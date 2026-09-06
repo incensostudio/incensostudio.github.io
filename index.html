@@ -1,0 +1,2491 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="description" content="Incenso Studio — a beauty studio in Tripoli, Lebanon. Hair, nails, lashes and bridal, by appointment." />
+<meta name="theme-color" content="#e6e1d5" />
+<title>Incenso Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" />
+<style>
+  /* ALT Gumbo — display face for the wordmark/headline */
+  @font-face {
+    font-family: "ALT Gumbo";
+    src: url("assets/fonts/ALTGumbo-Thin.otf") format("opentype");
+    font-weight: 100; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "ALT Gumbo";
+    src: url("assets/fonts/ALTGumbo-Light.otf") format("opentype");
+    font-weight: 300; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "ALT Gumbo";
+    src: url("assets/fonts/ALTGumbo-Regular.otf") format("opentype");
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "ALT Gumbo";
+    src: url("assets/fonts/ALTGumbo-Medium.otf") format("opentype");
+    font-weight: 500; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "ALT Gumbo";
+    src: url("assets/fonts/ALTGumbo-Semibold.otf") format("opentype");
+    font-weight: 600; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "ALT Gumbo";
+    src: url("assets/fonts/ALTGumbo-Bold.otf") format("opentype");
+    font-weight: 700; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "ALT Gumbo";
+    src: url("assets/fonts/ALTGumbo-Black.otf") format("opentype");
+    font-weight: 900; font-style: normal; font-display: swap;
+  }
+
+  :root {
+    /* Incenso type — loaded directly, independent of any other project */
+    --font-sans: "Geist", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --font-display: "Geist", "Helvetica Neue", Helvetica, sans-serif;
+
+    /* tuning knobs */
+    --cell-w: 64px;
+    --cell-h: 32px;
+    --grid-cols: 48;
+    --grid-rows: 36;
+    --bg-warm: #e5dcc9;
+    --fg-warm: #000000;
+    --grid-line: rgba(0, 0, 0, 0.08);
+    --grid-mark: rgba(0, 0, 0, 0.16);
+    --fade-out: 3600ms;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  html, body { min-height: 100%; }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--fg-warm);
+    background: var(--bg-warm);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Skip link — keyboard accessibility */
+  .skip-link {
+    position: absolute;
+    left: 12px;
+    top: -100px;
+    z-index: 100;
+    padding: 10px 16px;
+    background: var(--fg-warm);
+    color: #FEFEF1;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: top 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .skip-link:focus { top: 12px; }
+
+  /* Universal focus ring — keyboard only */
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid var(--fg-warm);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .stage {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 600px;
+    overflow: hidden;
+    background: var(--bg-warm);
+  }
+  /* ---- The skewed grid -------------------------------------------------- */
+  .grid-wrap {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(var(--cell-w) * var(--grid-cols));
+    height: calc(var(--cell-h) * var(--grid-rows));
+    transform:
+      translate(-50%, -50%)
+      skewX(-48deg)
+      skewY(14deg);
+    transform-origin: 50% 50%;
+  }
+
+  .row {
+    display: flex;
+    height: var(--cell-h);
+  }
+
+  .cell {
+    width: var(--cell-w);
+    height: var(--cell-h);
+    border-right: 1px solid var(--grid-line);
+    border-top: 1px solid var(--grid-line);
+    position: relative;
+    background-color: transparent;
+    transition: background-color var(--fade-out) cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: auto;
+  }
+  /* close the left/bottom edges */
+  .row:first-child .cell { border-top: 1px solid var(--grid-line); }
+  .row .cell:first-child { border-left: 1px solid var(--grid-line); }
+  .row:last-child .cell { border-bottom: 1px solid var(--grid-line); }
+
+  .cell.hit {
+    transition: background-color 0ms;
+  }
+
+  /* Clicked cells stay lit until clicked again */
+  .cell.locked {
+    transition: background-color 0ms;
+  }
+
+
+  /* small plus marks at the grid intersections (every other cell) */
+  .cell.mark::before,
+  .cell.mark::after {
+    content: "";
+    position: absolute;
+    background: var(--grid-mark);
+    pointer-events: none;
+  }
+  .cell.mark::before {
+    /* horizontal */
+    left: -4px; top: -0.5px;
+    width: 8px; height: 1px;
+  }
+  .cell.mark::after {
+    /* vertical */
+    left: -0.5px; top: -4px;
+    width: 1px; height: 8px;
+  }
+
+  /* ---- Foreground copy -------------------------------------------------- */
+  .scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 50%,
+        rgba(230, 225, 213, 0) 0%,
+        rgba(230, 225, 213, 0.35) 55%,
+        rgba(230, 225, 213, 0.75) 100%);
+  }
+
+  .content {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    padding: clamp(24px, 4vw, 56px);
+    z-index: 3;
+  }
+  .content > .stack {
+    text-align: center;
+    max-width: 760px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  .content > .stack.go {
+    animation: stackIn 1000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes stackIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.82);
+    margin: 0 0 clamp(24px, 3.5vw, 36px);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .eyebrow .dot {
+    width: 7px; height: 7px; border-radius: 999px;
+    background: #1F9A56;
+    box-shadow:
+      0 0 0 3px rgba(31, 154, 86, 0.14),
+      0 0 14px rgba(31, 154, 86, 0.45);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(31, 154, 86, 0.14), 0 0 14px rgba(31, 154, 86, 0.45); }
+    50%      { box-shadow: 0 0 0 6px rgba(31, 154, 86, 0.06), 0 0 18px rgba(31, 154, 86, 0.55); }
+  }
+
+  .wordmark {
+    display: block;
+    width: clamp(280px, 50vw, 720px);
+    height: auto;
+    margin: 0 auto;
+  }
+  .wordmark path { fill: var(--fg-warm); }
+
+  .sub {
+    margin: clamp(22px, 3vw, 30px) auto 0;
+    max-width: 62ch;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: clamp(15px, 1.35vw, 19px);
+    line-height: 1.55;
+    letter-spacing: 0.005em;
+    color: rgba(0, 0, 0, 0.78);
+    text-wrap: balance;
+  }
+
+  /* ---- Corner frame ----------------------------------------------------- */
+  .frame {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    padding:
+      max(clamp(24px, 3.2vw, 40px), env(safe-area-inset-top))
+      max(clamp(28px, 4.5vw, 56px), env(safe-area-inset-right))
+      max(clamp(24px, 3.2vw, 40px), env(safe-area-inset-bottom))
+      max(clamp(28px, 4.5vw, 56px), env(safe-area-inset-left));
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 12px;
+  }
+  .frame > * { pointer-events: auto; }
+  .frame .tl { grid-column: 1; grid-row: 1; justify-self: start; }
+  .frame .tc { grid-column: 2; grid-row: 1; justify-self: center; }
+  .frame .tr { grid-column: 3; grid-row: 1; justify-self: end; }
+  .frame .bl { grid-column: 1; grid-row: 3; justify-self: start; align-self: end; }
+  .frame .bc { grid-column: 2; grid-row: 3; justify-self: center; align-self: end; }
+  .frame .br { grid-column: 3; grid-row: 3; justify-self: end; align-self: end; }
+
+  .corner-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  [hidden] { display: none !important; }
+  /* Language toggle */
+  .lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.82);
+    user-select: none;
+  }
+  .lang button {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 2px 0;
+    margin: 0;
+    cursor: pointer;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: inherit;
+    border-radius: 4px;
+    transition: color 160ms, opacity 160ms;
+    opacity: 0.55;
+  }
+  .lang button:hover { color: var(--fg-warm); opacity: 1; }
+  .lang button[aria-pressed="true"] {
+    color: var(--fg-warm);
+    opacity: 1;
+  }
+  .lang .lang-sep { opacity: 0.4; }
+
+  /* ---- Top nav --------------------------------------------------------- */
+  .nav {
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(20px, 2.8vw, 36px);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.82);
+    height: 40px;
+  }
+  .nav a,
+  .nav .nav-item {
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color 160ms;
+    position: relative;
+    background: transparent;
+    border: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+  }
+  .nav a::after,
+  .nav .nav-item::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    bottom: -2px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nav a:hover::after,
+  .nav .nav-item:hover::after,
+  .nav .has-menu:hover .nav-item::after,
+  .nav .has-menu[aria-expanded="true"] .nav-item::after { transform: scaleX(1); }
+  .nav a:hover,
+  .nav .nav-item:hover { color: var(--fg-warm); }
+
+  /* SERVICES dropdown */
+  .nav .has-menu { position: relative; }
+  .nav .caret {
+    width: 8px; height: 8px;
+    display: block;
+    transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav .has-menu[aria-expanded="true"] .caret { transform: rotate(180deg); }
+
+  .nav-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    width: max-content;
+    min-width: calc(100% + 28px);
+    margin-top: 12px;
+    background: rgba(254, 254, 241, 0.6);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0;
+    padding: 0;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.13), 0 2px 5px rgba(0, 0, 0, 0.07);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 10;
+  }
+  /* invisible hover bridge between trigger and menu */
+  .nav-menu::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    top: -14px;
+    height: 14px;
+  }
+  .nav .has-menu:hover .nav-menu,
+  .nav .has-menu:focus-within .nav-menu,
+  .nav .has-menu[aria-expanded="true"] .nav-menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+  .nav .has-menu:hover .caret,
+  .nav .has-menu:focus-within .caret { transform: rotate(180deg); }
+  .nav-menu a {
+    display: block;
+    text-align: left;
+    padding: 11px 20px;
+    border-radius: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.78);
+    transition: color 160ms, background-color 160ms;
+  }
+  .nav-menu a + a {
+    border-top: 1px solid var(--grid-line);
+  }
+  .nav-menu a:hover {
+    background: rgba(0, 0, 0, 0.045);
+    color: var(--fg-warm);
+  }
+  .nav-menu a::after { display: none; }
+
+  .meta-link {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.82);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), color 200ms;
+    line-height: 1;
+  }
+  .meta-link:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--fg-warm);
+  }
+  .meta-link svg { width: 13px; height: 13px; display: block; opacity: 0.85; flex-shrink: 0; }
+
+  /* ---- CTA row ---------------------------------------------------------- */
+  .cta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: clamp(32px, 4.5vw, 46px);
+    pointer-events: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  /* Hero primary CTA — dominant central action */
+  .content .stack .cta-row .btn-primary {
+    height: 52px;
+    padding: 0 30px;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.26);
+  }
+  .content .stack .cta-row .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.30);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 999px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition:
+      transform 160ms cubic-bezier(0.4, 0, 0.2, 1),
+      background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--fg-warm);
+    color: #FEFEF1;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  }
+  .btn-primary:hover { background: #000000; }
+  .btn-primary:active { transform: scale(0.97); }
+
+  .btn-ghost {
+    background: rgba(254, 254, 241, 0.5);
+    color: var(--fg-warm);
+    border-color: rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .btn-ghost:hover {
+    background: rgba(254, 254, 241, 0.75);
+    border-color: rgba(0, 0, 0, 0.32);
+  }
+  .btn-ghost:active { transform: scale(0.97); }
+
+  .tb-cart {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    background: rgba(254, 254, 241, 0.5);
+    color: var(--fg-warm);
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 160ms cubic-bezier(0.4,0,0.2,1), background-color 200ms, border-color 200ms;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tb-cart:hover { background: rgba(254, 254, 241, 0.75); border-color: rgba(0, 0, 0, 0.32); }
+  .tb-cart:active { transform: scale(0.94); }
+  .tb-cart svg { width: 18px; height: 18px; display: block; }
+  .tb-cart .cart-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: var(--fg-warm);
+    color: #FEFEF1;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 17px;
+    text-align: center;
+    border: 1.5px solid var(--bg-warm);
+  }
+  .tb-cart .cart-badge[data-count="0"] { display: none; }
+
+
+  .btn-row { display: inline-flex; gap: 8px; align-items: center; }
+
+  /* ---- Live booking ticker --------------------------------------------- */
+  .ticker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.55);
+  }
+  .ticker .ticker-dot {
+    width: 12px; height: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dot-c, #F9A8D4);
+    flex-shrink: 0;
+    transition: color 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ticker .ticker-dot svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+  .ticker-text {
+    display: inline-block;
+    transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+  }
+  .ticker-text strong { color: var(--fg-warm); font-weight: 600; }
+
+  /* ---- Stories ring ---------------------------------------------------- */
+  .stories {
+    display: inline-flex;
+    gap: 12px;
+    margin-top: clamp(22px, 3vw, 30px);
+    pointer-events: auto;
+  }
+  .story {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 999px;
+    padding: 0;
+    background: conic-gradient(
+      from 90deg,
+      #F9A8D4, #FCC67E, #FDE047, #86EFAC, #7DD3FC, #D8B4FE, #F9A8D4
+    );
+    text-decoration: none;
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-block;
+    pointer-events: auto;
+  }
+  .story::after {
+    content: "";
+    position: absolute;
+    inset: 2.5px;
+    border-radius: 999px;
+    background: var(--bg-warm);
+    z-index: 1;
+  }
+  .story > img {
+    position: absolute;
+    inset: 4.5px;
+    width: calc(100% - 9px);
+    height: calc(100% - 9px);
+    object-fit: cover;
+    border-radius: 999px;
+    z-index: 2;
+  }
+  .story:hover { transform: translateY(-2px) scale(1.06); z-index: 20; }
+
+  /* Instagram-style preview popover */
+  .story-preview {
+    position: absolute;
+    bottom: calc(100% + 16px);
+    left: 50%;
+    width: 180px;
+    height: 300px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #0a0a0a;
+    box-shadow:
+      0 24px 56px rgba(0, 0, 0, 0.32),
+      0 6px 14px rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(6px) scale(0.92);
+    transition:
+      opacity 240ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 10;
+  }
+  /* Invisible hover bridge so the preview stays open as cursor crosses the gap */
+  .story-preview::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    top: 100%;
+    height: 18px;
+  }
+  .story.open .story-preview {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  .story.open .story-preview .sp-progress::after {
+    animation: spFill 4s linear forwards;
+  }
+  .story-preview img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+  .story-preview .sp-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background:
+      linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0) 25%),
+      linear-gradient(to top,    rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 40%);
+  }
+  .story-preview .sp-progress {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
+    overflow: hidden;
+    z-index: 3;
+  }
+  .story-preview .sp-progress::after {
+    content: "";
+    display: block;
+    height: 100%;
+    background: #fff;
+    width: 0;
+  }
+  @keyframes spFill {
+    from { width: 0; }
+    to   { width: 100%; }
+  }
+  .story-preview .sp-meta {
+    position: absolute;
+    top: 22px;
+    left: 12px;
+    right: 12px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.95);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+  .story-preview .sp-meta .sp-avatar {
+    width: 22px; height: 22px;
+    min-width: 22px; min-height: 22px;
+    max-width: 22px; max-height: 22px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 255, 255, 0.9);
+    background: #000000;
+    display: inline-block;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    position: relative;
+  }
+  .story-preview .sp-meta .sp-avatar img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .story-preview .sp-caption {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    right: 14px;
+    z-index: 3;
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  }
+  .story-preview .sp-caption .sp-when {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-top: 4px;
+  }
+
+  /* ---- Trust line (Google reviews, clickable) -------------------------- */
+  .trust {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: rgba(0, 0, 0, 0.65);
+    margin-top: clamp(22px, 3vw, 30px);
+    text-decoration: none;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 999px;
+    transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), color 200ms;
+    pointer-events: auto;
+  }
+  .trust:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--fg-warm);
+  }
+  .stars { display: inline-flex; gap: 3px; color: #C49232; }
+  .stars svg { width: 13px; height: 13px; display: block; }
+  .rating {
+    font-weight: 600;
+    color: var(--fg-warm);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+  .trust .sep { opacity: 0.35; }
+  .trust .reviews { letter-spacing: 0.04em; }
+
+  /* ---- Social row ------------------------------------------------------ */
+  .social-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .social-row a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    color: rgba(0, 0, 0, 0.65);
+    text-decoration: none;
+    transition:
+      color 160ms cubic-bezier(0.4, 0, 0.2, 1),
+      background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .social-row a:hover {
+    color: var(--fg-warm);
+    background: rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+  }
+  .social-row a:active { transform: translateY(0) scale(0.94); }
+  .social-row svg { width: 18px; height: 18px; display: block; }
+
+  /* Tooltip above each social icon (handle / number) */
+  .social-row a::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    padding: 5px 11px;
+    background: rgba(0, 0, 0, 0.92);
+    color: #FEFEF1;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.10em;
+    text-transform: none;
+    border-radius: 999px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 40;
+  }
+  .social-row a:hover::after,
+  .social-row a:focus-visible::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* corner meta (unused for now, kept for tuning) */
+  #readout { font-variant-numeric: tabular-nums; }
+
+  /* ---- Mobile menu ----------------------------------------------------- */
+  .menu-toggle {
+    display: none;
+    appearance: none;
+    background: rgba(254, 254, 241, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 999px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    color: var(--fg-warm);
+    transition: background-color 160ms;
+  }
+  .menu-toggle:hover { background: rgba(254, 254, 241, 0.6); }
+  .menu-toggle svg { width: 16px; height: 16px; display: block; }
+  .menu-toggle .icon-close { display: none; }
+  body.menu-open .menu-toggle .icon-open  { display: none; }
+  body.menu-open .menu-toggle .icon-close { display: block; }
+
+  .mobile-nav {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background: var(--bg-warm);
+    padding: 80px clamp(24px, 6vw, 48px) clamp(24px, 6vw, 48px);
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    pointer-events: auto;
+    opacity: 0;
+    transition: opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  body.menu-open .mobile-nav { display: flex; opacity: 1; }
+  .mobile-nav a,
+  .mobile-nav .m-group-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--fg-warm);
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.10);
+  }
+  .mobile-nav .m-group-label { color: rgba(0, 0, 0, 0.55); }
+  .mobile-nav .m-sub a {
+    padding: 12px 0 12px 18px;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  .mobile-nav .m-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  .mobile-nav .m-actions .btn { flex: 1; justify-content: center; }
+
+  /* ============================================================ */
+  /* === Creative extensions ==================================== */
+  /* ============================================================ */
+
+  /* Real system cursor over the hero (pointer on interactive elements) */
+  .stage a, .stage button, .stage .story, .stage input { cursor: pointer; }
+  .paint-cursor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 100;
+    width: 20px; height: 20px;
+    border-radius: 999px;
+    background: var(--cur-c, #F9A8D4);
+    mix-blend-mode: multiply;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 200ms, background-color 220ms cubic-bezier(0.16, 1, 0.3, 1), width 160ms, height 160ms;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+    will-change: left, top, background-color;
+  }
+  .paint-cursor.visible { opacity: 0; }
+  .paint-cursor.painting { width: 32px; height: 32px; }
+
+  /* Sparkle trail */
+  .sparkle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 99;
+    width: 5px; height: 5px;
+    border-radius: 999px;
+    background: var(--sp-c, #fff);
+    box-shadow: 0 0 8px var(--sp-c, #fff);
+    transform: translate(-50%, -50%);
+    animation: sparkleFade 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes sparkleFade {
+    0%   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--sx, 0px)), calc(-50% + var(--sy, -24px))) scale(0.3); }
+  }
+
+  /* Color-name tooltip */
+  .color-tip {
+    position: fixed;
+    pointer-events: none;
+    z-index: 50;
+    padding: 5px 11px;
+    background: rgba(0, 0, 0, 0.88);
+    color: #FEFEF1;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 16px));
+    transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+  }
+  .color-tip.visible { opacity: 1; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    z-index: 300;
+    padding: 11px 18px;
+    background: var(--fg-warm);
+    color: #FEFEF1;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(24px);
+    transition: opacity 240ms, transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.3);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Wordmark — idle breathing disabled; interactive on hover/focus */
+  .wordmark {
+    animation: none;
+    cursor: pointer;
+    transform-origin: 50% 60%;
+    transition: transform 520ms cubic-bezier(.22,1,.36,1);
+    will-change: transform;
+  }
+  .wordmark-o { animation: none; }
+  /* sheen sweep gradient sits ready; only revealed on hover (sweep via SMIL) */
+  .wordmark path { transition: fill 240ms ease; }
+  .wordmark:hover path,
+  .wordmark:focus-visible path {
+    fill: url(#wmSheen);
+  }
+  .wordmark:hover,
+  .wordmark:focus-visible {
+    animation: wmWobble 1400ms cubic-bezier(.36,.07,.19,.97) both;
+  }
+  @keyframes wmWobble {
+    0%   { transform: scale(1, 1) skewX(0deg); }
+    22%  { transform: scale(1.05, .94) skewX(-2.5deg); }
+    48%  { transform: scale(.97, 1.04) skewX(1.5deg); }
+    72%  { transform: scale(1.02, .98) skewX(-0.6deg); }
+    100% { transform: scale(1, 1) skewX(0deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wordmark:hover, .wordmark:focus-visible { animation: none; }
+  }
+
+  /* ---- Highlight ring as a button (was an <a>) -------------------------- */
+  .story {
+    appearance: none;
+    border: 0;
+    font: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Multi-segment hover progress — one segment per story in the highlight */
+  .story-preview .sp-progress {
+    display: flex;
+    gap: 3px;
+    background: transparent;
+    height: 2px;
+    overflow: visible;
+  }
+  .story-preview .sp-progress::after { display: none; content: none; }
+  .sp-seg {
+    flex: 1;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .sp-seg > i { display: block; height: 100%; width: 0; background: #fff; }
+  /* hover-preview segment fills are driven by JS so the whole highlight plays */
+
+  /* ============================================================ */
+  /* === Instagram-style story viewer =========================== */
+  /* ============================================================ */
+  .ig-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(8px, 3vw, 40px);
+    background: rgba(12, 9, 7, 0.92);
+    backdrop-filter: blur(10px) saturate(1.1);
+    -webkit-backdrop-filter: blur(10px) saturate(1.1);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ig-viewer.open { opacity: 1; pointer-events: auto; }
+
+  .ig-card {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    height: min(88vh, 860px);
+    max-width: 94vw;
+    width: auto;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #0a0a0a;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.55), 0 8px 24px rgba(0, 0, 0, 0.4);
+    transform: scale(0.94);
+    transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+    touch-action: none;
+  }
+  .ig-viewer.open .ig-card { transform: scale(1); }
+
+  .ig-media { position: absolute; inset: 0; z-index: 1; background: #0a0a0a; }
+  .ig-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ig-img.show { opacity: 1; }
+  .ig-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+      linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 22%),
+      linear-gradient(to top,    rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 38%);
+  }
+
+  .ig-bars {
+    position: absolute;
+    top: 12px; left: 12px; right: 12px;
+    z-index: 5;
+    display: flex;
+    gap: 4px;
+  }
+  .ig-bar {
+    flex: 1;
+    height: 2.5px;
+    background: rgba(255, 255, 255, 0.32);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .ig-bar > i { display: block; height: 100%; width: 0; background: #fff; border-radius: 999px; }
+  .ig-bar.done > i { width: 100%; }
+  .ig-bar.active > i {
+    width: 0;
+    animation: igFill var(--dur, 5000ms) linear forwards;
+  }
+  @keyframes igFill { from { width: 0; } to { width: 100%; } }
+
+  .ig-head {
+    position: absolute;
+    top: 24px; left: 14px; right: 14px;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    pointer-events: none;
+  }
+  .ig-avatar {
+    width: 30px; height: 30px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #000;
+    border: 1.5px solid rgba(255, 255, 255, 0.9);
+    flex-shrink: 0;
+  }
+  .ig-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ig-name {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .ig-when {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.72;
+  }
+  .ig-close {
+    position: absolute;
+    top: 20px; right: 12px;
+    z-index: 8;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    width: 34px; height: 34px;
+    color: #fff;
+    font-size: 26px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.85;
+    transition: opacity 160ms, transform 160ms;
+  }
+  .ig-close:hover { opacity: 1; transform: scale(1.08); }
+
+  .ig-cap {
+    position: absolute;
+    bottom: 22px; left: 18px; right: 18px;
+    z-index: 6;
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+    pointer-events: none;
+  }
+
+  /* tap zones inside the card */
+  .ig-tap {
+    position: absolute;
+    top: 0; bottom: 0;
+    z-index: 4;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+  }
+  .ig-tap-prev { left: 0; width: 32%; }
+  .ig-tap-next { right: 0; width: 68%; }
+
+  /* desktop chevrons outside the card */
+  .ig-nav {
+    appearance: none;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #fff;
+    width: 48px; height: 48px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 26px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background-color 180ms, transform 160ms;
+  }
+  .ig-nav:hover { background: rgba(255, 255, 255, 0.16); }
+  .ig-nav:active { transform: scale(0.92); }
+  @media (max-width: 760px) {
+    .ig-nav { display: none; }
+  }
+
+  /* Ambient radio toggle (icon-only, in BR) */
+  .tl { display: inline-flex; align-items: center; gap: 10px; }
+  .br { display: inline-flex; align-items: center; gap: 12px; }
+  .radio-toggle {
+    appearance: none;
+    background: rgba(254, 254, 241, 0.45);
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 999px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.72);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    pointer-events: auto;
+    transition: background-color 220ms, border-color 220ms, color 220ms, transform 160ms;
+  }
+  .radio-toggle:hover { background: rgba(254, 254, 241, 0.75); border-color: rgba(0, 0, 0, 0.32); color: var(--fg-warm); }
+  .radio-toggle:active { transform: scale(0.94); }
+  .radio-toggle svg.radio-icon { width: 14px; height: 14px; display: block; }
+  .radio-toggle .radio-bars {
+    display: none;
+    align-items: flex-end;
+    gap: 2px;
+    height: 13px;
+  }
+  .radio-toggle .radio-bars span {
+    display: block; width: 2px;
+    background: currentColor; border-radius: 1px;
+    animation: barBounce 720ms ease-in-out infinite;
+  }
+  .radio-toggle .radio-bars span:nth-child(2) { animation-delay: -180ms; }
+  .radio-toggle .radio-bars span:nth-child(3) { animation-delay: -360ms; }
+  @keyframes barBounce {
+    0%, 100% { height: 3px; }
+    50%      { height: 11px; }
+  }
+  /* Tooltip above the radio icon */
+  .radio-toggle::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    padding: 5px 11px;
+    background: rgba(0, 0, 0, 0.92);
+    color: #FEFEF1;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.10em;
+    border-radius: 999px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .radio-toggle:hover::after,
+  .radio-toggle:focus-visible::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .radio-toggle.playing .radio-icon { display: none; }
+  .radio-toggle.playing .radio-bars { display: inline-flex; }
+  .radio-toggle[aria-pressed="true"] {
+    background: var(--fg-warm);
+    color: #FEFEF1;
+    border-color: var(--fg-warm);
+  }
+
+  /* Radio popover removed — audio is direct now (no iframe) */
+
+  /* ---- Responsive ------------------------------------------------------ */
+  @media (max-width: 880px) {
+    .frame {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto 1fr auto auto;
+    }
+    .frame .tl { grid-column: 1; grid-row: 1; }
+    .frame .tc { display: none; }
+    .frame .tr { grid-column: 2; grid-row: 1; }
+    .frame .bl { grid-column: 1 / -1; grid-row: 3; justify-self: center; }
+    .frame .bc { grid-column: 1 / -1; grid-row: 4; justify-self: center; }
+    .frame .br { display: none; }
+
+    .menu-toggle { display: none; }
+    .btn-row .btn-ghost { display: none; }
+  }
+  @media (max-width: 480px) {
+    .wordmark { width: clamp(220px, 80vw, 400px); }
+    .sub { font-size: 15px; max-width: 28ch; }
+    .trust { flex-wrap: wrap; justify-content: center; }
+    .stars svg { width: 11px; height: 11px; }
+    .stories { gap: 9px; flex-wrap: wrap; justify-content: center; max-width: 100%; }
+    .story { width: 48px; height: 48px; }
+    .social-row { flex-wrap: wrap; justify-content: center; }
+    .ticker { max-width: 44vw; overflow: hidden; }
+    .ticker-text { overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  }
+  /* Short viewports (landscape phones) — compact the stack so nothing clips */
+  @media (max-height: 560px) {
+    .stage { min-height: 100dvh; }
+    .stories { display: none; }
+    .wordmark { width: clamp(200px, 34vw, 380px); }
+    .eyebrow { margin-bottom: 14px; }
+    .sub { margin-top: 12px; font-size: 14px; }
+    .trust { margin-top: 8px; }
+    .cta-row { margin-top: 14px; }
+    .frame { padding: max(14px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); }
+  }
+
+  /* ---- Arabic mode ----------------------------------------------------- */
+  html[lang="ar"] { --font-sans: "Tajawal", "Geist", "Helvetica Neue", sans-serif; }
+  /* Arabic has no caps and dislikes tracking — relax mono-styled chrome */
+  html[lang="ar"] .nav,
+  html[lang="ar"] .nav-menu a,
+  html[lang="ar"] .mobile-nav a,
+  html[lang="ar"] .mobile-nav .m-group-label,
+  html[lang="ar"] .meta-link,
+  html[lang="ar"] .ticker,
+  html[lang="ar"] .trust,
+  html[lang="ar"] .eyebrow {
+    font-family: "Tajawal", var(--font-mono);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  /* the 'incenso' logotype is the brand mark — always stays Latin/LTR */
+  html[lang="ar"] .wordmark { direction: ltr; }
+
+</style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="stage" id="stage">
+    <div class="grid-wrap" id="grid" aria-hidden="true"></div>
+    <div class="scrim"></div>
+
+    <div class="content" id="main">
+      <div class="stack">
+        <svg class="wordmark" id="wm" viewBox="0 0 1284 342" xmlns="http://www.w3.org/2000/svg" aria-label="incenso" tabindex="0">
+          <defs>
+            <linearGradient id="wmSheen" x1="0" y1="0" x2="460" y2="0" gradientUnits="userSpaceOnUse" spreadMethod="pad">
+              <stop offset="0" stop-color="var(--fg-warm)"></stop>
+              <stop offset="0.38" stop-color="var(--fg-warm)"></stop>
+              <stop offset="0.5" stop-color="#E0BC68"></stop>
+              <stop offset="0.62" stop-color="var(--fg-warm)"></stop>
+              <stop offset="1" stop-color="var(--fg-warm)"></stop>
+              <animateTransform attributeName="gradientTransform" type="translate"
+                begin="wm.mouseover; wm.focusin" dur="1.4s" fill="freeze"
+                from="-720 0" to="1280 0"></animateTransform>
+            </linearGradient>
+          </defs>
+          <path class="wordmark-o" d="M984 189.676C984 145.506 1007.35 106.459 1045.99 89.6959C1058.86 84.1134 1073.44 81 1089.42 81C1104.88 81 1119.21 83.8833 1132.45 89.1591C1145.74 94.4656 1158.61 102.425 1171.92 112.854C1186.18 122.44 1204.38 132.7 1226.24 143.083C1248.11 153.466 1268.29 164.923 1278.49 178.496C1288.48 191.808 1284.77 206.378 1268.26 221.484C1259.99 229.045 1249.57 236.637 1238.27 243.876C1226.97 251.13 1214.87 257.924 1203.23 264.09C1179.98 276.282 1159.68 284.564 1141.54 289.288C1123.51 293.858 1106.92 296.558 1090.42 296.542C1074.56 296.573 1060.21 293.69 1047.37 288.414C1008.84 272.556 984 235.18 984 189.676ZM1100.66 280.914C1116.94 281.129 1140.85 277.985 1167.52 265.9C1180.95 259.857 1196.3 250.195 1210.71 237.956C1225.11 225.717 1235.17 211.746 1233.01 197.068C1230.81 182.115 1213.73 170.014 1195.25 159.125C1176.76 148.098 1161.34 137.117 1149.18 127.194C1137.32 117.087 1126.04 109.557 1114.71 104.542C1103.42 99.5574 1091.8 96.8888 1080.3 96.8888C1065.42 96.8888 1047.6 101.383 1033.51 113.453C1019.42 125.523 1009.04 145.184 1009.04 175.52C1009.04 205.856 1019.94 232.88 1036.56 251.391C1053.19 269.902 1075.7 280.638 1100.66 280.899V280.914Z"></path>
+          <path d="M13.5156 285V89.7H39.0156V285H13.5156ZM192.182 285L82.682 117.6V285H56.582V90H90.782L198.782 255.6V90H224.582V285H192.182ZM340.877 288.6C282.977 288.6 238.877 250.2 238.877 187.5C238.877 124.8 282.977 86.4 340.877 86.4C392.777 86.4 433.577 117.6 438.077 164.7H411.377C407.177 131.1 376.877 109.2 340.577 109.2C299.177 109.2 264.977 138 264.977 187.2C264.977 236.7 299.477 265.5 340.877 265.5C377.477 265.5 407.777 243 411.977 204.9H438.077C434.177 256.8 393.677 288.6 340.877 288.6ZM454.434 285V90H605.334V112.8H479.634V175.2H596.334V198H479.634V262.2H604.134V285H454.434ZM756.44 285L646.94 117.6V285H620.84V90H655.04L763.04 255.6V90H788.84V285H756.44ZM890.378 288.6C845.078 288.6 804.278 268.8 804.878 222.3H831.278C831.578 254.7 857.678 266.7 889.778 266.7C913.178 266.7 939.578 256.8 939.578 232.5C939.578 207 912.878 201.9 883.178 197.4C847.778 192.3 809.378 186.3 809.378 141.9C809.378 108.3 838.478 86.4 879.578 86.4C932.678 86.4 959.078 116.4 959.078 147.9H932.078C931.778 123.3 911.678 108 879.578 108C854.078 108 835.178 121.8 835.178 142.2C835.178 168 861.578 169.8 890.978 174.6C926.078 180.3 965.678 186.9 965.378 231.9C965.078 267 930.878 288.6 890.378 288.6Z"></path>
+        </svg>
+        <p class="sub" data-ar-html="الجمال طقس. الانضباط رفاهية.<br/>للمرأة التي ترى في المرآة نقطة الانطلاق.">Beauty as ritual. Discipline as luxury.<br/>For the woman who treats the mirror as a starting line.</p>
+
+        <a class="trust" href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x1521f75831aec263:0x491dc69a84008be5?sa=X&amp;ved=1t:8290&amp;ictx=111" target="_blank" rel="noopener" aria-label="Read all reviews on Google">
+          <span class="stars" aria-label="Rated 4.9 out of 5">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 L14.5 8.5 L21 9.2 L16 13.4 L17.5 19.5 L12 16.2 L6.5 19.5 L8 13.4 L3 9.2 L9.5 8.5 Z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 L14.5 8.5 L21 9.2 L16 13.4 L17.5 19.5 L12 16.2 L6.5 19.5 L8 13.4 L3 9.2 L9.5 8.5 Z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 L14.5 8.5 L21 9.2 L16 13.4 L17.5 19.5 L12 16.2 L6.5 19.5 L8 13.4 L3 9.2 L9.5 8.5 Z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 L14.5 8.5 L21 9.2 L16 13.4 L17.5 19.5 L12 16.2 L6.5 19.5 L8 13.4 L3 9.2 L9.5 8.5 Z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 L14.5 8.5 L21 9.2 L16 13.4 L17.5 19.5 L12 16.2 L6.5 19.5 L8 13.4 L3 9.2 L9.5 8.5 Z"/></svg>
+          </span>
+          <span class="rating">4.9</span>
+          <span class="sep">/</span>
+          <span class="reviews" data-ar="٢٣١٢ تقييم">312 reviews</span>
+        </a>
+
+        <div class="stories" id="stories" aria-label="Story highlights"></div>
+
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://wa.me/96171930290?text=Hi%2C%20I%27d%20like%20to%20book%20an%20appointment" target="_blank" rel="noopener" data-ar="احجزي الآن">Book Now</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="tl">
+        <div class="ticker" aria-live="polite">
+          <span class="ticker-dot" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2 L13.5 8 L8 14 L2.5 8 Z"/></svg></span>
+          <span class="ticker-text">…</span>
+        </div>
+      </div>
+
+      <div class="tc" hidden>
+        <nav class="nav" id="nav" aria-label="Primary">
+          <a href="Shop.html" data-ar="المتجر">Shop</a>
+          <div class="has-menu" aria-expanded="false">
+            <button type="button" class="nav-item" data-toggle="services" aria-haspopup="true" aria-expanded="false" aria-controls="services-menu">
+              <span data-ar="الخدمات">Services</span>
+              <svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M2 4 L5 7 L8 4" />
+              </svg>
+            </button>
+            <div class="nav-menu" id="services-menu" role="menu">
+              <a href="Hair.html" role="menuitem" data-ar="الشعر">Hair</a>
+              <a href="Nails.html" role="menuitem" data-ar="الأظافر">Nails</a>
+              <a href="Makeup.html" role="menuitem" data-ar="المكياج">Make-up</a>
+              <a href="Brows-Lashes.html" role="menuitem" data-ar="الحواجب والرموش">Brows &amp; Lashes</a>
+              <a href="Bridal.html" role="menuitem" data-ar="العرائس">Bridal</a>
+            </div>
+          </div>
+          <a href="Our-Work.html" data-ar="أعمالنا">Our Work</a>
+          <a href="The-Space.html" data-ar="المكان">The Space</a>
+          <a href="Vouchers.html" data-ar="هدايا">Gift</a>
+        </nav>
+      </div>
+
+      <div class="tr">
+        <div class="btn-row">
+          <a class="btn btn-ghost" href="Shop.html" data-ar="المتجر" hidden>Shop</a>
+          <a class="tb-cart" href="Cart.html" aria-label="Cart" data-ar-label="عربة التسوق" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l1.4 10.3a1.4 1.4 0 0 0 1.4 1.2h8a1.4 1.4 0 0 0 1.4-1.1l1.3-6.4H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
+            <span class="cart-badge" data-count="0">0</span>
+          </a>
+          <button type="button" class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav">
+            <svg class="icon-open" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+              <path d="M2 5 H14 M2 11 H14" />
+            </svg>
+            <svg class="icon-close" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+              <path d="M3 3 L13 13 M13 3 L3 13" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="bl">
+        <a class="meta-link" href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x1521f75831aec263:0x491dc69a84008be5?sa=X&amp;ved=1t:8290&amp;ictx=111" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 14 C5 10.5 3 8 3 6 a5 5 0 0 1 10 0 c0 2 -2 4.5 -5 8 Z" />
+            <circle cx="8" cy="6" r="1.75" />
+          </svg>
+          32, Dam &amp; Farz, Tripoli, Lebanon
+        </a>
+      </div>
+
+      <div class="bc">
+        <div class="social-row" aria-label="Social and contact">
+          <a href="tel:+96171930290" aria-label="Phone" data-tooltip="+961 71 930 290">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 6.5 C4 5.1 5.1 4 6.5 4 H8.5 L10 8 L7.5 9.5 C8.7 12.3 10.7 14.3 13.5 15.5 L15 13 L19 14.5 V16.5 C19 17.9 17.9 19 16.5 19 C9.6 19 4 13.4 4 6.5 Z"/>
+            </svg>
+          </a>
+          <a href="https://wa.me/96171930290" target="_blank" rel="noopener" aria-label="WhatsApp" data-tooltip="+961 71 930 290">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 12 A8 8 0 0 1 7.5 18.7 L4 20 L5.3 16.5 A8 8 0 1 1 20 12 Z"/>
+              <path d="M9 10 C9 12.8 11.2 15 14 15 L15.3 14 L13.3 13 L12.3 14 C11.5 13.6 10.4 12.5 10 11.7 L11 10.7 L10 8.7 L9 8.7 Z"/>
+            </svg>
+          </a>
+          <a href="mailto:hi@incensostudio.com" aria-label="Email" data-tooltip="hi@incensostudio.com">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3.5" y="5.5" width="17" height="13" rx="2"/>
+              <path d="M4 7.5 L12 13 L20 7.5"/>
+            </svg>
+          </a>
+          <a href="https://instagram.com/incensostudio" target="_blank" rel="noopener" aria-label="Instagram" data-tooltip="@incensostudio">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3.5" y="3.5" width="17" height="17" rx="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.2" cy="6.8" r="0.8" fill="currentColor"/>
+            </svg>
+          </a>
+          <a href="https://tiktok.com/@incensostudio" target="_blank" rel="noopener" aria-label="TikTok" data-tooltip="@incensostudio">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9.5 15 a3.5 3.5 0 1 0 3.5 3.5 V4 c0.5 2.5 2.5 4 5 4"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="br">
+        <button type="button" class="radio-toggle" id="radio" aria-pressed="false" aria-label="Toggle ambient radio" data-tooltip="Tune in">
+          <svg class="radio-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 12.5 V4 L13 3 V11" />
+            <circle cx="5" cy="12.5" r="1.6" fill="currentColor" stroke="none" />
+            <circle cx="12" cy="11" r="1.6" fill="currentColor" stroke="none" />
+          </svg>
+          <span class="radio-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
+        <div class="lang" role="group" aria-label="Language / اللغة" hidden>
+          <button type="button" data-lang="en" aria-pressed="true" aria-label="English">EN</button>
+          <span class="lang-sep" aria-hidden="true">/</span>
+          <button type="button" data-lang="ar" aria-pressed="false" aria-label="العربية">AR</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+    <nav class="mobile-nav" id="mobileNav" aria-label="Mobile primary" aria-hidden="true" hidden>
+    <a href="Shop.html" data-ar="المتجر">Shop</a>
+    <span class="m-group-label" data-ar="الخدمات">Services</span>
+    <div class="m-sub">
+      <a href="Hair.html" data-ar="الشعر">Hair</a>
+      <a href="Nails.html" data-ar="الأظافر">Nails</a>
+      <a href="Makeup.html" data-ar="المكياج">Make-up</a>
+      <a href="Brows-Lashes.html" data-ar="الحواجب والرموش">Brows &amp; Lashes</a>
+      <a href="Bridal.html" data-ar="العرائس">Bridal</a>
+    </div>
+    <a href="Our-Work.html" data-ar="أعمالنا">Our Work</a>
+    <a href="The-Space.html" data-ar="المكان">The Space</a>
+    <a href="Vouchers.html" data-ar="هدايا">Gift</a>
+    <a href="Careers.html" data-ar="وظائف">Careers</a>
+    <div class="m-actions">
+      <a class="btn btn-ghost" href="Shop.html" data-ar="المتجر">Shop</a>
+      <a class="btn btn-primary" href="https://wa.me/96171930290?text=Hi%2C%20I%27d%20like%20to%20book%20an%20appointment" target="_blank" rel="noopener" data-ar="احجزي الآن">Book now</a>
+    </div>
+  </nav>
+
+  <!-- Instagram-style story viewer (opened by the highlight rings) -->
+  <div class="ig-viewer" id="igViewer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Story highlights viewer">
+    <button class="ig-nav ig-prev" id="igPrev" type="button" aria-label="Previous story">&lsaquo;</button>
+    <div class="ig-card" id="igCard">
+      <div class="ig-media" id="igMedia"></div>
+      <div class="ig-scrim"></div>
+      <div class="ig-bars" id="igBars"></div>
+      <div class="ig-head">
+        <span class="ig-avatar"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' fill='%23111'/%3E%3Ctext x='30' y='41' text-anchor='middle' font-family='Georgia,serif' font-size='30' fill='%23fff'%3Ei%3C/text%3E%3C/svg%3E" alt="" /></span>
+        <span class="ig-name" id="igName">incenso</span>
+        <span class="ig-when" id="igWhen"></span>
+      </div>
+      <div class="ig-cap" id="igCap"></div>
+      <button class="ig-tap ig-tap-prev" id="igTapPrev" type="button" aria-label="Previous"></button>
+      <button class="ig-tap ig-tap-next" id="igTapNext" type="button" aria-label="Next"></button>
+      <button class="ig-close" id="igClose" type="button" aria-label="Close stories">&times;</button>
+    </div>
+    <button class="ig-nav ig-next" id="igNext" type="button" aria-label="Next story">&rsaquo;</button>
+  </div>
+
+
+
+<script>
+  (() => {
+    const COLS = 48;
+    const ROWS = 36;
+
+    // Pastel palette — soft, candy-toned flashes for the lattice.
+    // Pastel palette — soft, candy-toned flashes for the lattice.
+    const ACCENTS = [
+      '#7DD3FC', // sky
+      '#F9A8D4', // pink
+      '#86EFAC', // mint
+      '#FDE047', // yellow
+      '#FCA5A5', // coral
+      '#D8B4FE', // lavender
+      '#93C5FD', // blue
+      '#A5B4FC', // periwinkle
+      '#C4B5FD', // violet
+      '#FCC67E', // peach
+    ];
+
+    // Strong, alive, feminine words. We build a pool of adj+noun combos
+    // plus standalone phrases — way more than the 1728 cells, so EVERY
+    // cell gets a unique phrase.
+    const ADJ = [
+      'Hot','Toxic','Wild','Wicked','Reckless','Forbidden','Dangerous','Bold','Cruel','Tender',
+      'Naked','Soft','Sweet','Salty','Loud','Quiet','Spicy','Smoky','Cherry','Sugar',
+      'Honey','Velvet','Silk','Lace','Diamond','Pearl','Ruby','Amber','Rose','Wine',
+      'Marble','Crystal','Gold','Silver','Black','Midnight','Late','First','Last','Bright',
+      'Dark','Burning','Holy','Sacred','Sinful','Naughty','Brave','Vintage','Iconic','Pretty',
+    ];
+    const NOUN = [
+      'drama','trouble','chaos','crush','obsession','confession','secret','rumor','gossip','tease',
+      'lover','magnet','halo','sin','spell','trance','vixen','goddess','brat','saint',
+      'siren','muse','rebel','wildfire','storm','kiss','bite','whisper','lipstick','stiletto',
+      'promise','poison','ego','spark','flame','ember','smoke','mist','wave','pulse',
+      'heat','mood','glow','vibe','aura','era','moment','fantasy','weakness','fever',
+    ];
+    const STANDALONE = [
+      'First date','Toxic','Gossip','Heartbreaker','Untouchable','Iconic','Goddess','Drama',
+      'Forbidden','Effortless','Magnetic','Reckless','Bombshell','Crush','Obsessed','Spellbound',
+      'Limitless','Femme fatale','Ruthless','Confession','Stardust','Honey trap','Vixen','Stiletto',
+      'It-girl','Spotlight','Cherry bomb','Champagne','Power move','Late night','Rebellion','Cinderella',
+      'Bewitch','Mad love','Hot girl','Slay','Brat','Spoiled','Dangerous','Soft launch','Vendetta',
+      'Velvet rope','Manifest','Insolent','Smoke show','Sweet trouble','Bite me','Dollhouse','Wicked',
+      'Daring','Wild card','Heartbreak','Black book','Plot twist','Cherry pick','Heat wave','Hot mess',
+      'Front row','Side piece','Pretty hurts','Brat era','Main character','Soft girl','Hard launch',
+      'Demon time','Glow up','Touch grass','Energy','Mother','Period','Wifey','Unbothered',
+      'Mood maker','Sugar baby','Spicy','Untouchable','Hard to get','Loud and proud','Pretty rich',
+      'Quiet luxury','Plot armor','Anti-hero','In my era','Final boss','Fashion girl','That girl',
+    ];
+
+    // ── Creative chrome (cursor, sparkles, tooltip, toast) ─────────────
+    const paintCursor = document.createElement('div');
+    paintCursor.className = 'paint-cursor';
+    document.body.appendChild(paintCursor);
+
+    const colorTip = document.createElement('div');
+    colorTip.className = 'color-tip';
+    document.body.appendChild(colorTip);
+
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+    let toastTimer = null;
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3400);
+    }
+
+    // ── Hover chime — 5 selectable voices, all on a pentatonic scale ──
+    const SoundFX = (() => {
+      let ctx = null, master = null, enabled = false, lastNoteT = 0, step = 0;
+      // C major pentatonic across two octaves — every note pleases
+      const SCALE = [
+        523.25, 587.33, 659.25, 783.99, 880.00,
+        1046.50, 1174.66, 1318.51, 1567.98, 1760.00
+      ];
+      const init = () => {
+        if (ctx) return;
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        ctx = new AC();
+        master = ctx.createGain();
+        master.gain.value = 0.0;
+        master.connect(ctx.destination);
+      };
+      // One sugary "ting" — glassy music-box bell + sparkle octaves on top
+      // Original chime — sine body + octave triangle shimmer, soft attack,
+      // long bell decay. Gentle wind-chime you brush past.
+      const candyNote = (freq, t, vol) => {
+        const g = ctx.createGain();
+        g.connect(master);
+        const o1 = ctx.createOscillator();
+        o1.type = 'sine';
+        o1.frequency.value = freq;
+        const o2 = ctx.createOscillator();
+        o2.type = 'triangle';
+        o2.frequency.value = freq * 2;
+        const g2 = ctx.createGain();
+        g2.gain.value = 0.25;
+        o2.connect(g2); g2.connect(g); o1.connect(g);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(vol, t + 0.008);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+        o1.start(t); o2.start(t);
+        o1.stop(t + 0.95); o2.stop(t + 0.95);
+      };
+      const ping = (idx) => {
+        if (!ctx || !enabled) return;
+        const now = ctx.currentTime;
+        if (now - lastNoteT < 0.035) return;
+        lastNoteT = now;
+        const base = SCALE[((idx % SCALE.length) + SCALE.length) % SCALE.length];
+        candyNote(base, now, 0.16);
+      };
+      return {
+        wake() {
+          init();
+          if (ctx && ctx.state === 'suspended') ctx.resume();
+          if (ctx && master) {
+            enabled = true;
+            master.gain.cancelScheduledValues(ctx.currentTime);
+            master.gain.linearRampToValueAtTime(0.9, ctx.currentTime + 0.4);
+          }
+        },
+        noteFor(seed) {
+          if (!enabled) return;
+          ping(seed % SCALE.length);
+        },
+        get on() { return enabled; },
+        toggle(v) {
+          enabled = (v === undefined) ? !enabled : v;
+          if (enabled) this.wake();
+          else if (master && ctx) master.gain.linearRampToValueAtTime(0.0, ctx.currentTime + 0.2);
+        },
+      };
+    })();
+    const wakeAudio = () => SoundFX.wake();
+    window.addEventListener('pointerdown', wakeAudio, { once: true });
+    window.addEventListener('keydown', wakeAudio, { once: true });
+
+    // Mousemove → color-name tooltip follow
+    window.addEventListener('pointermove', (e) => {
+      colorTip.style.left = e.clientX + 'px';
+      colorTip.style.top = e.clientY + 'px';
+    });
+
+    // Show/hide cursor over the hero
+    const stageEl = document.getElementById('stage');
+    stageEl.addEventListener('pointerenter', () => { paintCursor.classList.add('visible'); });
+    stageEl.addEventListener('pointerleave', () => {
+      paintCursor.classList.remove('visible');
+      colorTip.classList.remove('visible');
+    });
+
+    // Drag-to-paint: held mouse keeps cells lit longer (they don't fade
+    // out as you move on). Released → released cells fade normally.
+
+    const grid = document.getElementById('grid');
+    const frag = document.createDocumentFragment();
+
+    for (let r = 0; r < ROWS; r++) {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'row';
+      for (let c = 0; c < COLS; c++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell' + ((r % 2 === 0 && c % 2 === 0) ? ' mark' : '');
+        cell.dataset.r = r;
+        cell.dataset.c = c;
+        rowEl.appendChild(cell);
+      }
+      frag.appendChild(rowEl);
+    }
+    grid.appendChild(frag);
+
+    const allCells = grid.querySelectorAll('.cell');
+
+    // Build the unique word pool: STANDALONE + (ADJ × NOUN) compound phrases.
+    // 70 standalone + 50 × 50 combos = 2570 unique entries, more than the
+    // 1728 cells, so each cell gets a distinct word.
+    const wordPool = [...STANDALONE];
+    for (const a of ADJ) {
+      for (const n of NOUN) {
+        wordPool.push(a + ' ' + n);
+      }
+    }
+    // Shuffle so adjacent cells get unrelated words
+    for (let i = wordPool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [wordPool[i], wordPool[j]] = [wordPool[j], wordPool[i]];
+    }
+    allCells.forEach((cell, i) => {
+      cell.dataset.word = wordPool[i % wordPool.length];
+    });
+
+    // Each hover surfaces a FRESH unique word — drawn from a reshuffled bag
+    // so you never repeat a phrase until the whole pool is used up.
+    let _bag = [];
+    let _bagPtr = 0;
+    const refillBag = () => {
+      _bag = wordPool.slice();
+      for (let i = _bag.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [_bag[i], _bag[j]] = [_bag[j], _bag[i]];
+      }
+      _bagPtr = 0;
+    };
+    refillBag();
+    const nextWord = () => {
+      if (_bagPtr >= _bag.length) refillBag();
+      return _bag[_bagPtr++];
+    };
+
+    // Welcome wave — diagonal cascade across the lattice on load.
+    function welcomeWave() {
+      const sorted = Array.from(allCells).map((cell) => ({
+        cell,
+        diag: parseInt(cell.dataset.c) + parseInt(cell.dataset.r),
+      }));
+      const maxDiag = Math.max(...sorted.map((s) => s.diag));
+      sorted.forEach(({ cell, diag }) => {
+        if (Math.random() > 0.45) return;
+        const delay = (diag / maxDiag) * 1600 + Math.random() * 260;
+        setTimeout(() => {
+          const color = ACCENTS[Math.floor(Math.random() * ACCENTS.length)];
+          cell.classList.add('hit');
+          cell.style.backgroundColor = color;
+          setTimeout(() => {
+            cell.classList.remove('hit');
+            cell.style.backgroundColor = '';
+          }, 220);
+        }, delay);
+      });
+    }
+    // ── Opening sequence — diagonal welcome cascade ──
+    setTimeout(welcomeWave, 350);
+    document.querySelector('.content > .stack')?.classList.add('go');
+
+    // Hover behavior - currently-hovered cell stays lit; previous fades.
+    let lastCell = null;
+    let hovering = false;
+    let painting = false;
+    let paintMoved = false;
+    let downCell = null;
+    const paintedCells = new Set();
+
+    grid.addEventListener('pointerenter', () => { hovering = true; SoundFX.wake(); });
+    grid.addEventListener('pointerover', (e) => {
+      const cell = e.target.closest('.cell');
+      if (!cell || cell === lastCell) return;
+
+      // Release the previous cell into its slow fade (unless drag-painting
+      // or the user has locked it on with a click)
+      if (lastCell && !painting && !lastCell.classList.contains('locked')) {
+        lastCell.classList.remove('hit');
+        lastCell.style.backgroundColor = '';
+      }
+
+      lastCell = cell;
+
+      // Locked cells keep their own colour on plain hover — but dragging
+      // over one gives it a fresh colour (same as tapping it again)
+      if (cell.classList.contains('locked')) {
+        if (painting) {
+          let color = cell.style.backgroundColor;
+          for (let i = 0; i < 6; i++) {
+            const c = ACCENTS[Math.floor(Math.random() * ACCENTS.length)];
+            if (c !== color) { color = c; break; }
+          }
+          cell.style.backgroundColor = color;
+          paintMoved = true;
+          if (paintCursor) paintCursor.style.setProperty('--cur-c', color);
+        } else if (paintCursor) {
+          paintCursor.style.setProperty('--cur-c', cell.style.backgroundColor);
+        }
+        if (colorTip) { cell.dataset.word = nextWord(); colorTip.textContent = cell.dataset.word; colorTip.classList.add('visible'); }
+        return;
+      }
+
+      const color = ACCENTS[Math.floor(Math.random() * ACCENTS.length)];
+      cell.classList.add('hit');
+      cell.style.backgroundColor = color;
+
+      // Gentle chime — note chosen from the cell's grid position so the
+      // melody feels coherent as you sweep across the lattice.
+      SoundFX.noteFor(parseInt(cell.dataset.c || '0') + parseInt(cell.dataset.r || '0'));
+
+      if (painting) {
+        // First movement of a drag — also lock the box we pressed down on
+        if (!paintMoved && downCell && !downCell.classList.contains('locked')) {
+          if (!downCell.style.backgroundColor) {
+            downCell.style.backgroundColor = ACCENTS[Math.floor(Math.random() * ACCENTS.length)];
+          }
+          downCell.classList.add('locked', 'hit');
+        }
+        paintedCells.add(cell);
+        cell.classList.add('locked');
+        paintMoved = true;
+      }
+
+      // Update the custom cursor color and color-name tooltip
+      if (paintCursor) paintCursor.style.setProperty('--cur-c', color);
+      if (colorTip) {
+        cell.dataset.word = nextWord();
+        colorTip.textContent = cell.dataset.word;
+        colorTip.classList.add('visible');
+      }
+    });
+
+    grid.addEventListener('pointerleave', () => {
+      if (lastCell && !painting && !lastCell.classList.contains('locked')) {
+        lastCell.classList.remove('hit');
+        lastCell.style.backgroundColor = '';
+      }
+      lastCell = null;
+      hovering = false;
+      if (colorTip) colorTip.classList.remove('visible');
+    });
+
+
+    // Top nav — SERVICES dropdown (and ARIA sync)
+    const navEl = document.getElementById('nav');
+    if (navEl) {
+      const wraps = navEl.querySelectorAll('.has-menu');
+      const sync = (w, open) => {
+        w.setAttribute('aria-expanded', open ? 'true' : 'false');
+        const trigger = w.querySelector('[aria-haspopup]');
+        if (trigger) trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      };
+      wraps.forEach(w => {
+        const trigger = w.querySelector('[data-toggle]');
+        trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const open = w.getAttribute('aria-expanded') === 'true';
+          wraps.forEach(x => sync(x, false));
+          sync(w, !open);
+        });
+        w.addEventListener('mouseenter', () => sync(w, true));
+        w.addEventListener('mouseleave', () => sync(w, false));
+      });
+      document.addEventListener('click', () => {
+        wraps.forEach(x => sync(x, false));
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          wraps.forEach(x => sync(x, false));
+        }
+      });
+    }
+
+    // Mobile menu toggle
+    const mToggle = document.getElementById('menuToggle');
+    const mNav = document.getElementById('mobileNav');
+    if (mToggle && mNav) {
+      mToggle.addEventListener('click', () => {
+        const open = document.body.classList.toggle('menu-open');
+        mToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        mToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        mNav.setAttribute('aria-hidden', open ? 'false' : 'true');
+      });
+      mNav.addEventListener('click', (e) => {
+        if (e.target.closest('a')) {
+          document.body.classList.remove('menu-open');
+          mToggle.setAttribute('aria-expanded', 'false');
+          mToggle.setAttribute('aria-label', 'Open menu');
+          mNav.setAttribute('aria-hidden', 'true');
+        }
+      });
+    }
+
+    // Drag-to-paint over the lattice — dragging locks every box you sweep over
+    stageEl.addEventListener('pointerdown', (e) => {
+      const cell = e.target.closest('.cell');
+      if (cell) {
+        painting = true;
+        paintMoved = false;
+        downCell = cell;
+        paintCursor.classList.add('painting');
+      }
+    });
+    window.addEventListener('pointerup', () => {
+      if (!painting) return;
+      painting = false;
+      paintCursor.classList.remove('painting');
+      if (!paintMoved && downCell) {
+        // Plain tap — lock the box, or if already locked, give it a new colour
+        if (downCell.classList.contains('locked')) {
+          let color = downCell.style.backgroundColor;
+          const tries = 6;
+          for (let i = 0; i < tries; i++) {
+            const c = ACCENTS[Math.floor(Math.random() * ACCENTS.length)];
+            if (c !== color) { color = c; break; }
+          }
+          downCell.style.backgroundColor = color;
+        } else {
+          const color = downCell.style.backgroundColor || ACCENTS[Math.floor(Math.random() * ACCENTS.length)];
+          downCell.classList.add('locked', 'hit');
+          downCell.style.backgroundColor = color;
+        }
+      }
+      // Drag-painted cells are already locked, so they stay lit.
+      paintedCells.clear();
+      downCell = null;
+    });
+
+    // Magnetic CTAs — Book Now and Members lean toward the cursor (subtle)
+    document.querySelectorAll('.btn-primary, .btn-ghost').forEach((el) => {
+      el.addEventListener('pointermove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = (e.clientX - cx) * 0.10;
+        const dy = (e.clientY - cy) * 0.10;
+        el.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+      });
+      el.addEventListener('pointerleave', () => { el.style.transform = ''; });
+    });
+
+    // Toast on social-icon click — hold the redirect so the toast paints
+    document.querySelectorAll('.social-row a').forEach((a) => {
+      a.addEventListener('click', (e) => {
+        const href = a.getAttribute('href');
+        const target = a.getAttribute('target');
+        const label = a.getAttribute('aria-label') || 'link';
+        e.preventDefault();
+        showToast('Opening ' + label + ' ✦');
+        setTimeout(() => {
+          if (target === '_blank') {
+            window.open(href, '_blank', 'noopener,noreferrer');
+          } else {
+            window.location.href = href;
+          }
+        }, 900);
+      });
+    });
+
+    // Time-of-day theming — subtle palette shift
+    const hour = new Date().getHours();
+    const root = document.documentElement;
+    if (hour >= 6 && hour < 11) {
+      root.style.setProperty('--bg-warm', '#e8e3d6');
+      root.style.setProperty('--grid-line', 'rgba(0, 0, 0, 0.07)');
+    } else if (hour >= 11 && hour < 17) {
+      /* default */
+    } else if (hour >= 17 && hour < 21) {
+      root.style.setProperty('--bg-warm', '#e6dcc6');
+      root.style.setProperty('--grid-line', 'rgba(0, 0, 0, 0.10)');
+    } else {
+      root.style.setProperty('--bg-warm', '#e3d8c2');
+      root.style.setProperty('--grid-line', 'rgba(0, 0, 0, 0.11)');
+    }
+
+    // Easter egg: type "incenso" → lattice celebration burst
+    let typed = '';
+    const SECRET = 'incenso';
+    window.addEventListener('keydown', (e) => {
+      if (!e.key || e.key.length !== 1) return;
+      typed = (typed + e.key.toLowerCase()).slice(-SECRET.length);
+      if (typed === SECRET) {
+        showToast('✦  Hi there ✦');
+        for (let i = 0; i < 80; i++) {
+          setTimeout(() => {
+            const cell = allCells[Math.floor(Math.random() * allCells.length)];
+            const color = ACCENTS[Math.floor(Math.random() * ACCENTS.length)];
+            cell.classList.add('hit');
+            cell.style.backgroundColor = color;
+            setTimeout(() => {
+              cell.classList.remove('hit');
+              cell.style.backgroundColor = '';
+            }, 350);
+          }, i * 28);
+        }
+        typed = '';
+      }
+    });
+
+
+    // Studio status — a genuine, live open/closed indicator computed from
+    // Incenso's opening hours (Asia/Beirut). No fabricated "social proof".
+    const ticker     = document.querySelector('.ticker');
+    const tickerText = document.querySelector('.ticker-text');
+    const tickerDot  = document.querySelector('.ticker .ticker-dot');
+    if (tickerText) {
+      // Open daily 10:00 AM – 7:00 PM — except Saturday, open until 8:00 PM.
+      const OPEN_MIN  = 10 * 60;   // 10:00 AM
+      const closeMinFor = (day) => (day === 6 ? 20 * 60 : 19 * 60); // Sat (6) → 8 PM, else 7 PM
+      const fmt = (mins) => {
+        let h = Math.floor(mins / 60), m = mins % 60;
+        const ap = h >= 12 ? 'PM' : 'AM';
+        h = h % 12; if (h === 0) h = 12;
+        return m ? `${h}:${String(m).padStart(2, '0')} ${ap}` : `${h} ${ap}`;
+      };
+      const dur = (mins) => {
+        const h = Math.floor(mins / 60), m = mins % 60;
+        if (h && m) return `${h} hr ${m} min`;
+        if (h) return `${h} hr`;
+        return `${m} min`;
+      };
+
+      const render = () => {
+        // Use Beirut local time so the status is honest wherever the visitor is.
+        const beirut = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Beirut' }));
+        const nowMin = beirut.getHours() * 60 + beirut.getMinutes();
+        const CLOSE_MIN = closeMinFor(beirut.getDay());
+        let isOpen, text;
+        if (nowMin >= OPEN_MIN && nowMin < CLOSE_MIN) {
+          isOpen = true;
+          text = 'Open · closes ' + fmt(CLOSE_MIN);
+        } else {
+          isOpen = false;
+          text = 'Closed · opens ' + fmt(OPEN_MIN);
+        }
+        tickerText.textContent = text;
+        if (tickerDot) tickerDot.style.setProperty('--dot-c', isOpen ? '#1F9A56' : '#C81E2D');
+      };
+
+      render();
+      setInterval(render, 30000);   // keep the countdown fresh
+    }
+    // Story preview — stable open via JS, auto-closes after the 4s
+    // progress timer ends (even if still hovered).
+    document.querySelectorAll('.story').forEach((story) => {
+      const preview = story.querySelector('.story-preview');
+      if (!preview) return;
+      let hideTimer = null;
+      let autoCloseTimer = null;
+      const open = () => {
+        clearTimeout(hideTimer);
+        clearTimeout(autoCloseTimer);
+        story.classList.add('open');
+        // Auto-close at the same time the progress bar finishes
+        autoCloseTimer = setTimeout(() => {
+          story.classList.remove('open');
+        }, 4100);
+      };
+      const close = () => {
+        clearTimeout(autoCloseTimer);
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => story.classList.remove('open'), 140);
+      };
+      story.addEventListener('pointerenter', open);
+      story.addEventListener('pointerleave', close);
+      preview.addEventListener('pointerenter', open);
+      preview.addEventListener('pointerleave', close);
+    });
+
+    // Ambient radio — local MP3 playlist. Bars sync with audio state.
+    const radioBtn = document.getElementById('radio');
+    if (radioBtn) {
+      const TRACKS = [
+        'assets/audio/back-to-black.mp3',
+        'assets/audio/bidounak.mp3',
+        'assets/audio/kalby-mertah.mp3',
+      ];
+      let audio = null;
+      let trackIdx = 0;
+      const onPlay = () => {
+        radioBtn.classList.add('playing');
+        radioBtn.setAttribute('aria-pressed', 'true');
+        radioBtn.setAttribute('data-tooltip', 'On air');
+      };
+      const onPause = () => {
+        radioBtn.classList.remove('playing');
+        radioBtn.setAttribute('aria-pressed', 'false');
+        radioBtn.setAttribute('data-tooltip', 'Tune in');
+      };
+      const pickNext = () => {
+        if (TRACKS.length <= 1) return 0;
+        let next;
+        do {
+          next = Math.floor(Math.random() * TRACKS.length);
+        } while (next === trackIdx);
+        return next;
+      };
+      const playTrack = (i) => {
+        trackIdx = (i + TRACKS.length) % TRACKS.length;
+        audio.src = TRACKS[trackIdx];
+        audio.play().catch(() => showToast('Audio failed'));
+      };
+      radioBtn.addEventListener('click', () => {
+        if (!audio) {
+          audio = new Audio();
+          audio.volume = 0.55;
+          audio.addEventListener('play', onPlay);
+          audio.addEventListener('pause', onPause);
+          audio.addEventListener('ended', () => playTrack(pickNext()));
+          audio.addEventListener('error', () => {
+            onPause();
+            showToast('Track failed');
+          });
+          // Random first track each session
+          trackIdx = Math.floor(Math.random() * TRACKS.length);
+          audio.src = TRACKS[trackIdx];
+        }
+        if (audio.paused) {
+          audio.play().catch(() => showToast('Audio failed'));
+        } else {
+          audio.pause();
+        }
+      });
+    }
+
+  })();
+</script>
+
+<script>
+  /* ===== Instagram-style highlights ====================================== */
+  (() => {
+    const AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' fill='%23111'/%3E%3Ctext x='30' y='41' text-anchor='middle' font-family='Georgia,serif' font-size='30' fill='%23fff'%3Ei%3C/text%3E%3C/svg%3E";
+    const FALLBACK = 'Our-Work.html';   // no-JS / right-click target
+    const DUR = 5000;                    // ms per story
+
+    // Each ring is a HIGHLIGHT carrying many stories. Cover = stories[0].img.
+    const HIGHLIGHTS = [
+      { name: 'Bombshell', stories: [
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23b06a4a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23e8c4a8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Sunlit copper',   when: '2 days ago' },
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c9a86a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23efe3c8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E', label: 'Beach waves',     when: '3 days ago' },
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c98a96%27/%3E%3Cstop offset=%271%27 stop-color=%27%23f2dcda%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Full glam',       when: '4 days ago' },
+      ]},
+      { name: 'Glam prep', stories: [
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%238a7f8f%27/%3E%3Cstop offset=%271%27 stop-color=%27%23d9d3dc%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',  label: 'Rollers in',      when: '4 days ago' },
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c98a96%27/%3E%3Cstop offset=%271%27 stop-color=%27%23f2dcda%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Eyes first',      when: '5 days ago' },
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23b06a4a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23e8c4a8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'The reveal',      when: '6 days ago' },
+      ]},
+      { name: 'Make-up', stories: [
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c98a96%27/%3E%3Cstop offset=%271%27 stop-color=%27%23f2dcda%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Soft glam',       when: '1 week ago' },
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23b06a4a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23e8c4a8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Sunlit skin',     when: '1 week ago' },
+      ]},
+      { name: 'Balayage', stories: [
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c9a86a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23efe3c8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E', label: 'Lived-in waves',  when: '1 week ago' },
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23b06a4a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23e8c4a8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Copper gloss',    when: '2 weeks ago' },
+      ]},
+      { name: 'Blow-out', stories: [
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%238a7f8f%27/%3E%3Cstop offset=%271%27 stop-color=%27%23d9d3dc%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',  label: 'Volume set',      when: '2 weeks ago' },
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c9a86a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23efe3c8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E', label: 'The finish',      when: '3 weeks ago' },
+      ]},
+    ];
+
+    // ---- Render the highlight rings (covers + hover previews) ----------
+    const wrap = document.getElementById('stories');
+    if (!wrap) return;
+    HIGHLIGHTS.forEach((hl, i) => {
+      const cover = hl.stories[0].img;
+      const n = hl.stories.length;
+      const segs = Array.from({ length: n }, () => '<span class="sp-seg"><i></i></span>').join('');
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'story';
+      btn.dataset.hl = i;
+      btn.setAttribute('aria-label', 'Open ' + hl.name + ' highlight (' + n + ' stories)');
+      btn.innerHTML =
+        '<img src="' + cover + '" alt="" />' +
+        '<div class="story-preview" role="presentation">' +
+          '<img src="' + cover + '" alt="" />' +
+          '<div class="sp-scrim"></div>' +
+          '<div class="sp-progress">' + segs + '</div>' +
+          '<div class="sp-meta"><span class="sp-avatar"><img src="' + AVATAR + '" alt=""/></span>incenso</div>' +
+          '<div class="sp-caption">' + hl.name + '<span class="sp-when">' + n + ' stories</span></div>' +
+        '</div>';
+      wrap.appendChild(btn);
+    });
+
+    const rings = wrap.querySelectorAll('.story');
+
+    // ---- Hover preview — plays through every story in the highlight ----
+    const PREVIEW_DUR = 2000;  // ms per story while hovering
+    rings.forEach((story) => {
+      const hl = HIGHLIGHTS[parseInt(story.dataset.hl, 10)];
+      const preview = story.querySelector('.story-preview');
+      const imgEl = preview ? preview.querySelector('img') : null;
+      const segs = preview ? preview.querySelectorAll('.sp-seg > i') : [];
+      let stepTimer = null, hideTimer = null;
+
+      const resetSegs = (upTo) => segs.forEach((f, j) => {
+        f.style.animation = 'none';
+        f.style.width = j < upTo ? '100%' : '0';
+      });
+
+      function playFrom(idx) {
+        clearTimeout(stepTimer);
+        resetSegs(idx);
+        if (imgEl && hl.stories[idx]) imgEl.src = hl.stories[idx].img;
+        const active = segs[idx];
+        if (active) {
+          void active.offsetWidth;  // restart the fill animation
+          active.style.animation = 'spFill ' + PREVIEW_DUR + 'ms linear forwards';
+        }
+        stepTimer = setTimeout(() => {
+          if (idx + 1 < hl.stories.length) playFrom(idx + 1);
+          else close();
+        }, PREVIEW_DUR);
+      }
+
+      const open = () => {
+        clearTimeout(hideTimer);
+        story.classList.add('open');
+        playFrom(0);
+      };
+      const close = () => {
+        clearTimeout(stepTimer);
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => {
+          story.classList.remove('open');
+          resetSegs(0);
+          if (imgEl && hl.stories[0]) imgEl.src = hl.stories[0].img;
+        }, 140);
+      };
+
+      story.addEventListener('pointerenter', open);
+      story.addEventListener('pointerleave', close);
+      if (preview) {
+        preview.addEventListener('pointerenter', () => clearTimeout(hideTimer));
+        preview.addEventListener('pointerleave', close);
+      }
+      story.addEventListener('click', () => openViewer(parseInt(story.dataset.hl, 10)));
+    });
+
+    // ---- Full-screen viewer --------------------------------------------
+    const viewer = document.getElementById('igViewer');
+    const card   = document.getElementById('igCard');
+    const media  = document.getElementById('igMedia');
+    const bars   = document.getElementById('igBars');
+    const nameEl = document.getElementById('igName');
+    const whenEl = document.getElementById('igWhen');
+    const capEl  = document.getElementById('igCap');
+
+    let hi = 0, si = 0, isOpen = false;
+    let timer = null, startT = 0, remaining = DUR, activeFill = null;
+
+    function stories() { return HIGHLIGHTS[hi].stories; }
+
+    function clearTimer() { clearTimeout(timer); timer = null; }
+
+    function startTimer(ms) {
+      clearTimer();
+      startT = performance.now();
+      remaining = ms;
+      timer = setTimeout(nextStory, ms);
+    }
+
+    function pauseStory() {
+      if (!timer) return;
+      clearTimer();
+      remaining -= performance.now() - startT;
+      if (activeFill) activeFill.style.animationPlayState = 'paused';
+    }
+    function resumeStory() {
+      if (timer || !isOpen) return;
+      if (activeFill) activeFill.style.animationPlayState = 'running';
+      startTimer(Math.max(400, remaining));
+    }
+
+    function buildBars() {
+      bars.innerHTML = '';
+      stories().forEach((_, k) => {
+        const bar = document.createElement('div');
+        bar.className = 'ig-bar' + (k < si ? ' done' : k === si ? ' active' : '');
+        const fill = document.createElement('i');
+        bar.appendChild(fill);
+        bars.appendChild(bar);
+        if (k === si) {
+          fill.style.setProperty('--dur', DUR + 'ms');
+          activeFill = fill;
+        }
+      });
+    }
+
+    function render() {
+      const st = stories()[si];
+      nameEl.textContent = HIGHLIGHTS[hi].name;
+      whenEl.textContent = st.when || '';
+      capEl.textContent = st.label || '';
+
+      // crossfade media
+      media.innerHTML = '';
+      const img = new Image();
+      img.className = 'ig-img';
+      img.alt = '';
+      img.src = st.img;
+      media.appendChild(img);
+      const show = () => requestAnimationFrame(() => img.classList.add('show'));
+      if (img.complete) show(); else img.onload = show;
+
+      // preload next
+      const nx = stories()[si + 1];
+      if (nx) { const p = new Image(); p.src = nx.img; }
+
+      buildBars();
+      startTimer(DUR);
+    }
+
+    function openViewer(index) {
+      hi = index; si = 0; isOpen = true;
+      viewer.classList.add('open');
+      viewer.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      render();
+    }
+    function closeViewer() {
+      isOpen = false;
+      clearTimer();
+      viewer.classList.remove('open');
+      viewer.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    function nextStory() {
+      if (!isOpen) return;
+      si++;
+      if (si >= stories().length) {
+        hi++;
+        si = 0;
+        if (hi >= HIGHLIGHTS.length) { closeViewer(); return; }
+      }
+      render();
+    }
+    function prevStory() {
+      if (!isOpen) return;
+      si--;
+      if (si < 0) {
+        hi--;
+        if (hi < 0) { hi = 0; si = 0; render(); return; }
+        si = stories().length - 1;
+      }
+      render();
+    }
+
+    // chevrons + close
+    document.getElementById('igPrev').addEventListener('click', prevStory);
+    document.getElementById('igNext').addEventListener('click', nextStory);
+    document.getElementById('igClose').addEventListener('click', closeViewer);
+
+    // backdrop click closes
+    viewer.addEventListener('click', (e) => { if (e.target === viewer) closeViewer(); });
+
+    // press-and-hold to pause, quick tap to navigate (Instagram behaviour)
+    let downOnCard = false, held = false, holdTimer = null;
+    card.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.ig-close')) return;
+      downOnCard = true; held = false;
+      holdTimer = setTimeout(() => { held = true; pauseStory(); }, 220);
+    });
+    window.addEventListener('pointerup', (e) => {
+      if (!isOpen || !downOnCard) { downOnCard = false; return; }
+      downOnCard = false;
+      clearTimeout(holdTimer);
+      if (held) { held = false; resumeStory(); return; }
+      const rect = card.getBoundingClientRect();
+      if (e.clientX - rect.left < rect.width * 0.32) prevStory(); else nextStory();
+    });
+
+    // keyboard
+    window.addEventListener('keydown', (e) => {
+      if (!isOpen) return;
+      if (e.key === 'Escape') { closeViewer(); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); nextStory(); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); prevStory(); }
+    });
+  })();
+</script>
+
+<script>
+  /* ===== EN / AR language toggle ======================================== */
+  (() => {
+    const KEY = 'incenso-lang';
+    const htmlEl = document.documentElement;
+    const buttons = document.querySelectorAll('.lang [data-lang]');
+
+    // snapshot the English source the first time we run
+    const txtEls = Array.from(document.querySelectorAll('[data-ar]'));
+    txtEls.forEach(el => { el.dataset.en = el.textContent; });
+    const htmlEls = Array.from(document.querySelectorAll('[data-ar-html]'));
+    htmlEls.forEach(el => { el.dataset.enHtml = el.innerHTML; });
+
+    function apply(lang) {
+      const ar = lang === 'ar';
+      htmlEl.lang = ar ? 'ar' : 'en';
+      htmlEl.dir = ar ? 'rtl' : 'ltr';
+      txtEls.forEach(el => { el.textContent = ar ? el.getAttribute('data-ar') : el.dataset.en; });
+      htmlEls.forEach(el => { el.innerHTML = ar ? el.getAttribute('data-ar-html') : el.dataset.enHtml; });
+      buttons.forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false'));
+      try { localStorage.setItem(KEY, lang); } catch (e) {}
+    }
+
+    buttons.forEach(b => b.addEventListener('click', () => apply(b.dataset.lang)));
+
+    let saved = 'en';
+    try { saved = localStorage.getItem(KEY) || 'en'; } catch (e) {}
+    apply(saved);
+  })();
+</script>
+
+</body>
+</html>
