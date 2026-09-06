@@ -1420,17 +1420,17 @@
         </svg>
         <p class="sub" data-ar-html="الجمال طقس. الانضباط رفاهية.<br/>للمرأة التي ترى في المرآة نقطة الانطلاق.">Beauty as ritual. Discipline as luxury.<br/>For the woman who treats the mirror as a starting line.</p>
 
-        <a class="trust" href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x1521f75831aec263:0x491dc69a84008be5?sa=X&amp;ved=1t:8290&amp;ictx=111" target="_blank" rel="noopener" aria-label="Read all reviews on Google">
-          <span class="stars" aria-label="Rated 4.9 out of 5">
+        <a class="trust" id="trust" href="https://maps.google.com/?cid=5268585506035239909" target="_blank" rel="noopener" aria-label="Read all reviews on Google">
+          <span class="stars" aria-label="Rated 5.0 out of 5">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 L14.5 8.5 L21 9.2 L16 13.4 L17.5 19.5 L12 16.2 L6.5 19.5 L8 13.4 L3 9.2 L9.5 8.5 Z"/></svg>
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 L14.5 8.5 L21 9.2 L16 13.4 L17.5 19.5 L12 16.2 L6.5 19.5 L8 13.4 L3 9.2 L9.5 8.5 Z"/></svg>
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 L14.5 8.5 L21 9.2 L16 13.4 L17.5 19.5 L12 16.2 L6.5 19.5 L8 13.4 L3 9.2 L9.5 8.5 Z"/></svg>
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 L14.5 8.5 L21 9.2 L16 13.4 L17.5 19.5 L12 16.2 L6.5 19.5 L8 13.4 L3 9.2 L9.5 8.5 Z"/></svg>
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 L14.5 8.5 L21 9.2 L16 13.4 L17.5 19.5 L12 16.2 L6.5 19.5 L8 13.4 L3 9.2 L9.5 8.5 Z"/></svg>
           </span>
-          <span class="rating">4.9</span>
+          <span class="rating" id="trustRating">5.0</span>
           <span class="sep">/</span>
-          <span class="reviews" data-ar="٢٣١٢ تقييم">312 reviews</span>
+          <span class="reviews" id="trustReviews" data-ar="١٨ تقييم">18 reviews</span>
         </a>
 
         <div class="stories" id="stories" aria-label="Story highlights"></div>
@@ -2487,6 +2487,39 @@
     let saved = 'en';
     try { saved = localStorage.getItem(KEY) || 'en'; } catch (e) {}
     apply(saved);
+  })();
+
+  /* ---- Live Google rating + review count -------------------------------- */
+  /* Fetches from a cached Supabase edge function (server-side key, refreshed
+     at most twice a day). Falls back silently to the baked-in numbers. */
+  (function () {
+    var ENDPOINT = 'https://gcqkkruzgxpqpqxeymqx.supabase.co/functions/v1/google-reviews';
+    var ratingEl = document.getElementById('trustRating');
+    var reviewsEl = document.getElementById('trustReviews');
+    var starsEl = document.querySelector('.trust .stars');
+    var trustEl = document.getElementById('trust');
+    if (!ratingEl || !reviewsEl) return;
+
+    var arDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    function toAr(s) { return String(s).replace(/[0-9]/g, function (d) { return arDigits[+d]; }); }
+
+    fetch(ENDPOINT, { headers: { 'Accept': 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || typeof d.rating !== 'number' || typeof d.count !== 'number') return;
+        var rating = d.rating.toFixed(1);
+        ratingEl.textContent = rating;
+        var enReviews = d.count + ' review' + (d.count === 1 ? '' : 's');
+        reviewsEl.textContent = enReviews;
+        reviewsEl.dataset.en = enReviews;
+        reviewsEl.setAttribute('data-ar', toAr(d.count) + ' تقييم');
+        if (document.documentElement.lang === 'ar') {
+          reviewsEl.textContent = reviewsEl.getAttribute('data-ar');
+        }
+        if (starsEl) starsEl.setAttribute('aria-label', 'Rated ' + rating + ' out of 5');
+        if (trustEl && d.uri) trustEl.href = d.uri;
+      })
+      .catch(function () { /* keep baked-in numbers */ });
   })();
 </script>
 
