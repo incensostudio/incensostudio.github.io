@@ -9,6 +9,12 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
 <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<!-- Installable full-screen app (Add to Home Screen) -->
+<link rel="manifest" href="site.webmanifest" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Incenso" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" />
@@ -34,12 +40,20 @@
 
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
+  /* Sand fills the whole viewport incl. the phone's status-bar / home-indicator
+     areas and the iOS rubber-band overscroll zones — no white edges. */
+  html {
+    background: var(--bg-warm);
+    background-color: var(--bg-warm);
+    overscroll-behavior: none;
+  }
   html, body { min-height: 100%; }
   body {
     margin: 0;
     font-family: var(--font-sans);
     color: var(--fg-warm);
     background: var(--bg-warm);
+    overscroll-behavior: none;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
