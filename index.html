@@ -1258,17 +1258,18 @@
       top: max(14px, env(safe-area-inset-top));
       left: max(20px, env(safe-area-inset-left));
     }
-    /* Melt the lattice into the page color at the top & bottom edges — a
-       gentle screen-space fade that only whispers the grid away at the very
-       edge, keeping the tone continuous with the lattice. */
+    /* Melt the lattice into the page color at the top & bottom edges.
+       Done in screen space on the scrim (not the skewed grid layer, whose
+       own mask would be sheared and land off-screen) so the fade sits
+       exactly at the visible top/bottom of the viewport. */
     .scrim {
       background:
-        linear-gradient(to bottom, rgba(229,220,201,0.32) 0%, rgba(229,220,201,0) 9%),
-        linear-gradient(to top, rgba(229,220,201,0.32) 0%, rgba(229,220,201,0) 9%),
-        radial-gradient(ellipse 90% 70% at 50% 50%,
+        linear-gradient(to bottom, rgba(229,220,201,0.5) 0%, rgba(229,220,201,0.22) 12%, rgba(229,220,201,0) 30%),
+        linear-gradient(to top, rgba(229,220,201,0.5) 0%, rgba(229,220,201,0.22) 12%, rgba(229,220,201,0) 30%),
+        radial-gradient(ellipse 80% 60% at 50% 50%,
           rgba(229, 220, 201, 0) 0%,
-          rgba(229, 220, 201, 0.18) 60%,
-          rgba(229, 220, 201, 0.4) 100%);
+          rgba(229, 220, 201, 0.35) 55%,
+          rgba(229, 220, 201, 0.75) 100%);
     }
     .ticker-stack { display: inline-flex; justify-content: center; margin: 0 auto 20px; }
     .social-row .pin-mobile { display: inline-flex; }
