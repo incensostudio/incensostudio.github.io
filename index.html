@@ -1583,7 +1583,7 @@
     // oscillators get muted by the ringer switch, media playback does not.
     const SoundFX = (() => {
       const NOTES = 10;      // bell-0.wav … bell-9.wav (C-pentatonic, 2 octaves)
-      const POOL = 2;        // voices per note for a little overlap
+      const POOL = 4;        // voices per note so overlapping brushes blend, not cut
       let banks = null, cursor = null, enabled = false, unlocked = false, lastNoteT = 0;
 
       const build = () => {
@@ -1614,7 +1614,7 @@
       const ping = (idx) => {
         if (!enabled || !banks) return;
         const now = performance.now();
-        if (now - lastNoteT < 35) return;   // throttle rapid sweeps
+        if (now - lastNoteT < 28) return;   // throttle rapid sweeps
         lastNoteT = now;
         const note = ((idx % NOTES) + NOTES) % NOTES;
         const voices = banks[note];
