@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <meta name="description" content="Incenso Studio — a beauty studio in Tripoli, Lebanon. Hair, nails, make-up and lashes, by appointment." />
-<meta name="theme-color" content="#e5dcc9" />
+<meta name="theme-color" content="#e2d9c6" />
 <title>Incenso Studio</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
@@ -33,7 +33,7 @@
   }
 
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; background: #e2d9c6; }
   html, body { min-height: 100%; }
   body {
     margin: 0;
@@ -525,6 +525,7 @@
   .tb-cart .cart-badge[data-count="0"] { display: none; }
 
   .btn-row { display: inline-flex; gap: 8px; align-items: center; }
+  .tb-cart-left { display: none; }
 
   /* ---- Live booking ticker --------------------------------------------- */
   .ticker {
@@ -1250,14 +1251,12 @@
 
     .menu-toggle { display: inline-flex; }
     .frame .bl { display: none; }
-    .frame .tl { visibility: hidden; }
-    /* Mobile: cart sits opposite the hamburger (top-left), mirroring its
-       inset so both 40px buttons align on the same top line with equal gaps. */
-    .tb-cart {
-      position: absolute;
-      top: max(14px, env(safe-area-inset-top));
-      left: max(20px, env(safe-area-inset-left));
-    }
+    /* Mobile: cart moves to the top-left (its own .tl copy); hide the ticker
+       there and the right-side cart. Keeps the top row balanced without
+       crowding the hamburger. */
+    .frame .tl .ticker { display: none; }
+    .tl .tb-cart-left { display: inline-flex; }
+    .btn-row .tb-cart { display: none; }
     /* Melt the lattice into the page color at the top & bottom edges.
        Done in screen space on the scrim (not the skewed grid layer, whose
        own mask would be sheared and land off-screen) so the fade sits
@@ -1373,6 +1372,10 @@
           <span class="ticker-dot" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2 L13.5 8 L8 14 L2.5 8 Z"/></svg></span>
           <span class="ticker-text">…</span>
         </div>
+        <a class="tb-cart tb-cart-left" href="Cart.html" aria-label="Cart" data-ar-label="عربة التسوق">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l1.4 10.3a1.4 1.4 0 0 0 1.4 1.2h8a1.4 1.4 0 0 0 1.4-1.1l1.3-6.4H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
+            <span class="cart-badge" data-count="0">0</span>
+        </a>
       </div>
 
       <div class="tc">
