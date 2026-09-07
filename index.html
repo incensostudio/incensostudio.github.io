@@ -1251,6 +1251,13 @@
     .menu-toggle { display: inline-flex; }
     .frame .bl { display: none; }
     .frame .tl { visibility: hidden; }
+    /* Mobile: cart sits opposite the hamburger (top-left), mirroring its
+       inset so both 40px buttons align on the same top line with equal gaps. */
+    .tb-cart {
+      position: absolute;
+      top: max(14px, env(safe-area-inset-top));
+      left: max(20px, env(safe-area-inset-left));
+    }
     /* Melt the lattice into the page color at the top & bottom edges.
        Done in screen space on the scrim (not the skewed grid layer, whose
        own mask would be sheared and land off-screen) so the fade sits
