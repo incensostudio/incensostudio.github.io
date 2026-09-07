@@ -1086,28 +1086,6 @@
     transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .ig-vid.show { opacity: 1; }
-  .ig-mute {
-    position: absolute;
-    top: 20px; right: 54px;
-    z-index: 8;
-    appearance: none;
-    border: 0;
-    cursor: pointer;
-    width: 34px; height: 34px;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.35);
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
-    color: #fff;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.9;
-    transition: opacity 160ms, transform 160ms;
-  }
-  .ig-mute.show { display: inline-flex; }
-  .ig-mute:hover { opacity: 1; transform: scale(1.08); }
-  .ig-mute svg { width: 17px; height: 17px; display: block; }
   .ig-scrim {
     position: absolute;
     inset: 0;
@@ -1545,7 +1523,6 @@
       <div class="ig-cap" id="igCap"></div>
       <button class="ig-tap ig-tap-prev" id="igTapPrev" type="button" aria-label="Previous"></button>
       <button class="ig-tap ig-tap-next" id="igTapNext" type="button" aria-label="Next"></button>
-      <button class="ig-mute" id="igMute" type="button" aria-label="Unmute video" aria-pressed="false"></button>
       <button class="ig-close" id="igClose" type="button" aria-label="Close stories">&times;</button>
     </div>
     <button class="ig-nav ig-next" id="igNext" type="button" aria-label="Next story">&rsaquo;</button>
@@ -2300,30 +2277,11 @@
     const nameEl = document.getElementById('igName');
     const whenEl = document.getElementById('igWhen');
     const capEl  = document.getElementById('igCap');
-    const muteBtn = document.getElementById('igMute');
+    const avatarEl = document.querySelector('#igViewer .ig-avatar img');
 
     let hi = 0, si = 0, isOpen = false;
     let timer = null, startT = 0, remaining = DUR, activeFill = null;
-    let curVideo = null, wantSound = false;
-
-    const IC_MUTED = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><line x1="16.5" y1="9" x2="21.5" y2="14"/><line x1="21.5" y1="9" x2="16.5" y2="14"/></svg>';
-    const IC_SOUND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7"/><path d="M18.5 6a8 8 0 0 1 0 12"/></svg>';
-    function updateMuteIcon() {
-      muteBtn.innerHTML = wantSound ? IC_SOUND : IC_MUTED;
-      muteBtn.setAttribute('aria-pressed', wantSound ? 'true' : 'false');
-      muteBtn.setAttribute('aria-label', wantSound ? 'Mute video' : 'Unmute video');
-    }
-    muteBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
-    muteBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      wantSound = !wantSound;
-      if (curVideo) {
-        curVideo.muted = !wantSound;
-        if (wantSound) curVideo.play().catch(() => {});
-      }
-      updateMuteIcon();
-    });
-    updateMuteIcon();
+    let curVideo = null, mode = 'image';
 
     function stories() { return HIGHLIGHTS[hi].stories; }
 
@@ -2337,26 +2295,15 @@
     }
 
     function pauseStory() {
-      if (curVideo) {
-        try { curVideo.pause(); } catch (e) {}
-        if (activeFill) activeFill.style.animationPlayState = 'paused';
-        return;
-      }
-      if (!timer) return;
-      clearTimer();
-      remaining -= performance.now() - startT;
+      if (mode === 'video' && curVideo) { try { curVideo.pause(); } catch (e) {} }
       if (activeFill) activeFill.style.animationPlayState = 'paused';
+      if (timer) { clearTimer(); remaining -= performance.now() - startT; }
     }
     function resumeStory() {
       if (!isOpen) return;
-      if (curVideo) {
-        curVideo.play().catch(() => {});
-        if (activeFill) activeFill.style.animationPlayState = 'running';
-        return;
-      }
-      if (timer) return;
+      if (mode === 'video' && curVideo) { curVideo.play().catch(() => {}); }
       if (activeFill) activeFill.style.animationPlayState = 'running';
-      startTimer(Math.max(400, remaining));
+      if (mode === 'image' && !timer) startTimer(Math.max(400, remaining));
     }
 
     function buildBars() {
@@ -2379,6 +2326,7 @@
       nameEl.textContent = HIGHLIGHTS[hi].name;
       whenEl.textContent = st.when || '';
       capEl.textContent = st.label || '';
+      if (avatarEl) avatarEl.src = HIGHLIGHTS[hi].cover || AVATAR;
 
       clearTimer();
       if (curVideo) { try { curVideo.pause(); } catch (e) {} curVideo = null; }
@@ -2386,17 +2334,17 @@
       media.innerHTML = '';
 
       if (st.video) {
-        // Video story: plays through its own length, then advances.
+        // Video story: plays with sound through its own length, then advances.
+        mode = 'video';
         const v = document.createElement('video');
         v.className = 'ig-vid';
         v.src = st.video;
         if (st.img) v.poster = st.img;
         v.playsInline = true;
         v.setAttribute('playsinline', ''); v.setAttribute('webkit-playsinline', '');
-        v.muted = !wantSound; v.preload = 'auto';
+        v.muted = false; v.preload = 'auto';
         curVideo = v;
         media.appendChild(v);
-        muteBtn.classList.add('show');
         // reveal immediately so the poster frame shows while the video buffers
         requestAnimationFrame(() => v.classList.add('show'));
         v.addEventListener('loadedmetadata', () => {
@@ -2404,10 +2352,12 @@
           if (activeFill) activeFill.style.setProperty('--dur', ms + 'ms');
         }, { once: true });
         v.addEventListener('ended', () => { if (isOpen) nextStory(); });
-        v.play().catch(() => { if (wantSound) { v.muted = true; v.play().catch(() => {}); } });
+        // Opening the viewer is a user tap, so sound-on autoplay is allowed.
+        // If a browser still blocks it, don't mute — fall back to a timed advance.
+        v.play().catch(() => { mode = 'image'; startTimer(DUR); });
       } else {
         // Image story: fixed duration.
-        muteBtn.classList.remove('show');
+        mode = 'image';
         const img = new Image();
         img.className = 'ig-img';
         img.alt = '';
