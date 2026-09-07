@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<meta name="description" content="Incenso Studio — a beauty studio in Tripoli, Lebanon. Hair, nails, lashes and bridal, by appointment." />
+<meta name="description" content="Incenso Studio — a beauty studio in Tripoli, Lebanon. Hair, nails, make-up and lashes, by appointment." />
 <meta name="theme-color" content="#e5dcc9" />
 <title>Incenso Studio</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml" />
@@ -149,9 +149,9 @@
     pointer-events: none;
     background:
       radial-gradient(ellipse 80% 60% at 50% 50%,
-        rgba(230, 225, 213, 0) 0%,
-        rgba(230, 225, 213, 0.35) 55%,
-        rgba(230, 225, 213, 0.75) 100%);
+        rgba(229, 220, 201, 0) 0%,
+        rgba(229, 220, 201, 0.35) 55%,
+        rgba(229, 220, 201, 0.75) 100%);
   }
 
   .content {
@@ -482,35 +482,25 @@
   .btn-primary:hover { background: #000000; }
   .btn-primary:active { transform: scale(0.97); }
 
-  .btn-ghost {
-    background: rgba(254, 254, 241, 0.5);
-    color: var(--fg-warm);
-    border-color: rgba(0, 0, 0, 0.18);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
-  .btn-ghost:hover {
-    background: rgba(254, 254, 241, 0.75);
-    border-color: rgba(0, 0, 0, 0.32);
-  }
-  .btn-ghost:active { transform: scale(0.97); }
+
+
 
   .tb-cart {
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     border-radius: 999px;
     background: rgba(254, 254, 241, 0.5);
-    color: var(--fg-warm);
-    border: 1px solid rgba(0, 0, 0, 0.18);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    color: var(--fg-warm);
     text-decoration: none;
     cursor: pointer;
-    transition: transform 160ms cubic-bezier(0.4,0,0.2,1), background-color 200ms, border-color 200ms;
+    transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms, transform 160ms;
     -webkit-tap-highlight-color: transparent;
   }
   .tb-cart:hover { background: rgba(254, 254, 241, 0.75); border-color: rgba(0, 0, 0, 0.32); }
@@ -520,21 +510,19 @@
     position: absolute;
     top: -3px;
     right: -3px;
-    min-width: 17px;
-    height: 17px;
+    min-width: 16px;
+    height: 16px;
     padding: 0 4px;
     border-radius: 999px;
     background: var(--fg-warm);
     color: #FEFEF1;
     font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 500;
-    line-height: 17px;
+    font-size: 9px;
+    line-height: 16px;
     text-align: center;
     border: 1.5px solid var(--bg-warm);
   }
   .tb-cart .cart-badge[data-count="0"] { display: none; }
-
 
   .btn-row { display: inline-flex; gap: 8px; align-items: center; }
 
@@ -559,6 +547,7 @@
     transition: color 600ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .ticker .ticker-dot svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+  .ticker-stack { display: none; }
   .ticker-text {
     display: inline-block;
     transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -801,6 +790,7 @@
     transform: translateY(-2px);
   }
   .social-row a:active { transform: translateY(0) scale(0.94); }
+  .social-row .pin-mobile { display: none; }
   .social-row svg { width: 18px; height: 18px; display: block; }
 
   /* Tooltip above each social icon (handle / number) */
@@ -870,8 +860,10 @@
     transition: opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   body.menu-open .mobile-nav { display: flex; opacity: 1; }
-  .mobile-nav a,
-  .mobile-nav .m-group-label {
+  body.menu-open .frame { z-index: 30; }
+  body.menu-open .frame .tl, body.menu-open .frame .bl, body.menu-open .frame .bc, body.menu-open .frame .br { visibility: hidden; }
+  body.menu-open .tb-cart { visibility: hidden; }
+  .mobile-nav a {
     display: block;
     font-family: var(--font-mono);
     font-size: 13px;
@@ -883,19 +875,19 @@
     padding: 14px 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.10);
   }
-  .mobile-nav .m-group-label { color: rgba(0, 0, 0, 0.55); }
+  .mobile-nav details { border-bottom: 1px solid rgba(0, 0, 0, 0.10); }
+  .mobile-nav summary { list-style: none; display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-warm); padding: 14px 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .mobile-nav summary::-webkit-details-marker { display: none; }
+  .mobile-nav .m-caret { width: 11px; height: 11px; transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1); }
+  .mobile-nav details[open] .m-caret { transform: rotate(180deg); }
+  .mobile-nav details .m-sub { padding-bottom: 8px; }
+  .mobile-nav details .m-sub a:last-child { border-bottom: 0; }
   .mobile-nav .m-sub a {
     padding: 12px 0 12px 18px;
     font-size: 12px;
-    letter-spacing: 0.12em;
+    color: rgba(0, 0, 0, 0.72);
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   }
-  .mobile-nav .m-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 24px;
-  }
-  .mobile-nav .m-actions .btn { flex: 1; justify-content: center; }
 
   /* ============================================================ */
   /* === Creative extensions ==================================== */
@@ -1173,7 +1165,7 @@
     z-index: 6;
     color: #fff;
     font-family: var(--font-sans);
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 500;
     letter-spacing: 0.005em;
     text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
@@ -1257,7 +1249,10 @@
     .frame .br { display: none; }
 
     .menu-toggle { display: inline-flex; }
-    .btn-row .btn-ghost { display: none; }
+    .frame .bl { display: none; }
+    .frame .tl { visibility: hidden; }
+    .ticker-stack { display: inline-flex; justify-content: center; margin: 0 auto 20px; }
+    .social-row .pin-mobile { display: inline-flex; }
   }
   @media (max-width: 480px) {
     .wordmark { width: clamp(220px, 80vw, 400px); }
@@ -1267,8 +1262,8 @@
     .stories { gap: 9px; flex-wrap: wrap; justify-content: center; max-width: 100%; }
     .story { width: 48px; height: 48px; }
     .social-row { flex-wrap: wrap; justify-content: center; }
-    .ticker { max-width: 44vw; overflow: hidden; }
-    .ticker-text { overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .tl .ticker { max-width: calc(100vw - 160px); overflow: hidden; }
+  .ticker-text { overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
   }
   /* Short viewports (landscape phones) — compact the stack so nothing clips */
   @media (max-height: 560px) {
@@ -1288,7 +1283,6 @@
   html[lang="ar"] .nav,
   html[lang="ar"] .nav-menu a,
   html[lang="ar"] .mobile-nav a,
-  html[lang="ar"] .mobile-nav .m-group-label,
   html[lang="ar"] .meta-link,
   html[lang="ar"] .ticker,
   html[lang="ar"] .trust,
@@ -1310,6 +1304,10 @@
 
     <div class="content" id="main">
       <div class="stack">
+        <div class="ticker ticker-stack" aria-live="polite">
+          <span class="ticker-dot" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2 L13.5 8 L8 14 L2.5 8 Z"/></svg></span>
+          <span class="ticker-text">…</span>
+        </div>
         <svg class="wordmark" id="wm" viewBox="0 0 1284 342" xmlns="http://www.w3.org/2000/svg" aria-label="incenso" tabindex="0">
           <defs>
             <linearGradient id="wmSheen" x1="0" y1="0" x2="460" y2="0" gradientUnits="userSpaceOnUse" spreadMethod="pad">
@@ -1372,8 +1370,7 @@
               <a href="Nails.html" role="menuitem" data-ar="الأظافر">Nails</a>
               <a href="Makeup.html" role="menuitem" data-ar="المكياج">Make-up</a>
               <a href="Brows-Lashes.html" role="menuitem" data-ar="الحواجب والرموش">Brows &amp; Lashes</a>
-              <a href="Bridal.html" role="menuitem" data-ar="العرائس">Bridal</a>
-            </div>
+                    </div>
           </div>
           <a href="Our-Work.html" data-ar="أعمالنا">Our Work</a>
           <a href="The-Space.html" data-ar="المكان">The Space</a>
@@ -1383,7 +1380,6 @@
 
       <div class="tr">
         <div class="btn-row">
-          <a class="btn btn-ghost" href="Shop.html" data-ar="المتجر">Shop</a>
           <a class="tb-cart" href="Cart.html" aria-label="Cart" data-ar-label="عربة التسوق">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l1.4 10.3a1.4 1.4 0 0 0 1.4 1.2h8a1.4 1.4 0 0 0 1.4-1.1l1.3-6.4H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
             <span class="cart-badge" data-count="0">0</span>
@@ -1411,6 +1407,12 @@
 
       <div class="bc">
         <div class="social-row" aria-label="Social and contact">
+          <a class="pin-mobile" href="https://maps.google.com/?cid=5268585506035239909" target="_blank" rel="noopener" aria-label="Location" data-tooltip="32, Dam &amp; Farz, Tripoli">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M8 14 C5 10.5 3 8 3 6 a5 5 0 0 1 10 0 c0 2 -2 4.5 -5 8 Z"></path>
+              <circle cx="8" cy="6" r="1.7"></circle>
+            </svg>
+          </a>
           <a href="tel:+96171930290" aria-label="Phone" data-tooltip="+961 71 930 290">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M4 6.5 C4 5.1 5.1 4 6.5 4 H8.5 L10 8 L7.5 9.5 C8.7 12.3 10.7 14.3 13.5 15.5 L15 13 L19 14.5 V16.5 C19 17.9 17.9 19 16.5 19 C9.6 19 4 13.4 4 6.5 Z"/>
@@ -1452,11 +1454,6 @@
           </svg>
           <span class="radio-bars" aria-hidden="true"><span></span><span></span><span></span></span>
         </button>
-        <div class="lang" role="group" aria-label="Language / اللغة">
-          <button type="button" data-lang="en" aria-pressed="true" aria-label="English">EN</button>
-          <span class="lang-sep" aria-hidden="true">/</span>
-          <button type="button" data-lang="ar" aria-pressed="false" aria-label="العربية">AR</button>
-        </div>
       </div>
     </div>
 
@@ -1464,22 +1461,18 @@
 
     <nav class="mobile-nav" id="mobileNav" aria-label="Mobile primary" aria-hidden="true">
     <a href="Shop.html" data-ar="المتجر">Shop</a>
-    <span class="m-group-label" data-ar="الخدمات">Services</span>
-    <div class="m-sub">
+    <details class="m-services">
+      <summary><span data-ar="الخدمات">Services</span><svg class="m-caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4 L5 7 L8 4"></path></svg></summary>
+      <div class="m-sub">
       <a href="Hair.html" data-ar="الشعر">Hair</a>
       <a href="Nails.html" data-ar="الأظافر">Nails</a>
       <a href="Makeup.html" data-ar="المكياج">Make-up</a>
       <a href="Brows-Lashes.html" data-ar="الحواجب والرموش">Brows &amp; Lashes</a>
-      <a href="Bridal.html" data-ar="العرائس">Bridal</a>
-    </div>
+      </div>
+    </details>
     <a href="Our-Work.html" data-ar="أعمالنا">Our Work</a>
     <a href="The-Space.html" data-ar="المكان">The Space</a>
     <a href="Vouchers.html" data-ar="هدايا">Gift</a>
-    <a href="Careers.html" data-ar="وظائف">Careers</a>
-    <div class="m-actions">
-      <a class="btn btn-ghost" href="Shop.html" data-ar="المتجر">Shop</a>
-      <a class="btn btn-primary" href="https://wa.me/96171930290?text=Hi%2C%20I%27d%20like%20to%20book%20an%20appointment" target="_blank" rel="noopener" data-ar="احجزي الآن">Book now</a>
-    </div>
   </nav>
 
   <!-- Instagram-style story viewer (opened by the highlight rings) -->
@@ -1881,6 +1874,9 @@
         mToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
         mNav.setAttribute('aria-hidden', open ? 'false' : 'true');
       });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.body.classList.contains('menu-open')) mToggle.click();
+      });
       mNav.addEventListener('click', (e) => {
         if (e.target.closest('a')) {
           document.body.classList.remove('menu-open');
@@ -1927,7 +1923,7 @@
     });
 
     // Magnetic CTAs — buttons lean toward the cursor (subtle)
-    document.querySelectorAll('.btn-primary, .btn-ghost').forEach((el) => {
+    document.querySelectorAll('.btn-primary').forEach((el) => {
       el.addEventListener('pointermove', (e) => {
         const rect = el.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
@@ -2000,10 +1996,9 @@
 
     // Studio status — a genuine, live open/closed indicator computed from
     // Incenso's opening hours (Asia/Beirut). No fabricated "social proof".
-    const ticker     = document.querySelector('.ticker');
-    const tickerText = document.querySelector('.ticker-text');
-    const tickerDot  = document.querySelector('.ticker .ticker-dot');
-    if (tickerText) {
+    const tickerTexts = document.querySelectorAll('.ticker-text');
+    const tickerDots  = document.querySelectorAll('.ticker .ticker-dot');
+    if (tickerTexts.length) {
       // Open daily 10:00 AM – 7:00 PM — except Saturday, open until 8:00 PM.
       const OPEN_MIN  = 10 * 60;   // 10:00 AM
       const closeMinFor = (day) => (day === 6 ? 20 * 60 : 19 * 60); // Sat (6) → 8 PM, else 7 PM
@@ -2033,8 +2028,8 @@
           isOpen = false;
           text = 'Closed · opens ' + fmt(OPEN_MIN);
         }
-        tickerText.textContent = text;
-        if (tickerDot) tickerDot.style.setProperty('--dot-c', isOpen ? '#1F9A56' : '#C81E2D');
+        tickerTexts.forEach((t) => { t.textContent = text; });
+        tickerDots.forEach((d) => { d.style.setProperty('--dot-c', isOpen ? '#1F9A56' : '#C81E2D'); });
       };
 
       render();
@@ -2369,35 +2364,6 @@
 </script>
 
 <script>
-  /* ===== EN / AR language toggle ======================================== */
-  (() => {
-    const KEY = 'incenso-lang';
-    const htmlEl = document.documentElement;
-    const buttons = document.querySelectorAll('.lang [data-lang]');
-
-    // snapshot the English source the first time we run
-    const txtEls = Array.from(document.querySelectorAll('[data-ar]'));
-    txtEls.forEach(el => { el.dataset.en = el.textContent; });
-    const htmlEls = Array.from(document.querySelectorAll('[data-ar-html]'));
-    htmlEls.forEach(el => { el.dataset.enHtml = el.innerHTML; });
-
-    function apply(lang) {
-      const ar = lang === 'ar';
-      htmlEl.lang = ar ? 'ar' : 'en';
-      htmlEl.dir = ar ? 'rtl' : 'ltr';
-      txtEls.forEach(el => { el.textContent = ar ? el.getAttribute('data-ar') : el.dataset.en; });
-      htmlEls.forEach(el => { el.innerHTML = ar ? el.getAttribute('data-ar-html') : el.dataset.enHtml; });
-      buttons.forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false'));
-      try { localStorage.setItem(KEY, lang); } catch (e) {}
-    }
-
-    buttons.forEach(b => b.addEventListener('click', () => apply(b.dataset.lang)));
-
-    let saved = 'en';
-    try { saved = localStorage.getItem(KEY) || 'en'; } catch (e) {}
-    apply(saved);
-  })();
-
   /* ---- Live Google rating + review count -------------------------------- */
   /* Fetches from a cached Supabase edge function (server-side key, refreshed
      at most twice a day). Falls back silently to the baked-in numbers. */
@@ -2409,22 +2375,13 @@
     var trustEl = document.getElementById('trust');
     if (!ratingEl || !reviewsEl) return;
 
-    var arDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
-    function toAr(s) { return String(s).replace(/[0-9]/g, function (d) { return arDigits[+d]; }); }
-
     fetch(ENDPOINT, { headers: { 'Accept': 'application/json' } })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         if (!d || typeof d.rating !== 'number' || typeof d.count !== 'number') return;
         var rating = d.rating.toFixed(1);
         ratingEl.textContent = rating;
-        var enReviews = d.count + ' review' + (d.count === 1 ? '' : 's');
-        reviewsEl.textContent = enReviews;
-        reviewsEl.dataset.en = enReviews;
-        reviewsEl.setAttribute('data-ar', toAr(d.count) + ' تقييم');
-        if (document.documentElement.lang === 'ar') {
-          reviewsEl.textContent = reviewsEl.getAttribute('data-ar');
-        }
+        reviewsEl.textContent = d.count + ' review' + (d.count === 1 ? '' : 's');
         if (starsEl) starsEl.setAttribute('aria-label', 'Rated ' + rating + ' out of 5');
         if (trustEl && d.uri) trustEl.href = d.uri;
       })
