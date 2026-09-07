@@ -1577,58 +1577,81 @@
       toastTimer = setTimeout(() => toast.classList.remove('show'), 3400);
     }
 
-    // ── Hover chime — pentatonic bell samples ──
-    // Played through HTMLAudio media elements (not Web Audio) so they sound
-    // on iOS Safari even when the phone's silent/mute switch is on — Web Audio
-    // oscillators get muted by the ringer switch, media playback does not.
+    // ── Hover chime — 5 selectable voices, all on a pentatonic scale ──
+    // Web Audio synthesis: instant, low-latency, endlessly polyphonic. We ask
+    // iOS for a "playback" audio session (navigator.audioSession) so it stays
+    // audible in Safari even with the silent switch on — no laggy workarounds.
     const SoundFX = (() => {
-      const NOTES = 10;      // bell-0.wav … bell-9.wav (C-pentatonic, 2 octaves)
-      const POOL = 4;        // voices per note so overlapping brushes blend, not cut
-      let banks = null, cursor = null, enabled = false, unlocked = false, lastNoteT = 0;
-
-      const build = () => {
-        if (banks) return;
-        banks = []; cursor = new Array(NOTES).fill(0);
-        for (let i = 0; i < NOTES; i++) {
-          const voices = [];
-          for (let p = 0; p < POOL; p++) {
-            const a = new Audio('assets/audio/bell-' + i + '.wav');
-            a.preload = 'auto';
-            a.setAttribute('playsinline', '');
-            voices.push(a);
-          }
-          banks.push(voices);
-        }
-      };
-      // Must run inside a user gesture: set the playback session and "prime"
-      // each element with a play/pause so later triggers are allowed by iOS.
-      const unlock = () => {
-        build();
+      let ctx = null, master = null, enabled = false, lastNoteT = 0, step = 0;
+      // C major pentatonic across two octaves — every note pleases
+      const SCALE = [
+        523.25, 587.33, 659.25, 783.99, 880.00,
+        1046.50, 1174.66, 1318.51, 1567.98, 1760.00
+      ];
+      const init = () => {
+        if (ctx) return;
         try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
-        if (unlocked) return;
-        unlocked = true;
-        banks.forEach((voices) => voices.forEach((a) => {
-          try { a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(() => {}); } catch (e) {}
-        }));
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        ctx = new AC();
+        master = ctx.createGain();
+        master.gain.value = 0.0;
+        master.connect(ctx.destination);
+      };
+      // One sugary "ting" — glassy music-box bell + sparkle octaves on top
+      // Original chime — sine body + octave triangle shimmer, soft attack,
+      // long bell decay. Gentle wind-chime you brush past.
+      const candyNote = (freq, t, vol) => {
+        const g = ctx.createGain();
+        g.connect(master);
+        const o1 = ctx.createOscillator();
+        o1.type = 'sine';
+        o1.frequency.value = freq;
+        const o2 = ctx.createOscillator();
+        o2.type = 'triangle';
+        o2.frequency.value = freq * 2;
+        const g2 = ctx.createGain();
+        g2.gain.value = 0.25;
+        o2.connect(g2); g2.connect(g); o1.connect(g);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(vol, t + 0.008);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+        o1.start(t); o2.start(t);
+        o1.stop(t + 0.95); o2.stop(t + 0.95);
       };
       const ping = (idx) => {
-        if (!enabled || !banks) return;
-        const now = performance.now();
-        if (now - lastNoteT < 28) return;   // throttle rapid sweeps
+        if (!ctx || !enabled) return;
+        const now = ctx.currentTime;
+        if (now - lastNoteT < 0.035) return;
         lastNoteT = now;
-        const note = ((idx % NOTES) + NOTES) % NOTES;
-        const voices = banks[note];
-        const a = voices[cursor[note]];
-        cursor[note] = (cursor[note] + 1) % voices.length;
-        try { a.currentTime = 0; a.play().catch(() => {}); } catch (e) {}
+        const base = SCALE[((idx % SCALE.length) + SCALE.length) % SCALE.length];
+        candyNote(base, now, 0.16);
       };
       return {
-        wake() { unlock(); enabled = true; },
-        noteFor(seed) { if (enabled) ping(seed); },
+        wake() {
+          init();
+          try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+          if (ctx && ctx.state === 'suspended') ctx.resume();
+          if (ctx && master) {
+            enabled = true;
+            master.gain.cancelScheduledValues(ctx.currentTime);
+            master.gain.linearRampToValueAtTime(0.9, ctx.currentTime + 0.4);
+          }
+        },
+        noteFor(seed) {
+          if (!enabled) return;
+          ping(seed % SCALE.length);
+        },
         get on() { return enabled; },
-        toggle(v) { enabled = (v === undefined) ? !enabled : v; if (enabled) this.wake(); },
+        toggle(v) {
+          enabled = (v === undefined) ? !enabled : v;
+          if (enabled) this.wake();
+          else if (master && ctx) master.gain.linearRampToValueAtTime(0.0, ctx.currentTime + 0.2);
+        },
       };
     })();
+    // Ask for the playback session as early as possible too (harmless if unsupported).
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
     const wakeAudio = () => SoundFX.wake();
     window.addEventListener('pointerdown', wakeAudio, { once: true });
     window.addEventListener('keydown', wakeAudio, { once: true });
