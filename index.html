@@ -2146,25 +2146,25 @@
 
     // Each ring is a HIGHLIGHT carrying many stories. Cover = stories[0].img.
     const HIGHLIGHTS = [
-      { name: 'Bombshell', stories: [
+      { name: 'Bombshell', cover: 'assets/highlights/mint.svg', stories: [
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23b06a4a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23e8c4a8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Sunlit copper',   when: '2 days ago' },
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c9a86a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23efe3c8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E', label: 'Beach waves',     when: '3 days ago' },
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c98a96%27/%3E%3Cstop offset=%271%27 stop-color=%27%23f2dcda%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Full glam',       when: '4 days ago' },
       ]},
-      { name: 'Glam prep', stories: [
+      { name: 'Glam prep', cover: 'assets/highlights/yellow.svg', stories: [
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%238a7f8f%27/%3E%3Cstop offset=%271%27 stop-color=%27%23d9d3dc%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',  label: 'Rollers in',      when: '4 days ago' },
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c98a96%27/%3E%3Cstop offset=%271%27 stop-color=%27%23f2dcda%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Eyes first',      when: '5 days ago' },
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23b06a4a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23e8c4a8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'The reveal',      when: '6 days ago' },
       ]},
-      { name: 'Make-up', stories: [
+      { name: 'Make-up', cover: 'assets/highlights/pink.svg', stories: [
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c98a96%27/%3E%3Cstop offset=%271%27 stop-color=%27%23f2dcda%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Soft glam',       when: '1 week ago' },
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23b06a4a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23e8c4a8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Sunlit skin',     when: '1 week ago' },
       ]},
-      { name: 'Balayage', stories: [
+      { name: 'Balayage', cover: 'assets/highlights/lilac.svg', stories: [
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c9a86a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23efe3c8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E', label: 'Lived-in waves',  when: '1 week ago' },
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23b06a4a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23e8c4a8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Copper gloss',    when: '2 weeks ago' },
       ]},
-      { name: 'Blow-out', stories: [
+      { name: 'Blow-out', cover: 'assets/highlights/blue.svg', stories: [
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%238a7f8f%27/%3E%3Cstop offset=%271%27 stop-color=%27%23d9d3dc%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',  label: 'Volume set',      when: '2 weeks ago' },
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c9a86a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23efe3c8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E', label: 'The finish',      when: '3 weeks ago' },
       ]},
@@ -2174,7 +2174,7 @@
     const wrap = document.getElementById('stories');
     if (!wrap) return;
     HIGHLIGHTS.forEach((hl, i) => {
-      const cover = hl.stories[0].img;
+      const cover = hl.cover || hl.stories[0].img;
       const n = hl.stories.length;
       const segs = Array.from({ length: n }, () => '<span class="sp-seg"><i></i></span>').join('');
       const btn = document.createElement('button');
