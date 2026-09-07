@@ -1076,6 +1076,38 @@
     transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .ig-img.show { opacity: 1; }
+  .ig-vid {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ig-vid.show { opacity: 1; }
+  .ig-mute {
+    position: absolute;
+    top: 20px; right: 54px;
+    z-index: 8;
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    width: 34px; height: 34px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.35);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9;
+    transition: opacity 160ms, transform 160ms;
+  }
+  .ig-mute.show { display: inline-flex; }
+  .ig-mute:hover { opacity: 1; transform: scale(1.08); }
+  .ig-mute svg { width: 17px; height: 17px; display: block; }
   .ig-scrim {
     position: absolute;
     inset: 0;
@@ -1513,6 +1545,7 @@
       <div class="ig-cap" id="igCap"></div>
       <button class="ig-tap ig-tap-prev" id="igTapPrev" type="button" aria-label="Previous"></button>
       <button class="ig-tap ig-tap-next" id="igTapNext" type="button" aria-label="Next"></button>
+      <button class="ig-mute" id="igMute" type="button" aria-label="Unmute video" aria-pressed="false"></button>
       <button class="ig-close" id="igClose" type="button" aria-label="Close stories">&times;</button>
     </div>
     <button class="ig-nav ig-next" id="igNext" type="button" aria-label="Next story">&rsaquo;</button>
@@ -2151,10 +2184,20 @@
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c9a86a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23efe3c8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E', label: 'Beach waves',     when: '3 days ago' },
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c98a96%27/%3E%3Cstop offset=%271%27 stop-color=%27%23f2dcda%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Full glam',       when: '4 days ago' },
       ]},
-      { name: 'Glam prep', cover: 'assets/highlights/yellow.svg', stories: [
-        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%238a7f8f%27/%3E%3Cstop offset=%271%27 stop-color=%27%23d9d3dc%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',  label: 'Rollers in',      when: '4 days ago' },
-        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c98a96%27/%3E%3Cstop offset=%271%27 stop-color=%27%23f2dcda%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Eyes first',      when: '5 days ago' },
-        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23b06a4a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23e8c4a8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'The reveal',      when: '6 days ago' },
+      { name: 'Hair', cover: 'assets/highlights/yellow.svg', stories: [
+        { img: 'assets/hair/v1.jpg', video: 'assets/hair/v1.mp4', label: '', when: '' },
+        { img: 'assets/hair/v2.jpg', video: 'assets/hair/v2.mp4', label: '', when: '' },
+        { img: 'assets/hair/v3.jpg', video: 'assets/hair/v3.mp4', label: '', when: '' },
+        { img: 'assets/hair/v4.jpg', video: 'assets/hair/v4.mp4', label: '', when: '' },
+        { img: 'assets/hair/v5.jpg', video: 'assets/hair/v5.mp4', label: '', when: '' },
+        { img: 'assets/hair/v6.jpg', video: 'assets/hair/v6.mp4', label: '', when: '' },
+        { img: 'assets/hair/v7.jpg', video: 'assets/hair/v7.mp4', label: '', when: '' },
+        { img: 'assets/hair/v8.jpg', video: 'assets/hair/v8.mp4', label: '', when: '' },
+        { img: 'assets/hair/p1.jpg', label: '', when: '' },
+        { img: 'assets/hair/p2.jpg', label: '', when: '' },
+        { img: 'assets/hair/p3.jpg', label: '', when: '' },
+        { img: 'assets/hair/p4.jpg', label: '', when: '' },
+        { img: 'assets/hair/p5.jpg', label: '', when: '' },
       ]},
       { name: 'Make-up', cover: 'assets/highlights/pink.svg', stories: [
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c98a96%27/%3E%3Cstop offset=%271%27 stop-color=%27%23f2dcda%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Soft glam',       when: '1 week ago' },
@@ -2257,9 +2300,30 @@
     const nameEl = document.getElementById('igName');
     const whenEl = document.getElementById('igWhen');
     const capEl  = document.getElementById('igCap');
+    const muteBtn = document.getElementById('igMute');
 
     let hi = 0, si = 0, isOpen = false;
     let timer = null, startT = 0, remaining = DUR, activeFill = null;
+    let curVideo = null, wantSound = false;
+
+    const IC_MUTED = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><line x1="16.5" y1="9" x2="21.5" y2="14"/><line x1="21.5" y1="9" x2="16.5" y2="14"/></svg>';
+    const IC_SOUND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7"/><path d="M18.5 6a8 8 0 0 1 0 12"/></svg>';
+    function updateMuteIcon() {
+      muteBtn.innerHTML = wantSound ? IC_SOUND : IC_MUTED;
+      muteBtn.setAttribute('aria-pressed', wantSound ? 'true' : 'false');
+      muteBtn.setAttribute('aria-label', wantSound ? 'Mute video' : 'Unmute video');
+    }
+    muteBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+    muteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      wantSound = !wantSound;
+      if (curVideo) {
+        curVideo.muted = !wantSound;
+        if (wantSound) curVideo.play().catch(() => {});
+      }
+      updateMuteIcon();
+    });
+    updateMuteIcon();
 
     function stories() { return HIGHLIGHTS[hi].stories; }
 
@@ -2273,13 +2337,24 @@
     }
 
     function pauseStory() {
+      if (curVideo) {
+        try { curVideo.pause(); } catch (e) {}
+        if (activeFill) activeFill.style.animationPlayState = 'paused';
+        return;
+      }
       if (!timer) return;
       clearTimer();
       remaining -= performance.now() - startT;
       if (activeFill) activeFill.style.animationPlayState = 'paused';
     }
     function resumeStory() {
-      if (timer || !isOpen) return;
+      if (!isOpen) return;
+      if (curVideo) {
+        curVideo.play().catch(() => {});
+        if (activeFill) activeFill.style.animationPlayState = 'running';
+        return;
+      }
+      if (timer) return;
       if (activeFill) activeFill.style.animationPlayState = 'running';
       startTimer(Math.max(400, remaining));
     }
@@ -2305,22 +2380,47 @@
       whenEl.textContent = st.when || '';
       capEl.textContent = st.label || '';
 
-      // crossfade media
-      media.innerHTML = '';
-      const img = new Image();
-      img.className = 'ig-img';
-      img.alt = '';
-      img.src = st.img;
-      media.appendChild(img);
-      const show = () => requestAnimationFrame(() => img.classList.add('show'));
-      if (img.complete) show(); else img.onload = show;
-
-      // preload next
-      const nx = stories()[si + 1];
-      if (nx) { const p = new Image(); p.src = nx.img; }
-
+      clearTimer();
+      if (curVideo) { try { curVideo.pause(); } catch (e) {} curVideo = null; }
       buildBars();
-      startTimer(DUR);
+      media.innerHTML = '';
+
+      if (st.video) {
+        // Video story: plays through its own length, then advances.
+        const v = document.createElement('video');
+        v.className = 'ig-vid';
+        v.src = st.video;
+        if (st.img) v.poster = st.img;
+        v.playsInline = true;
+        v.setAttribute('playsinline', ''); v.setAttribute('webkit-playsinline', '');
+        v.muted = !wantSound; v.preload = 'auto';
+        curVideo = v;
+        media.appendChild(v);
+        muteBtn.classList.add('show');
+        // reveal immediately so the poster frame shows while the video buffers
+        requestAnimationFrame(() => v.classList.add('show'));
+        v.addEventListener('loadedmetadata', () => {
+          const ms = (isFinite(v.duration) && v.duration > 0) ? v.duration * 1000 : DUR;
+          if (activeFill) activeFill.style.setProperty('--dur', ms + 'ms');
+        }, { once: true });
+        v.addEventListener('ended', () => { if (isOpen) nextStory(); });
+        v.play().catch(() => { if (wantSound) { v.muted = true; v.play().catch(() => {}); } });
+      } else {
+        // Image story: fixed duration.
+        muteBtn.classList.remove('show');
+        const img = new Image();
+        img.className = 'ig-img';
+        img.alt = '';
+        img.src = st.img;
+        media.appendChild(img);
+        const show = () => requestAnimationFrame(() => img.classList.add('show'));
+        if (img.complete) show(); else img.onload = show;
+        startTimer(DUR);
+      }
+
+      // preload next poster/image
+      const nx = stories()[si + 1];
+      if (nx && nx.img) { const p = new Image(); p.src = nx.img; }
     }
 
     function openViewer(index) {
@@ -2333,6 +2433,7 @@
     function closeViewer() {
       isOpen = false;
       clearTimer();
+      if (curVideo) { try { curVideo.pause(); } catch (e) {} curVideo = null; }
       viewer.classList.remove('open');
       viewer.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
