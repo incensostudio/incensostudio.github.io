@@ -1251,6 +1251,11 @@
     .menu-toggle { display: inline-flex; }
     .frame .bl { display: none; }
     .frame .tl { visibility: hidden; }
+    /* Seamless lattice fade into the page color at top & bottom */
+    .grid-wrap {
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
+    }
     .ticker-stack { display: inline-flex; justify-content: center; margin: 0 auto 20px; }
     .social-row .pin-mobile { display: inline-flex; }
   }
