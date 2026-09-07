@@ -1577,102 +1577,59 @@
       toastTimer = setTimeout(() => toast.classList.remove('show'), 3400);
     }
 
-    // ── Hover chime — 5 selectable voices, all on a pentatonic scale ──
+    // ── Hover chime — pentatonic bell samples ──
+    // Played through HTMLAudio media elements (not Web Audio) so they sound
+    // on iOS Safari even when the phone's silent/mute switch is on — Web Audio
+    // oscillators get muted by the ringer switch, media playback does not.
     const SoundFX = (() => {
-      let ctx = null, master = null, enabled = false, lastNoteT = 0, step = 0;
-      // C major pentatonic across two octaves — every note pleases
-      const SCALE = [
-        523.25, 587.33, 659.25, 783.99, 880.00,
-        1046.50, 1174.66, 1318.51, 1567.98, 1760.00
-      ];
-      const init = () => {
-        if (ctx) return;
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if (!AC) return;
-        ctx = new AC();
-        master = ctx.createGain();
-        master.gain.value = 0.0;
-        master.connect(ctx.destination);
+      const NOTES = 10;      // bell-0.wav … bell-9.wav (C-pentatonic, 2 octaves)
+      const POOL = 2;        // voices per note for a little overlap
+      let banks = null, cursor = null, enabled = false, unlocked = false, lastNoteT = 0;
+
+      const build = () => {
+        if (banks) return;
+        banks = []; cursor = new Array(NOTES).fill(0);
+        for (let i = 0; i < NOTES; i++) {
+          const voices = [];
+          for (let p = 0; p < POOL; p++) {
+            const a = new Audio('assets/audio/bell-' + i + '.wav');
+            a.preload = 'auto';
+            a.setAttribute('playsinline', '');
+            voices.push(a);
+          }
+          banks.push(voices);
+        }
       };
-      // One sugary "ting" — glassy music-box bell + sparkle octaves on top
-      // Original chime — sine body + octave triangle shimmer, soft attack,
-      // long bell decay. Gentle wind-chime you brush past.
-      const candyNote = (freq, t, vol) => {
-        const g = ctx.createGain();
-        g.connect(master);
-        const o1 = ctx.createOscillator();
-        o1.type = 'sine';
-        o1.frequency.value = freq;
-        const o2 = ctx.createOscillator();
-        o2.type = 'triangle';
-        o2.frequency.value = freq * 2;
-        const g2 = ctx.createGain();
-        g2.gain.value = 0.25;
-        o2.connect(g2); g2.connect(g); o1.connect(g);
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(vol, t + 0.008);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
-        o1.start(t); o2.start(t);
-        o1.stop(t + 0.95); o2.stop(t + 0.95);
+      // Must run inside a user gesture: set the playback session and "prime"
+      // each element with a play/pause so later triggers are allowed by iOS.
+      const unlock = () => {
+        build();
+        try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+        if (unlocked) return;
+        unlocked = true;
+        banks.forEach((voices) => voices.forEach((a) => {
+          try { a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(() => {}); } catch (e) {}
+        }));
       };
       const ping = (idx) => {
-        if (!ctx || !enabled) return;
-        const now = ctx.currentTime;
-        if (now - lastNoteT < 0.035) return;
+        if (!enabled || !banks) return;
+        const now = performance.now();
+        if (now - lastNoteT < 35) return;   // throttle rapid sweeps
         lastNoteT = now;
-        const base = SCALE[((idx % SCALE.length) + SCALE.length) % SCALE.length];
-        candyNote(base, now, 0.16);
+        const note = ((idx % NOTES) + NOTES) % NOTES;
+        const voices = banks[note];
+        const a = voices[cursor[note]];
+        cursor[note] = (cursor[note] + 1) % voices.length;
+        try { a.currentTime = 0; a.play().catch(() => {}); } catch (e) {}
       };
       return {
-        wake() {
-          init();
-          if (ctx && ctx.state === 'suspended') ctx.resume();
-          if (ctx && master) {
-            enabled = true;
-            master.gain.cancelScheduledValues(ctx.currentTime);
-            master.gain.linearRampToValueAtTime(0.9, ctx.currentTime + 0.4);
-          }
-        },
-        noteFor(seed) {
-          if (!enabled) return;
-          ping(seed % SCALE.length);
-        },
+        wake() { unlock(); enabled = true; },
+        noteFor(seed) { if (enabled) ping(seed); },
         get on() { return enabled; },
-        toggle(v) {
-          enabled = (v === undefined) ? !enabled : v;
-          if (enabled) this.wake();
-          else if (master && ctx) master.gain.linearRampToValueAtTime(0.0, ctx.currentTime + 0.2);
-        },
+        toggle(v) { enabled = (v === undefined) ? !enabled : v; if (enabled) this.wake(); },
       };
     })();
-    // iOS routes Web Audio through the ringer channel, so the lattice chimes
-    // and radio go silent when the phone's mute switch is on. Unlock the
-    // "playback" audio session (modern API) + keep a silent looping media
-    // element alive (older-iOS fallback) so sound plays regardless.
-    let silentKeepAlive = null;
-    const makeSilentWavUrl = () => {
-      const rate = 8000, n = rate; // 1s of silence
-      const buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
-      const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
-      w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVE'); w(12, 'fmt ');
-      v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
-      v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true);
-      v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
-      return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
-    };
-    const unlockIOSAudio = () => {
-      try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
-      try {
-        if (!silentKeepAlive) {
-          silentKeepAlive = new Audio(makeSilentWavUrl());
-          silentKeepAlive.loop = true;
-          silentKeepAlive.volume = 0;
-          silentKeepAlive.setAttribute('playsinline', '');
-        }
-        silentKeepAlive.play().catch(() => {});
-      } catch (e) {}
-    };
-    const wakeAudio = () => { unlockIOSAudio(); SoundFX.wake(); };
+    const wakeAudio = () => SoundFX.wake();
     window.addEventListener('pointerdown', wakeAudio, { once: true });
     window.addEventListener('keydown', wakeAudio, { once: true });
 
