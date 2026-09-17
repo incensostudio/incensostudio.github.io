@@ -2336,6 +2336,8 @@
 <script>
 (() => { try { const n = parseInt(localStorage.getItem('incenso-cart-count') || '0', 10) || 0; document.querySelectorAll('.cart-badge').forEach((b) => { b.dataset.count = n; b.textContent = n; }); } catch (e) {} })();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase.js"></script>
 <script src="assets/phone.js"></script>
 <script src="assets/auth.js"></script>
 <script>

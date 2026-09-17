@@ -1,13 +1,18 @@
-/* Incenso Studio — shared account + OTP sign-in (demo: no backend, code is shown on screen) */
+/* Incenso Studio — account + phone-OTP sign-in, backed by Supabase.
+   The account object (name, phone, bookings[], orders[], visits, prefs, gift)
+   stays a synchronous local cache so pages are unchanged; it is hydrated from
+   and mirrored to Supabase. Real SMS codes are sent once Twilio is connected
+   to Supabase Auth. */
 (() => {
+  const SB = window.SB;
   const AKEY = 'incenso-account', SKEY = 'incenso-signedin';
-  const MKEY = 'incenso-accounts';
   const digits = (p) => String(p || '').replace(/\D/g, '');
-  const all = () => { try { return JSON.parse(localStorage.getItem(MKEY) || '{}') || {}; } catch (e) { return {}; } };
-  const findByPhone = (p) => { const d = digits(p); if (d.length < 6) return null; const m = all(); const k = Object.keys(m).find((x) => x === d || x.endsWith(d) || d.endsWith(x)); return k ? m[k] : null; };
-  const get = () => { try { return JSON.parse(localStorage.getItem(AKEY) || 'null'); } catch (e) { return null; } };
-  const set = (a) => { try { localStorage.setItem(AKEY, JSON.stringify(a)); const m = all(); m[digits(a.phone)] = a; localStorage.setItem(MKEY, JSON.stringify(m)); } catch (e) {} };
-  const signedIn = () => { try { return localStorage.getItem(SKEY) === '1' && !!get(); } catch (e) { return false; } };
+  const e164 = (p) => { const d = digits(p); return d ? '+' + d : ''; };
+  const readLocal = () => { try { return JSON.parse(localStorage.getItem(AKEY) || 'null'); } catch (e) { return null; } };
+  const writeLocal = (a) => { try { if (a) localStorage.setItem(AKEY, JSON.stringify(a)); else localStorage.removeItem(AKEY); } catch (e) {} };
+  let acc = readLocal();
+  const get = () => acc;
+  const signedIn = () => { try { return localStorage.getItem(SKEY) === '1' && !!acc; } catch (e) { return !!acc; } };
 
   const TIERS = [
     { name: 'Member',  min: 0,    color: '#CFDFDD', perk: 'Welcome — every dollar counts toward Insider' },
@@ -16,20 +21,56 @@
   ];
   const tierFor = (spend) => TIERS.filter((t) => spend >= t.min).pop();
   const nextTier = (spend) => TIERS.find((t) => spend < t.min) || null;
-  // Rolling 12-month spend — recomputed daily from dated visits + orders, so levels ease off as old spend ages out
-  const yearSpend = (acc) => {
-    if (!acc) return 0;
+  const yearSpend = (a) => {
+    if (!a) return 0;
     const cutoff = Date.now() - 365 * 24 * 3600 * 1000;
     let s = 0;
-    (acc.visits || []).forEach((v) => { if (new Date(v.date + 'T12:00:00').getTime() >= cutoff) s += v.price || 0; });
-    (acc.orders || []).forEach((o) => { if (!/cancel/i.test(o.status || '') && new Date(o.date + 'T12:00:00').getTime() >= cutoff) s += o.total || 0; });
-    (acc.bookings || []).forEach((b) => { const t = new Date(b.date + 'T23:59:59').getTime(); if (!/cancel/i.test(b.status || '') && t < Date.now() && t >= cutoff) s += b.price || 0; });
+    (a.visits || []).forEach((v) => { if (new Date(v.date + 'T12:00:00').getTime() >= cutoff) s += v.price || 0; });
+    (a.orders || []).forEach((o) => { if (!/cancel/i.test(o.status || '') && new Date((o.date || '') + 'T12:00:00').getTime() >= cutoff) s += o.total || 0; });
+    (a.bookings || []).forEach((b) => { const t = new Date(b.date + 'T23:59:59').getTime(); if (!/cancel/i.test(b.status || '') && t < Date.now() && t >= cutoff) s += b.price || 0; });
     return s;
   };
+  const seed = (name, phone, email) => ({ name, phone, email: email || '', created: new Date().toISOString(), visits: [], orders: [], bookings: [], prefs: {} });
 
-  const seed = (name, phone, email) => ({ name, phone, email: email || '', created: new Date().toISOString(), visits: [], orders: [], bookings: [] });
+  // ---- Supabase <-> account-object mapping ----
+  const bkFromRow = (r) => ({ ref: r.ref, services: r.services || [], serviceMins: r.service_mins || [], staff: r.staff || {}, date: r.date, time: r.time, start: r.start_min, mins: r.mins, price: r.price, priceFrom: r.price_from, quote: r.quote, quoteItems: r.quote_items || [], pay: r.pay, paid: r.paid, due: r.due, refund: r.refund, gift: r.gift && Object.keys(r.gift).length ? r.gift : null, status: r.status, notes: r.notes, mood: r.mood, flags: r.flags || [], drink: r.drink || [], smoke: r.smoke, created: r.created_at, updated: r.updated_at, cancelled: r.cancelled_at, cancelReason: r.cancel_reason, service: (r.services || []).join(' + ') });
+  const bkToRow = (b, uid) => ({ ref: b.ref, user_id: uid, services: b.services || [], service_mins: b.serviceMins || [], staff: b.staff || {}, date: b.date || null, time: b.time || null, start_min: (b.start != null ? b.start : null), mins: b.mins || null, price: b.price || 0, price_from: !!b.priceFrom, quote: !!b.quote, quote_items: b.quoteItems || [], pay: b.pay || null, paid: b.paid || 0, due: b.due || 0, refund: b.refund || 0, gift: b.gift || {}, status: b.status || 'Upcoming', notes: b.notes || null, mood: b.mood || null, flags: b.flags || [], drink: b.drink || [], smoke: b.smoke || null, cancelled_at: b.cancelled || null, cancel_reason: b.cancelReason || null });
+  const orFromRow = (r) => ({ ref: r.ref, date: (r.created_at || '').slice(0, 10), items: r.items || [], total: r.total, status: r.status, method: r.method, pay: r.pay, name: r.name, phone: r.phone, email: r.email, address: (r.address && r.address.text) || '', discount: r.discount, tier: r.tier });
+  const orToRow = (o, uid) => ({ ref: o.ref, user_id: uid, items: o.items || [], total: o.total || 0, status: o.status || 'Placed', method: o.method || null, pay: o.pay || null, name: o.name || null, phone: o.phone || null, email: o.email || null, address: (typeof o.address === 'string' ? { text: o.address } : (o.address || {})), discount: o.discount || 0, tier: o.tier || null });
 
-  // ---- Modal ----
+  let currentUid = null;
+  const persist = async (a) => {
+    if (!SB || !a) return;
+    try {
+      const { data: { user } } = await SB.auth.getUser();
+      if (!user) return;
+      const uid = user.id; currentUid = uid;
+      await SB.from('profiles').upsert({ id: uid, phone: a.phone || null, name: a.name || null, email: a.email || null, photo_url: a.photo || null, prefs: a.prefs || {}, tier: (tierFor(yearSpend(a)) || {}).name || 'Member', spend_12mo: yearSpend(a), updated_at: new Date().toISOString() }, { onConflict: 'id' });
+      if ((a.bookings || []).length) await SB.from('bookings').upsert(a.bookings.map((b) => bkToRow(b, uid)), { onConflict: 'ref' });
+      if ((a.orders || []).length) await SB.from('orders').upsert(a.orders.map((o) => orToRow(o, uid)), { onConflict: 'ref' });
+    } catch (e) { console.warn('[Incenso] persist failed', e); }
+  };
+  const set = (a) => { acc = a; writeLocal(a); persist(a); return a; };
+
+  const hydrate = async (uid) => {
+    if (!SB) return null;
+    try {
+      const [pr, bk, od] = await Promise.all([
+        SB.from('profiles').select('*').eq('id', uid).maybeSingle(),
+        SB.from('bookings').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
+        SB.from('orders').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
+      ]);
+      const prof = pr.data;
+      if (!prof) return null;
+      const a = { id: uid, name: prof.name, phone: prof.phone, email: prof.email || '', photo: prof.photo_url || '', prefs: prof.prefs || {}, tier: prof.tier, created: prof.created_at,
+        bookings: (bk.data || []).map(bkFromRow), orders: (od.data || []).map(orFromRow), visits: [] };
+      a.visits = a.bookings.filter((b) => /complete/i.test(b.status || '')).map((b) => ({ date: b.date, price: b.price, service: b.service }));
+      if (window.IncensoGift && window.IncensoGift.attach) { try { await window.IncensoGift.attach(a); } catch (e) {} }
+      return a;
+    } catch (e) { console.warn('[Incenso] hydrate failed', e); return null; }
+  };
+
+
   const css = '.au{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:clamp(16px,3vw,40px);opacity:0;pointer-events:none;transition:opacity 240ms cubic-bezier(0.16,1,0.3,1)}' +
   '.au.open{opacity:1;pointer-events:auto}body.au-open{overflow:hidden}' +
   '.au-scrim{position:absolute;inset:0;background:rgba(30,26,18,0.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}' +
@@ -78,24 +119,30 @@
   const mount = () => { if (!el.isConnected) document.body.appendChild(el); };
   const body = () => el.querySelector('.au-body');
 
-  let onDone = null, code = '', pendingPhone = '';
+
+  let onDone = null, pendingPhone = '', pendingE164 = '';
   const open = (cb, prefill) => { mount(); onDone = cb || null; stepPhone(prefill); el.classList.add('open'); el.setAttribute('aria-hidden', 'false'); document.body.classList.add('au-open'); };
   const close = () => { el.classList.remove('open'); el.setAttribute('aria-hidden', 'true'); document.body.classList.remove('au-open'); };
 
   const stepPhone = (prefill) => {
-    const acc = get();
     const pre = prefill || (acc ? String(acc.phone) : '');
     body().innerHTML = '<p class="au-kicker">Incenso Studio</p><h2 class="au-title">Enter your phone to continue</h2>' +
-      '<p class="au-sub">Enter your number and we\u2019ll send a one-time verification code \u2014 no password needed. If you\u2019re new, your account is created automatically.</p>' +
+      '<p class="au-sub">Enter your number and we’ll text you a one-time code — no password needed. New here? Your account is created automatically.</p>' +
       '<form id="auPhoneForm"><div class="au-field"><label for="auPhone">Phone</label><div class="phone-combo"><select class="pc-cc" aria-label="Country code"></select><input id="auPhone" type="tel" inputmode="tel" placeholder="Phone number" required value="' + pre.replace(/^\+[\d]+\s*/, '') + '" /></div></div>' +
-      '<button type="submit" class="au-btn">Send code</button></form>';
+      '<p class="au-err" id="auErr"></p>' +
+      '<button type="submit" class="au-btn" id="auSend">Send code</button></form>';
     if (window.IncensoPhone) window.IncensoPhone.fill(body());
     const preCC = String(pre).match(/^\+\d+/);
     if (preCC) { const sel = body().querySelector('.pc-cc'); if (sel) sel.value = preCC[0]; }
-    body().querySelector('#auPhoneForm').addEventListener('submit', (e) => {
+    body().querySelector('#auPhoneForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       pendingPhone = (body().querySelector('.pc-cc').value + ' ' + body().querySelector('#auPhone').value.trim()).trim();
-      code = String(Math.floor(1000 + Math.random() * 9000));
+      pendingE164 = e164(pendingPhone);
+      const err = body().querySelector('#auErr'); const btn = body().querySelector('#auSend');
+      err.style.display = 'none'; btn.disabled = true; btn.textContent = 'Sending…';
+      if (!SB) { err.textContent = 'Sign-in is being connected. Please try again shortly.'; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Send code'; return; }
+      const { error } = await SB.auth.signInWithOtp({ phone: pendingE164 });
+      if (error) { err.textContent = /provider|sms|not enabled|unsupported/i.test(error.message) ? 'Text sign-in is being switched on — hang tight, it’s almost ready.' : error.message; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Send code'; return; }
       stepCode();
     });
   };
@@ -104,49 +151,46 @@
     body().innerHTML = '<p class="au-kicker">Verify</p><h2 class="au-title">Enter the code</h2>' +
       '<p class="au-sub">Sent by SMS to ' + pendingPhone + '.</p>' +
       '<form id="auCodeForm"><div class="au-code">' +
-      [0,1,2,3].map((i) => '<input type="text" inputmode="numeric" maxlength="1" aria-label="Digit ' + (i+1) + '" />').join('') +
-      '</div><p class="au-err" id="auErr">Enter the 4-digit code from the SMS.</p>' +
-      '<button type="submit" class="au-btn">Verify</button></form>' +
-      '<p class="au-alt" id="auResendRow">Didn\u2019t get it? <button type="button" id="auResend">Send code again</button></p>' +
+      [0,1,2,3,4,5].map((i) => '<input type="text" inputmode="numeric" maxlength="1" aria-label="Digit ' + (i+1) + '" />').join('') +
+      '</div><p class="au-err" id="auErr">Enter the 6-digit code from the SMS.</p>' +
+      '<button type="submit" class="au-btn" id="auVerify">Verify</button></form>' +
+      '<p class="au-alt" id="auResendRow">Didn’t get it? <button type="button" id="auResend">Send code again</button></p>' +
       '<p class="au-alt">Wrong number? <button type="button" id="auBack">Go back</button></p>';
     const inputs = [...body().querySelectorAll('.au-code input')];
     inputs[0].focus();
     inputs.forEach((inp, i) => {
       inp.addEventListener('input', () => { inp.value = inp.value.replace(/\D/g, '').slice(0, 1); if (inp.value && inputs[i + 1]) inputs[i + 1].focus(); });
       inp.addEventListener('keydown', (e) => { if (e.key === 'Backspace' && !inp.value && inputs[i - 1]) inputs[i - 1].focus(); });
+      inp.addEventListener('paste', (e) => { const t = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6); if (t) { e.preventDefault(); t.split('').forEach((d, k) => { if (inputs[k]) inputs[k].value = d; }); (inputs[Math.min(t.length, 5)] || inputs[5]).focus(); } });
     });
-    body().querySelector('#auBack').addEventListener('click', stepPhone);
+    body().querySelector('#auBack').addEventListener('click', () => stepPhone(pendingPhone));
     const resend = body().querySelector('#auResend');
-    resend.addEventListener('click', () => {
-      code = String(Math.floor(1000 + Math.random() * 9000));
-      inputs.forEach((x) => { x.value = ''; });
-      inputs[0].focus();
-      resend.disabled = true;
-      const row = body().querySelector('#auResendRow');
-      let left = 30;
-      row.childNodes[0].textContent = 'Code sent \u2014 again in ' + left + 's ';
-      resend.style.display = 'none';
-      const t = setInterval(() => {
-        left -= 1;
-        if (left <= 0) { clearInterval(t); row.childNodes[0].textContent = 'Didn\u2019t get it? '; resend.style.display = ''; resend.disabled = false; return; }
-        row.childNodes[0].textContent = 'Code sent \u2014 again in ' + left + 's ';
-      }, 1000);
+    resend.addEventListener('click', async () => {
+      if (SB) await SB.auth.signInWithOtp({ phone: pendingE164 });
+      inputs.forEach((x) => { x.value = ''; }); inputs[0].focus();
+      const row = body().querySelector('#auResendRow'); let left = 30; resend.style.display = 'none';
+      row.childNodes[0].textContent = 'Code sent — again in ' + left + 's ';
+      const t = setInterval(() => { left -= 1; if (left <= 0) { clearInterval(t); row.childNodes[0].textContent = 'Didn’t get it? '; resend.style.display = ''; return; } row.childNodes[0].textContent = 'Code sent — again in ' + left + 's '; }, 1000);
     });
-    body().querySelector('#auCodeForm').addEventListener('submit', (e) => {
+    body().querySelector('#auCodeForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const entered = inputs.map((x) => x.value).join('');
-      if (entered.length !== 4) { body().querySelector('#auErr').style.display = 'block'; return; }
-      const acc = findByPhone(pendingPhone);
-      if (acc) { finish(acc); } else { stepDetails(); }
+      const err = body().querySelector('#auErr');
+      if (entered.length !== 6) { err.textContent = 'Enter the 6-digit code from the SMS.'; err.style.display = 'block'; return; }
+      const btn = body().querySelector('#auVerify'); btn.disabled = true; btn.textContent = 'Verifying…';
+      const { data, error } = await SB.auth.verifyOtp({ phone: pendingE164, token: entered, type: 'sms' });
+      if (error || !data || !data.user) { err.textContent = 'That code didn’t match. Try again.'; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Verify'; inputs.forEach((x) => { x.value = ''; }); inputs[0].focus(); return; }
+      const existing = await hydrate(data.user.id);
+      if (existing && existing.name) finish(existing); else stepDetails();
     });
   };
 
   const stepDetails = () => {
     body().innerHTML = '<p class="au-kicker">New account</p><h2 class="au-title">Almost there</h2>' +
-      '<p class="au-sub">So we know who\u2019s in the chair \u2014 and where to send updates.</p>' +
+      '<p class="au-sub">So we know who’s in the chair — and where to send updates.</p>' +
       '<form id="auDetForm"><div class="au-field"><label for="auName">Full name</label><input id="auName" type="text" autocomplete="name" required /></div>' +
       '<div class="au-field"><label for="auEmail">E-mail</label><input id="auEmail" type="email" autocomplete="email" required /></div>' +
-      '<div class="au-field"><label>Photo <span style="font-weight:400;color:rgba(0,0,0,0.45)">\u2014 optional</span></label>' +
+      '<div class="au-field"><label>Photo <span style="font-weight:400;color:rgba(0,0,0,0.45)">— optional</span></label>' +
       '<div class="au-photo"><span class="av" id="auAv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"></circle><path d="M5 19.5c1.3-3.2 4-4.8 7-4.8s5.7 1.6 7 4.8"></path></svg></span>' +
       '<span><button type="button" class="au-photo-btn" id="auPhotoBtn">Upload photo</button><p class="hint">JPG or PNG, up to 5 MB</p></span>' +
       '<input id="auPhoto" type="file" accept="image/*" hidden /></div></div>' +
@@ -164,31 +208,31 @@
     });
     body().querySelector('#auDetForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      const acc = seed(body().querySelector('#auName').value.trim(), pendingPhone, body().querySelector('#auEmail').value.trim());
-      if (photoData) acc.photo = photoData;
-      finish(acc, true);
+      const a = seed(body().querySelector('#auName').value.trim(), pendingPhone, body().querySelector('#auEmail').value.trim());
+      if (photoData) a.photo = photoData;
+      finish(a);
     });
   };
 
-  const finish = (acc) => {
-    if (window.IncensoGift) window.IncensoGift.attach(acc);
-    set(acc);
+  const finish = (a) => {
+    if (window.IncensoGift && window.IncensoGift.attach) { try { window.IncensoGift.attach(a); } catch (e) {} }
+    acc = a; writeLocal(a);
     try { localStorage.setItem(SKEY, '1'); } catch (e) {}
+    persist(a);
     syncButtons();
     close();
-    if (onDone) onDone(acc);
+    if (onDone) onDone(a);
   };
 
   el.addEventListener('click', (e) => { if (e.target.closest('.au-scrim') || e.target.closest('.au-close')) close(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && el.classList.contains('open')) close(); });
 
-  // ---- Account buttons ([data-account-btn]) ----
   const syncButtons = () => {
-    const acc = signedIn() ? get() : null;
+    const a = signedIn() ? acc : null;
     document.querySelectorAll('[data-account-btn]').forEach((b) => {
       b.setAttribute('aria-label', signedIn() ? 'Your account' : 'Sign in');
       b.classList.toggle('signed', signedIn());
-      const ph = acc && acc.photo;
+      const ph = a && a.photo;
       b.classList.toggle('has-photo', !!ph);
       b.style.backgroundImage = ph ? 'url(' + ph + ')' : '';
     });
@@ -201,28 +245,53 @@
     else open(() => { location.href = 'Account.html'; });
   });
 
-  const signOut = () => { try { localStorage.setItem(SKEY, '0'); } catch (e) {} syncButtons(); };
+  const signOut = async () => { try { if (SB) await SB.auth.signOut(); } catch (e) {} try { localStorage.setItem(SKEY, '0'); } catch (e) {} acc = null; writeLocal(null); syncButtons(); };
 
-  window.IncensoAuth = { get, set, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, TIERS, sync: syncButtons, findByPhone, all };
+  // findByPhone/all kept as no-op-ish shims for any legacy callers
+  const findByPhone = () => null;
+  const all = () => ({});
 
-  // ---- Newsletter subscribe: members pass straight through, new numbers sign up first ----
+  window.IncensoAuth = { get, set, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, TIERS, sync: syncButtons, findByPhone, all, hydrate };
+
+  // ---- Newsletter subscribe (persists to Supabase; members pass straight through) ----
   document.addEventListener('submit', (e) => {
     const nf = e.target && e.target.id === 'newsForm' ? e.target : null;
     if (!nf) return;
-    e.preventDefault();
-    e.stopPropagation();
-    const raw = nf.email.value;
-    const digits = raw.replace(/\D/g, '');
-    if (raw.includes('+')) { nf.email.setCustomValidity('Just the number \u2014 the country code is picked on the left'); nf.email.reportValidity(); return; }
-    if (digits.length < 6 || digits.length > 12) { nf.email.setCustomValidity('Enter a valid phone number'); nf.email.reportValidity(); return; }
-    const done = () => { nf.innerHTML = '<span class="news-done">Noted \u2726 We\u2019ll keep you up to date</span>'; };
-    const acc = get();
-    const accDigits = acc ? String(acc.phone).replace(/\D/g, '') : '';
-    if (acc && accDigits && (accDigits === digits || accDigits.endsWith(digits) || digits.endsWith(accDigits))) { done(); return; }
+    e.preventDefault(); e.stopPropagation();
+    const raw = nf.email.value; const dd = raw.replace(/\D/g, '');
+    if (raw.includes('+')) { nf.email.setCustomValidity('Just the number — the country code is picked on the left'); nf.email.reportValidity(); return; }
+    if (dd.length < 6 || dd.length > 12) { nf.email.setCustomValidity('Enter a valid phone number'); nf.email.reportValidity(); return; }
     const cc = nf.querySelector('.pc-cc');
-    open(done, ((cc ? cc.value : '') + ' ' + raw.trim()).trim());
+    const full = ((cc ? cc.value : '') + ' ' + raw.trim()).trim();
+    const done = () => { nf.innerHTML = '<span class="news-done">Noted ✦ We’ll keep you up to date</span>'; };
+    if (SB) { SB.from('newsletter').upsert({ phone: e164(full) }, { onConflict: 'phone' }).then(() => {}, () => {}); }
+    const accDigits = acc ? digits(acc.phone) : '';
+    if (acc && accDigits && (accDigits === dd || accDigits.endsWith(dd) || dd.endsWith(accDigits))) { done(); return; }
+    open(done, full);
   }, true);
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', syncButtons);
-  else syncButtons();
+  // ---- Session reconcile on load ----
+  const boot = async () => {
+    syncButtons();
+    if (!SB) return;
+    try {
+      const { data: { session } } = await SB.auth.getSession();
+      if (session && session.user) {
+        currentUid = session.user.id;
+        if (!acc) {
+          const a = await hydrate(session.user.id);
+          if (a) { acc = a; writeLocal(a); try { localStorage.setItem(SKEY, '1'); } catch (e) {}
+            if (!sessionStorage.getItem('incenso-hydrated')) { try { sessionStorage.setItem('incenso-hydrated', '1'); } catch (e) {} location.reload(); return; }
+          }
+        } else {
+          hydrate(session.user.id).then((a) => { if (a) { acc = a; writeLocal(a); document.dispatchEvent(new Event('account:updated')); } });
+        }
+        try { localStorage.setItem(SKEY, '1'); } catch (e) {}
+      } else if (acc) {
+        acc = null; writeLocal(null); try { localStorage.setItem(SKEY, '0'); } catch (e) {}
+      }
+    } catch (e) { console.warn('[Incenso] auth boot', e); }
+    syncButtons();
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
