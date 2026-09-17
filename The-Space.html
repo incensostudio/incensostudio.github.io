@@ -3,57 +3,139 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<meta name="robots" content="noindex" />
+<meta name="description" content="Incenso Studio — The studio. 32 Dam & Farz, Tripoli — hours, directions and house notes." />
 <meta name="theme-color" content="#e5dcc9" />
-<title>The Space — Incenso Studio</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
 <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<title>The Space — Incenso Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" />
+<link rel="stylesheet" href="assets/site.css" />
 <style>
-  * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; }
-  body {
-    background: #e5dcc9; color: #000;
-    font-family: "Geist", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    min-height: 100dvh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; text-align: center;
-    padding: 40px 24px; gap: 22px;
-  }
-  .brand {
-    font-family: "Geist Mono", ui-monospace, monospace;
-    font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase;
-    color: rgba(0,0,0,0.55);
-  }
-  h1 { font-size: clamp(34px, 8vw, 68px); font-weight: 600; margin: 0; letter-spacing: -0.02em; }
-  .kicker {
-    font-family: "Geist Mono", ui-monospace, monospace;
-    font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
-    color: rgba(0,0,0,0.5);
-  }
-  p { max-width: 46ch; font-size: 16px; line-height: 1.6; color: rgba(0,0,0,0.7); margin: 0; }
-  .row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
-  a.btn {
-    display: inline-flex; align-items: center; height: 50px; padding: 0 26px;
-    border-radius: 999px; text-decoration: none; font-size: 14px; font-weight: 500;
-    transition: transform 160ms, box-shadow 160ms, background-color 160ms;
-  }
-  a.primary { background: #000; color: #FEFEF1; box-shadow: 0 8px 24px rgba(0,0,0,0.22); }
-  a.primary:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(0,0,0,0.3); }
-  a.ghost { background: transparent; color: #000; border: 1px solid rgba(0,0,0,0.28); }
-  a.ghost:hover { background: rgba(0,0,0,0.05); }
+.bleed{margin-inline:calc(-1 * var(--gutter))}
+.s-hero{padding:clamp(28px,5vw,72px) 0 clamp(28px,4vw,48px)}
+.s-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(24px,4vw,64px);align-items:end}
+.s-hero h1{font-size:clamp(38px,5.6vw,80px);line-height:1;letter-spacing:-0.035em;max-width:12ch}
+.incense{display:block;height:clamp(140px,20vw,260px);width:auto;opacity:0.9;justify-self:end}
+.s-hero .lead{margin:clamp(18px,2vw,26px) 0 0;font-size:clamp(15px,1.3vw,18px);line-height:1.55;color:rgba(0,0,0,0.78);max-width:46ch;text-wrap:pretty}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--fg-warm);border-bottom:1px solid var(--fg-warm);margin-top:clamp(28px,4vw,56px);margin-bottom:clamp(8px,2vw,24px)}
+.stat{padding:clamp(18px,2.6vw,32px) clamp(16px,2vw,28px) clamp(18px,2.6vw,32px) 0}
+.stat + .stat{border-left:1px solid var(--fg-warm);padding-left:clamp(16px,2vw,28px)}
+.stat b{display:block;font-family:var(--font-mono);font-size:clamp(40px,6vw,84px);font-weight:500;letter-spacing:-0.04em;line-height:0.9}
+.stat span{display:block;margin-top:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(0,0,0,0.55)}
+.chap .ph image-slot{position:absolute;inset:0;width:100%;height:100%}
+.chap{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,5vw,96px);align-items:center;padding:clamp(40px,6vw,96px) 0}
+.chap + .chap{border-top:1px solid var(--card-line)}
+.chap.flip .ph{order:-1}
+.chap:not(.flip){grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+.chap .k{font-family:var(--font-mono);font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(0,0,0,0.5);margin:0 0 18px;display:flex;gap:12px}
+.chap h2{font-size:clamp(28px,3.6vw,52px);font-weight:600;letter-spacing:-0.03em;line-height:1.02;margin:0 0 18px;text-wrap:balance}
+.chap p{margin:0;font-size:clamp(15px,1.25vw,17px);line-height:1.6;color:rgba(0,0,0,0.78);max-width:46ch;text-wrap:pretty}
+.chap p + p{margin-top:12px}
+.chap .ph{position:relative;aspect-ratio:1;width:100%;border:1px solid var(--card-line);background:rgba(254,254,241,0.55);overflow:hidden}
+
+.collage{border-top:1px solid var(--card-line);padding:clamp(28px,4vw,56px) 0 clamp(40px,6vw,96px)}
+.col-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(12px,2vw,28px) clamp(10px,1.6vw,20px)}
+.col-cell{margin:0}
+.col-cell .fr{position:relative;aspect-ratio:9/16;background:rgba(254,254,241,0.55);border:1px solid var(--card-line);overflow:hidden}
+.col-cell .fr image-slot{position:absolute;inset:0;width:100%;height:100%}
+
+.hours{border-top:1px solid var(--fg-warm);padding:clamp(40px,6vw,96px) 0;display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:clamp(24px,4vw,64px)}
+.hours h2{font-size:clamp(28px,3.6vw,52px);font-weight:600;letter-spacing:-0.03em;line-height:1.02;margin:0 0 16px}
+.hours .ticker{font-family:var(--font-sans);font-size:15px;font-weight:600;letter-spacing:0;text-transform:none;gap:8px}
+.hours .ticker-dot{width:auto}
+.hrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--card-line)}
+.hrow:first-child{border-top:1px solid var(--card-line)}
+.hrow .d{font-size:clamp(18px,2vw,26px);font-weight:500;letter-spacing:-0.02em}
+.hrow .t{font-family:var(--font-mono);font-size:clamp(18px,2vw,26px);font-weight:500;letter-spacing:-0.02em;white-space:nowrap}
+.hrow.today .d::after{content:"Today";display:inline-block;font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--fg-warm);background:#86EFAC;border-radius:999px;padding:5px 10px;margin-left:12px;vertical-align:middle;position:relative;top:-2px}
+.hours .note{margin:18px 0 0;font-size:14px;color:rgba(0,0,0,0.62)}
+.manifesto{border-top:1px solid var(--fg-warm);padding:clamp(40px,6vw,96px) 0}
+.manifesto .k{font-family:var(--font-mono);font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(0,0,0,0.55);margin:0 0 28px}
+.rule{display:grid;grid-template-columns:64px minmax(0,1fr);gap:clamp(16px,3vw,48px);padding:clamp(20px,3vw,36px) 0;border-top:1px solid var(--card-line);max-width:980px}
+.rule .ix{font-family:var(--font-mono);font-size:12px;letter-spacing:0.16em;color:rgba(0,0,0,0.4);padding-top:8px}
+.rule h3{font-size:clamp(22px,3vw,40px);font-weight:500;letter-spacing:-0.03em;line-height:1.05;margin:0}
+.rule p{margin:12px 0 0;font-size:15px;line-height:1.6;color:rgba(0,0,0,0.7);max-width:60ch;text-wrap:pretty}
+.team{border-top:1px solid var(--fg-warm);padding:clamp(40px,6vw,96px) 0}
+.team-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:28px}
+.team h2{font-size:clamp(28px,3.6vw,52px);font-weight:600;letter-spacing:-0.03em;margin:0}
+.strip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(200px,1fr);gap:clamp(14px,2vw,28px);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;scrollbar-width:thin}
+.per{scroll-snap-align:start;color:inherit;text-decoration:none;display:block}
+.per .por{position:relative;aspect-ratio:3/4;border:1px solid var(--card-line);background:rgba(254,254,241,0.55);overflow:hidden}
+.per .por image-slot{position:absolute;inset:0;width:100%;height:100%}
+.per .nm{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:12px 0 0;font-size:18px;font-weight:600;letter-spacing:-0.02em}
+.per .nm small{font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(0,0,0,0.5);font-weight:500}
+.per .bio{margin:6px 0 0;font-size:13px;line-height:1.5;color:rgba(0,0,0,0.62)}
+.find{border-top:1px solid var(--fg-warm);padding:clamp(40px,6vw,96px) 0 clamp(48px,7vw,112px);display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,4vw,64px);align-items:end}
+.find .k{font-family:var(--font-mono);font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(0,0,0,0.55);margin:0 0 18px}
+.find .addr{font-size:clamp(30px,5vw,72px);font-weight:600;letter-spacing:-0.035em;line-height:1;margin:0}
+.find .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.find .c{font-size:15px;line-height:1.7;color:rgba(0,0,0,0.75)}
+.find .c a{color:var(--fg-warm);text-underline-offset:3px}
+@media (max-width:880px){.s-top{grid-template-columns:1fr;align-items:start}.incense{justify-self:start;height:120px}.col-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.chap,.hours,.find{grid-template-columns:1fr}.chap.flip .ph{order:0}.chap .ph{aspect-ratio:1}.stats{grid-template-columns:1fr}.stat + .stat{border-left:0;border-top:1px solid var(--fg-warm);padding-left:0}.rule{grid-template-columns:1fr;gap:8px}}
 </style>
+<template id="__bundler_thumbnail" data-bg-color="#e5dcc9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#e5dcc9"/><text x="200" y="262" text-anchor="middle" font-family="Georgia,serif" font-size="180" fill="#000">i</text></svg></template>
 </head>
 <body>
-  <div class="brand">Incenso Studio</div>
-  <div class="kicker">The Space</div>
-  <h1>Coming soon</h1>
-  <p>This page is on its way. In the meantime, the fastest way to reach us is on WhatsApp — we'd love to help.</p>
-  <div class="row">
-    <a class="btn primary" href="https://wa.me/96171930290?text=Hi%2C%20I%27d%20like%20to%20ask%20about%20The%20Space" target="_blank" rel="noopener">Message us on WhatsApp</a>
-    <a class="btn ghost" href="/">Back to home</a>
-  </div>
+<a class="skip-link" href="#main">Skip to content</a>
+<main class="page" id="main" data-screen-label="The Space">
+<header class="s-hero">
+<div class="s-top"><div><h1>The room where it happens.</h1><p class="lead">First floor on Dam &amp; Farz, Tripoli. Three hair stations, two nail stations, one make-up station — and the incense that gave the studio its name.</p></div><img class="incense" src="assets/incense.svg" alt="" width="406" height="422" /></div>
+<div class="stats"><div class="stat"><b>3</b><span>Hair stations</span></div><div class="stat"><b>2</b><span>Nail stations</span></div><div class="stat"><b>1</b><span>Make-up station</span></div></div>
+</header>
+<section class="chap"><div><p class="k"><span>01</span>The room</p><h2>Light from the street, energy from the room.</h2><p>Tall windows let the afternoon light in. Warm walls, quiet floors, and the chairs placed where the light lands.</p><p>Good music, real conversation, dryers going — the kind of room that lifts your mood before anyone touches your hair.</p></div><div class="ph"><image-slot id="space-2" shape="rect" placeholder="A chair, in afternoon light"></image-slot></div></section>
+<section class="chap flip"><div><p class="k"><span>02</span>The ritual</p><h2>Incense first. Then the drink.</h2><p>Every visit starts the same way: the incense is lit and your drink is poured for the time you booked — chosen when you book, ready when you arrive. Only then do we pick up a comb.</p><p>The incense is the one constant. Everything after it is yours to choose.</p></div><div class="ph"><image-slot id="space-3" shape="rect" placeholder="Incense, coffee cup, the nail table"></image-slot></div></section>
+<section class="collage" aria-label="Around the studio">
+<div class="col-grid">
+<figure class="col-cell"><div class="fr"><image-slot id="space-4" shape="rect" placeholder="Hair station"></image-slot></div></figure>
+<figure class="col-cell"><div class="fr"><image-slot id="space-5" shape="rect" placeholder="Detail — tools, polish, incense"></image-slot></div></figure>
+<figure class="col-cell"><div class="fr"><image-slot id="space-6" shape="rect" placeholder="Nail station"></image-slot></div></figure>
+<figure class="col-cell"><div class="fr"><image-slot id="space-7" shape="rect" placeholder="The window"></image-slot></div></figure>
+<figure class="col-cell"><div class="fr"><image-slot id="space-8" shape="rect" placeholder="Make-up station"></image-slot></div></figure>
+<figure class="col-cell"><div class="fr"><image-slot id="space-9" shape="rect" placeholder="The mirror wall"></image-slot></div></figure>
+<figure class="col-cell"><div class="fr"><image-slot id="space-10" shape="rect" placeholder="Drinks, poured"></image-slot></div></figure>
+<figure class="col-cell"><div class="fr"><image-slot id="space-11" shape="rect" placeholder="Colour bar"></image-slot></div></figure>
+<figure class="col-cell"><div class="fr"><image-slot id="space-12" shape="rect" placeholder="Wash basins"></image-slot></div></figure>
+<figure class="col-cell"><div class="fr"><image-slot id="space-13" shape="rect" placeholder="The door"></image-slot></div></figure>
+</div>
+</section>
+<section class="hours" aria-label="Hours">
+<div><h2>Open every day.</h2><span class="ticker" aria-live="polite"><span class="ticker-dot" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2 L13.5 8 L8 14 L2.5 8 Z"></path></svg></span><span class="ticker-text">…</span></span><p class="note">By appointment. Walk-ins are welcome whenever a chair is free — otherwise we may ask you to wait a little. Around holidays we often open longer; the hours here are always up to date.</p></div>
+<div id="hrows"></div>
+</section>
+<section class="manifesto" aria-label="House notes">
+<p class="k">House notes — the few things that keep the room the way it is</p>
+<div class="rule"><span class="ix">01</span><div><h3>Arrive five minutes early.</h3><p>Your drink is poured for the time you booked. Late by more than fifteen and we may need to shorten the service so the next guest starts on time — message us on WhatsApp if you're running behind.</p></div></div>
+<div class="rule"><span class="ix">02</span><div><h3>Quiet chairs are a thing.</h3><p>Say "quiet, please" when you book and nobody will make small talk. Say "happy to chat" and we will.</p></div></div>
+<div class="rule"><span class="ix">03</span><div><h3>IQOS only.</h3><p>No cigarettes in the studio. Bring your IQOS — or ask, we keep one for guests.</p></div></div>
+<div class="rule"><span class="ix">04</span><div><h3>Hijab-friendly, properly.</h3><p>Tell us when you book and we make sure no man is in the studio for the length of your appointment — staff or guest. The whole room is yours.</p></div></div>
+<div class="rule"><span class="ix">05</span><div><h3>Photos only with a yes.</h3><p>We post our work. If you'd rather not appear, tick "no photos of me" at booking and the camera stays in the drawer.</p></div></div>
+<div class="rule"><span class="ix">06</span><div><h3>Tell us what your skin knows.</h3><p>Allergies, sensitivities, pregnancy, a recent colour or keratin — it changes what we can safely do. There's a place for all of it when you book.</p></div></div>
+</section>
+<section class="team" aria-label="The team">
+<div class="team-head"><h2>The team.</h2><span class="mono-tag">Tap a name to book with them</span></div>
+<div class="strip" id="team"></div>
+</section>
+<section class="find" aria-label="Find us">
+<div><p class="k">Find us</p><p class="addr">32, Dam &amp; Farz<br>Tripoli, Lebanon</p><div class="acts"><a class="btn" href="https://maps.google.com/?cid=5268585506035239909" target="_blank" rel="noopener">Directions</a><a class="btn ghost" href="Book.html">Book a chair</a></div></div>
+<div class="c"><a href="tel:+96171930290">+961 71 930 290</a><br><a href="https://wa.me/96171930290" target="_blank" rel="noopener">WhatsApp</a> · <a href="mailto:hi@incensostudio.com">hi@incensostudio.com</a><br>Valet parking at the door; the building has a lift.</div>
+</section>
+</main>
+<script src="assets/site.js"></script>
+<script src="assets/catalog.js"></script>
+<script src="assets/image-slot.js"></script>
+<script src="assets/phone.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+(() => {
+const C = window.IncensoCatalog;
+document.getElementById('team').innerHTML = C.STAFF.map((s) => '<a class="per" href="Book.html?cat=' + encodeURIComponent(s.cats[0]) + '&staff=' + encodeURIComponent(s.name) + '" style="--acc:' + s.accent + '"><div class="por"><image-slot id="staff-' + s.name.toLowerCase() + '" shape="rect"' + (s.photo ? ' src="' + s.photo + '"' : '') + ' placeholder="' + s.name + ' \u2014 portrait"></image-slot></div><p class="nm">' + s.name + '<small>' + s.role + '</small></p><p class="bio">' + s.bio + '</p></a>').join('');
+const dow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Beirut' })).getDay();
+const rows = [['Sunday', 0, '10 AM – 7 PM'], ['Monday', 1, '10 AM – 7 PM'], ['Tuesday', 2, '10 AM – 7 PM'], ['Wednesday', 3, '10 AM – 7 PM'], ['Thursday', 4, '10 AM – 7 PM'], ['Friday', 5, '10 AM – 8 PM'], ['Saturday', 6, '10 AM – 8 PM']];
+document.getElementById('hrows').innerHTML = rows.map((r) => '<div class="hrow' + (r[1] === dow ? ' today' : '') + '"><span class="d">' + r[0] + '</span><span class="t">' + r[2] + '</span></div>').join('');
+})();
+</script>
 </body>
 </html>

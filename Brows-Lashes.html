@@ -3,57 +3,139 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<meta name="robots" content="noindex" />
+<meta name="description" content="Incenso Studio — Brows &amp; Lashes. Shaping, threading, lamination, lifts and extensions in Tripoli, Lebanon." />
 <meta name="theme-color" content="#e5dcc9" />
-<title>Brows & Lashes — Incenso Studio</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
 <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<title>Brows & Lashes — Incenso Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" />
+<link rel="stylesheet" href="assets/site.css" />
 <style>
-  * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; }
-  body {
-    background: #e5dcc9; color: #000;
-    font-family: "Geist", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    min-height: 100dvh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; text-align: center;
-    padding: 40px 24px; gap: 22px;
-  }
-  .brand {
-    font-family: "Geist Mono", ui-monospace, monospace;
-    font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase;
-    color: rgba(0,0,0,0.55);
-  }
-  h1 { font-size: clamp(34px, 8vw, 68px); font-weight: 600; margin: 0; letter-spacing: -0.02em; }
-  .kicker {
-    font-family: "Geist Mono", ui-monospace, monospace;
-    font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
-    color: rgba(0,0,0,0.5);
-  }
-  p { max-width: 46ch; font-size: 16px; line-height: 1.6; color: rgba(0,0,0,0.7); margin: 0; }
-  .row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
-  a.btn {
-    display: inline-flex; align-items: center; height: 50px; padding: 0 26px;
-    border-radius: 999px; text-decoration: none; font-size: 14px; font-weight: 500;
-    transition: transform 160ms, box-shadow 160ms, background-color 160ms;
-  }
-  a.primary { background: #000; color: #FEFEF1; box-shadow: 0 8px 24px rgba(0,0,0,0.22); }
-  a.primary:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(0,0,0,0.3); }
-  a.ghost { background: transparent; color: #000; border: 1px solid rgba(0,0,0,0.28); }
-  a.ghost:hover { background: rgba(0,0,0,0.05); }
+.bleed{margin-inline:calc(-1 * var(--gutter))}
+.sv-hero{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:clamp(28px,5vw,80px);align-items:center;padding:clamp(24px,4vw,56px) 0 clamp(28px,4vw,56px)}
+.sv-hero h1{font-size:clamp(36px,4.8vw,68px);line-height:1.02;letter-spacing:-0.03em;max-width:14ch}
+.sv-hero .lead{margin:clamp(18px,2vw,26px) 0 0;font-size:clamp(15px,1.3vw,18px);line-height:1.6;color:rgba(0,0,0,0.78);max-width:46ch;text-wrap:pretty}
+.sv-hero .cta{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:clamp(24px,3vw,36px)}
+.sv-hero .cta .mono-tag{letter-spacing:0.16em;color:rgba(0,0,0,0.55)}
+.sv-photo{position:relative;aspect-ratio:4/5;border:1px solid var(--card-line);background:rgba(254,254,241,0.55);overflow:hidden}
+.sv-photo image-slot{position:absolute;inset:0;width:100%;height:100%}
+.sv-photo::after{content:"";position:absolute;inset:0;background:var(--acc,#F9A8D4);opacity:0.22;pointer-events:none;mix-blend-mode:multiply}
+@media (max-width:880px){.sv-hero{grid-template-columns:1fr}.sv-hero h1{max-width:none}.sv-photo{aspect-ratio:4/3}.menu{grid-template-columns:1fr;gap:16px}.menu-side{position:static}.menu-side .mono-tag{margin-bottom:12px}.jump{flex-direction:row;flex-wrap:wrap;gap:8px 20px;padding-bottom:8px}.jump a::before{display:none}.mi{grid-template-columns:minmax(0,1fr) auto 32px;row-gap:4px}.mi .br{margin:4px 0 0;font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;color:rgba(0,0,0,0.45);line-height:1.5}
+.mi .du{grid-column:1;text-align:left;min-width:0}.mi .pr{grid-row:1;grid-column:2}.mi .go{grid-row:1;grid-column:3}.mi .br{margin:4px 0 0;font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;color:rgba(0,0,0,0.45);line-height:1.5}
+.mi .du{grid-row:2}}
+.menu{padding:clamp(40px,6vw,88px) 0 clamp(20px,3vw,40px);display:grid;grid-template-columns:200px minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:start}
+.menu-side{position:sticky;top:calc(clamp(24px,3.2vw,40px) + 100px)}
+.menu-side h2{font-size:clamp(24px,3vw,40px);font-weight:600;letter-spacing:-0.025em;margin:0 0 14px}
+.menu-side .mono-tag{display:block;line-height:1.6;letter-spacing:0.14em;margin-bottom:22px}
+.jump{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin:0;padding:0}
+.jump a{font-family:var(--font-mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(0,0,0,0.5);text-decoration:none;position:relative;padding:2px 0;transition:color 160ms}
+.jump a::before{content:"";position:absolute;left:-14px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:999px;background:var(--fg-warm);opacity:0;transition:opacity 160ms}
+.jump a:hover,.jump a.on{color:var(--fg-warm)}
+.jump a.on::before{opacity:1}
+.jump[hidden]{display:none}
+.menu-list{list-style:none;margin:0;padding:0;min-width:0}
+.mg{display:flex;align-items:baseline;justify-content:space-between;gap:16px;min-width:0;padding:clamp(22px,3vw,40px) 0 10px;border-bottom:1px solid var(--fg-warm);scroll-margin-top:130px}
+.mg:first-child{padding-top:0}
+.mg h3{font-size:clamp(17px,1.8vw,22px);font-weight:600;letter-spacing:-0.02em;margin:0;min-width:0;overflow-wrap:anywhere}
+.mg span{font-family:var(--font-mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(0,0,0,0.45);white-space:nowrap}
+.mi{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto auto 32px;align-items:center;gap:clamp(12px,2vw,24px);padding:12px 14px;border-bottom:1px solid var(--grid-line);transition:background-color 3600ms cubic-bezier(0.16,1,0.3,1)}
+.mi.lit{transition:background-color 0ms}
+.mi .nm{font-size:16px;font-weight:500;letter-spacing:-0.01em;line-height:1.3;margin:0}
+.mi .ds{margin:3px 0 0;font-size:13px;line-height:1.5;color:rgba(0,0,0,0.6);max-width:56ch;text-wrap:pretty}
+.mi .br{margin:4px 0 0;font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;color:rgba(0,0,0,0.45);line-height:1.5}
+.mi .du{font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;color:rgba(0,0,0,0.5);white-space:nowrap;min-width:64px;text-align:right}
+.mi .pr{font-family:var(--font-mono);font-size:15px;font-weight:600;white-space:nowrap;min-width:72px;text-align:right}
+.mi .pr small{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(0,0,0,0.45);font-weight:400;margin-right:6px}
+.mi .pr small.u{margin:0 0 0 4px}
+.mi .pr .q{display:inline-block;font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;border:1px solid rgba(0,0,0,0.4);border-radius:999px;padding:5px 10px;color:rgba(0,0,0,0.75)}
+.mi .go{width:32px;height:32px;border-radius:999px;border:1px solid rgba(0,0,0,0.35);display:grid;place-items:center;color:var(--fg-warm);text-decoration:none;transition:background-color 200ms,color 200ms,border-color 200ms,transform 160ms}
+.mi .go svg{width:12px;height:12px}
+.mi .go:hover{background:var(--fg-warm);color:#FEFEF1;border-color:var(--fg-warm)}
+.mi .go:active{transform:scale(0.94)}
+.chairs{padding:clamp(28px,4vw,48px) 0 clamp(48px,7vw,96px)}
+.chairs h2{font-size:clamp(24px,3vw,40px);font-weight:600;letter-spacing:-0.025em;margin:0 0 6px}
+.chairs .sub{margin:0 0 28px;font-size:15px;color:rgba(0,0,0,0.62)}
+.ch-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,280px));gap:clamp(16px,2.4vw,32px);max-width:920px}
+.chair{color:inherit;text-decoration:none;display:block}
+.chair .por{position:relative;aspect-ratio:3/4;border:1px solid var(--card-line);background:rgba(254,254,241,0.55);overflow:hidden}
+.chair .por image-slot{position:absolute;inset:0;width:100%;height:100%}
+.chair .nm{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:14px 0 0;font-size:20px;font-weight:600;letter-spacing:-0.02em}
+.chair .nm small{font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(0,0,0,0.5);font-weight:500}
+.chair .bio{margin:6px 0 0;font-size:13.5px;line-height:1.5;color:rgba(0,0,0,0.62)}
+.chair .bk{display:inline-block;margin-top:10px;font-size:13px;font-weight:500;border-bottom:1px solid currentColor}
+.chair:hover .bk{color:#000}
+.next{border-top:1px solid var(--fg-warm);padding:clamp(28px,4vw,48px) 0 clamp(48px,7vw,96px)}
+.next .k{font-family:var(--font-mono);font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(0,0,0,0.55);margin:0 0 14px}
+.next a{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--card-line);text-decoration:none;color:var(--fg-warm);font-size:clamp(26px,4vw,56px);font-weight:600;letter-spacing:-0.03em;line-height:1;transition:padding-left 240ms cubic-bezier(0.16,1,0.3,1)}
+.next a:hover{padding-left:14px}
+.next a span{font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;font-weight:500;color:rgba(0,0,0,0.5)}
+@media (max-width:880px){.sv-hero{grid-template-columns:1fr;align-items:start}.mi{grid-template-columns:32px minmax(0,1fr) 40px;row-gap:8px}.mi .du,.mi .pr{grid-column:2}.mi .pr{font-size:17px}.mi .go{grid-column:3;grid-row:1}}
 </style>
+<template id="__bundler_thumbnail" data-bg-color="#e5dcc9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#e5dcc9"/><text x="200" y="262" text-anchor="middle" font-family="Georgia,serif" font-size="180" fill="#000">i</text></svg></template>
 </head>
 <body>
-  <div class="brand">Incenso Studio</div>
-  <div class="kicker">Brows & Lashes</div>
-  <h1>Coming soon</h1>
-  <p>This page is on its way. In the meantime, the fastest way to reach us is on WhatsApp — we'd love to help.</p>
-  <div class="row">
-    <a class="btn primary" href="https://wa.me/96171930290?text=Hi%2C%20I%27d%20like%20to%20ask%20about%20Brows%20and%20Lashes" target="_blank" rel="noopener">Message us on WhatsApp</a>
-    <a class="btn ghost" href="/">Back to home</a>
-  </div>
+<a class="skip-link" href="#main">Skip to content</a>
+<main class="page" id="main" data-screen-label="Brows &amp; Lashes" data-cat="Brows &amp; Lashes">
+<header class="sv-hero">
+<div><h1 id="h1"></h1><p class="lead" id="introP"></p><div class="cta"><a class="btn" href="Book.html?cat=Brows%20%26%20Lashes">Book brows &amp; lashes</a><span class="mono-tag" id="svcCount"></span></div></div>
+<div class="sv-photo" id="svPhoto"><image-slot id="banner-brows-lashes" shape="rect" placeholder="Brows &amp; Lashes — hero photo"></image-slot></div>
+</header>
+<section class="menu" id="services" aria-label="Menu">
+<aside class="menu-side"><h2>The menu</h2><span class="mono-tag" id="menuNote">Prices in USD</span><nav class="jump" id="jump" aria-label="Menu sections"></nav></aside>
+<ol class="menu-list" id="menu"></ol>
+</section>
+<section class="chairs" aria-label="The chairs">
+<h2>The chairs</h2>
+<p class="sub" id="chSub"></p>
+<div class="ch-row" id="chairs"></div>
+</section>
+<section class="next" aria-label="Other services">
+<p class="k">Also at Incenso</p>
+<div id="next"></div>
+</section>
+</main>
+<script src="assets/site.js"></script>
+<script src="assets/catalog.js"></script>
+<script src="assets/image-slot.js"></script>
+<script src="assets/phone.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+(() => {
+const C = window.IncensoCatalog, catName = document.getElementById('main').dataset.cat;
+const cat = C.CATS.find((x) => x.name === catName);
+const dur = (m) => m >= 60 ? Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : '') : m + ' min';
+document.getElementById('h1').textContent = cat.h1;
+document.getElementById('introP').textContent = cat.intro;
+document.getElementById('chSub').textContent = cat.chairs;
+const staff = C.STAFF.filter((s) => s.cats.includes(catName));
+const list = C.SERVICES.filter((s) => s.cat === catName);
+document.getElementById('svcCount').textContent = list.length + ' services';
+document.getElementById('svcCount').textContent = list.length + ' services \u00b7 from $' + Math.min.apply(null, list.filter((s) => s.price != null && !s.unit).map((s) => s.price));
+document.getElementById('svPhoto').style.setProperty('--acc', staff[0] ? staff[0].accent : '#D8B4FE');
+if (!staff.length) document.querySelector('.chairs').hidden = true;
+const ACC = staff.map((s) => s.accent).concat(['#7DD3FC', '#F9A8D4', '#FDE047']);
+const menu = document.getElementById('menu');
+const groups = C.groupsOf(catName);
+const jump = document.getElementById('jump');
+jump.innerHTML = groups.length > 1 ? groups.map((g) => '<a href="#g-' + g.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '">' + g + '</a>').join('') : '';
+if (groups.length < 2) jump.hidden = true;
+if (list.some((s) => s.from)) document.getElementById('menuNote').textContent = 'Prices in USD \u00b7 \u201cfrom\u201d varies with length, thickness or design';
+const heads = () => [...menu.querySelectorAll('.mg')];
+const onScroll = () => { const y = window.scrollY + 140; let cur = null; heads().forEach((m) => { if (m.offsetTop <= y) cur = m.id; }); jump.querySelectorAll('a').forEach((a) => a.classList.toggle('on', a.getAttribute('href') === '#' + cur)); };
+window.addEventListener('scroll', onScroll, { passive: true });
+setTimeout(onScroll, 0);
+let lg = '';
+menu.innerHTML = list.map((s, i) => { const gh = s.group !== lg ? '<li class="mg" id="g-' + s.group.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '"><h3>' + s.group + '</h3><span>' + list.filter((x) => x.group === s.group).length + ' services</span></li>' : ''; lg = s.group; return gh + '<li class="mi" data-accent="' + ACC[i % ACC.length] + '"><div><h3 class="nm">' + s.name + '</h3>' + (s.desc ? '<p class="ds">' + s.desc + '</p>' : '') + (s.brands ? '<p class="br">Featuring ' + s.brands + '</p>' : '') + '</div><span class="du">' + dur(s.mins) + '</span><span class="pr">' + (s.price == null ? '<span class="q">Custom quote</span>' : (s.from ? '<small>from</small>' : '') + '$' + s.price + (s.unit ? '<small class="u">/ ' + s.unit + '</small>' : '')) + '</span><a class="go" href="Book.html?svc=' + encodeURIComponent(s.name) + '" aria-label="Book ' + s.name + '"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8 H13 M9.5 3.5 L14 8 L9.5 12.5"></path></svg></a></li>'; }).join('');
+menu.querySelectorAll('.mi').forEach((row) => {
+row.addEventListener('pointerenter', () => { row.classList.add('lit'); row.style.backgroundColor = row.dataset.accent + '30'; });
+row.addEventListener('pointerleave', () => { row.classList.remove('lit'); row.style.backgroundColor = 'transparent'; });
+});
+document.getElementById('chairs').innerHTML = staff.map((s) => '<a class="chair" href="Book.html?cat=' + encodeURIComponent(catName) + '&staff=' + encodeURIComponent(s.name) + '" style="--acc:' + s.accent + '"><div class="por"><image-slot id="staff-' + s.name.toLowerCase() + '" shape="rect"' + (s.photo ? ' src="' + s.photo + '"' : '') + ' placeholder="' + s.name + ' — portrait"></image-slot></div><p class="nm">' + s.name + '<small>' + s.role + '</small></p><p class="bio">' + s.bio + '</p><span class="bk">Book with ' + s.name + '</span></a>').join('');
+document.getElementById('next').innerHTML = C.CATS.filter((x) => x.name !== catName).map((x) => '<a href="' + x.file + '">' + x.name + '<span>' + C.SERVICES.filter((s) => s.cat === x.name).length + ' services →</span></a>').join('');
+})();
+</script>
 </body>
 </html>

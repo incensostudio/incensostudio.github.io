@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="description" content="Incenso Studio — your account. Level, orders, visits and bookings." />
+<meta name="theme-color" content="#e5dcc9" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<title>Account — Incenso Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" />
+<link rel="stylesheet" href="assets/site.css" />
+<style>
+  .intro{display:flex;flex-direction:column;align-items:flex-start}
+  .intro .sub{margin:14px 0 0;font-size:14px;color:rgba(0,0,0,0.62)}
+  .intro .sub button{appearance:none;border:0;background:none;font:inherit;font-weight:600;color:var(--fg-warm);cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0}
+  .hi-row{display:flex;align-items:center;gap:clamp(14px,2vw,22px)}
+  .pfp{width:clamp(54px,6vw,74px);aspect-ratio:1;border-radius:999px;background-size:cover;background-position:center;background-color:rgba(254,254,241,0.5);border:1px dashed rgba(0,0,0,0.35);flex:none;display:grid;place-items:center;cursor:pointer;padding:0;position:relative;overflow:hidden;transition:border-color 160ms}
+  .pfp.has{border-style:solid}
+  .pfp svg{width:38%;height:38%;opacity:0.4}
+  .pfp.has svg{display:none}
+  .pfp::after{content:"Change";position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,0.45);color:#FEFEF1;font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;opacity:0;transition:opacity 160ms}
+  .pfp:hover::after{opacity:1}
+  .pfp[hidden]{display:none}
+  .dash{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--card-line);border-left:1px solid var(--card-line);margin-bottom:clamp(48px,7vw,96px)}
+  .panel{position:relative;border-right:1px solid var(--card-line);border-bottom:1px solid var(--card-line);padding:clamp(20px,2.6vw,32px);min-width:0}
+  .panel::before{content:"";position:absolute;left:-4.5px;top:-1px;width:9px;height:1px;background:var(--grid-mark)}
+  .panel::after{content:"";position:absolute;left:-1px;top:-4.5px;width:1px;height:9px;background:var(--grid-mark)}
+  .panel.wide{grid-column:1 / -1}
+  .p-title{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:rgba(0,0,0,0.82);margin:0 0 18px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .p-title .mono-tag{letter-spacing:0.18em}
+  .p-title[hidden]{display:none}
+  .lv{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 22px}
+  .lv-name{font-weight:600;font-size:clamp(26px,3vw,38px);letter-spacing:-0.02em;margin:0}
+  .lv-spend{font-family:var(--font-mono);font-size:14px;font-weight:500}
+  .lv-perk{width:100%;margin:6px 0 0;font-size:14px;color:rgba(0,0,0,0.7)}
+  .lv-next{font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(0,0,0,0.5)}
+  .lv-tiers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px}
+  .lv-tier{border:1px solid var(--card-line,rgba(0,0,0,0.2));background:var(--tbg);padding:16px 18px 18px;position:relative}
+  .lv-tier .tn{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--fg-warm);display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+  .lv-tier .tn .you{font-size:9px;letter-spacing:0.14em;color:rgba(0,0,0,0.5);font-weight:500}
+  .lv-tier .tp{font-family:var(--font-sans);font-weight:600;font-size:clamp(22px,2.4vw,30px);letter-spacing:-0.02em;color:var(--fg-warm);margin:10px 0 2px}
+  .lv-tier .tr{font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;color:rgba(0,0,0,0.55);margin:0}
+  .lv-tier.on{border-color:rgba(0,0,0,0.55)}
+  .lv-tier.on::after{content:"";position:absolute;inset:3px;border:1px solid rgba(0,0,0,0.25);pointer-events:none}
+  .lv-tier .mini{position:relative;height:2px;background:rgba(0,0,0,0.12);margin-top:30px}
+  .lv-tier .mini i{position:absolute;left:0;top:0;bottom:0;background:var(--fg-warm)}
+  .lv-tier .mini .amt{position:absolute;top:-22px;transform:translateX(-50%);font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:0.06em;color:var(--fg-warm);white-space:nowrap}
+  @media (max-width:720px){.lv-tiers{grid-template-columns:1fr}}
+  .r{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--grid-line);font-size:14px}
+  .r:last-child{border-bottom:0}
+  .r .a{min-width:0}
+  .r .a b{font-weight:600;letter-spacing:-0.01em}
+  .r .a small{display:block;font-size:12px;color:rgba(0,0,0,0.55);margin-top:2px}
+  .r .v{font-family:var(--font-mono);font-size:13px;font-weight:500;white-space:nowrap;text-align:right}
+  a.r-link{text-decoration:none;color:inherit;transition:background-color 140ms;padding-left:12px;padding-right:12px}
+  a.r-link:hover{background:rgba(0,0,0,0.04)}
+  .r.muted .a,.r.muted .v{opacity:0.55}
+  .r.muted .a b{text-decoration:line-through}
+  .r .v small{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(0,0,0,0.5);margin-top:3px}
+  .none{font-size:14px;color:rgba(0,0,0,0.55);margin:0}
+  .gc-hero{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;padding:6px 0 18px;border-bottom:1px solid var(--card-line)}
+  .gc-amt{font-family:var(--font-mono);font-weight:600;font-size:clamp(30px,3.4vw,44px);letter-spacing:-0.03em;line-height:1}
+  .gc-sub{font-size:13px;color:rgba(0,0,0,0.6);max-width:26ch;line-height:1.45;flex:1 1 160px}
+  .gc-row{align-items:center}
+  .gc-row .a b .of{font-weight:400;color:rgba(0,0,0,0.5);font-size:13px}
+  .gc-st{font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:5px 10px;border-radius:999px;white-space:nowrap;border:1px solid currentColor}
+  .gc-st.ok{color:#1F9A56;background:rgba(134,239,172,0.25);border-color:transparent}
+  .gc-st.warn{color:#8a5a00;background:rgba(253,224,71,0.35);border-color:transparent}
+  .gc-st.dim{color:rgba(0,0,0,0.5)}
+  .gc-st.bad{color:#B3261E}
+  .panel .btn{margin-top:20px}
+  .saved{font-family:var(--font-mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(0,0,0,0.6);margin-left:12px}
+  .rm-rs{appearance:none;width:26px;height:26px;border-radius:999px;border:1px solid rgba(0,0,0,0.18);background:transparent;color:rgba(0,0,0,0.6);font-size:13px;line-height:1;cursor:pointer;padding:0 0 1px;transition:background-color 160ms,color 160ms}
+  .rm-rs:hover{background:var(--fg-warm);color:#FEFEF1;border-color:var(--fg-warm)}
+  .lock{display:none;padding:clamp(20px,3vw,40px) 0 clamp(64px,9vw,128px)}
+  .lock p{margin:0 0 28px;font-size:clamp(15px,1.3vw,18px);line-height:1.55;color:rgba(0,0,0,0.78);max-width:52ch}
+  body.locked .dash,body.locked .intro .sub,body.locked #introBook{display:none}
+  body.locked .lock{display:block}
+  @media (max-width:880px){.dash{grid-template-columns:1fr}}
+</style>
+<template id="__bundler_thumbnail" data-bg-color="#e5dcc9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#e5dcc9"/><text x="200" y="262" text-anchor="middle" font-family="Georgia,serif" font-size="180" fill="#000">i</text></svg></template>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to account</a>
+<main class="page" id="main" data-screen-label="Account">
+  <section class="intro">
+    <div class="hi-row"><button type="button" class="pfp" id="pfp" hidden aria-label="Change profile photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"></circle><path d="M5 19.5c1.3-3.2 4-4.8 7-4.8s5.7 1.6 7 4.8"></path></svg></button><input id="pfpFile" type="file" accept="image/*" hidden /><h1 id="hi">Your account.</h1></div>
+    <p class="sub"><span id="phoneLine"></span> · <button type="button" id="signOut">Sign out</button></p>
+  </section>
+
+  <section class="lock" aria-label="Sign in">
+    <p>Your level, appointments, gift balance, visits and orders live here — sign in with your phone to open it.</p>
+    <button type="button" class="btn" id="lockBtn">Sign in / Create account</button>
+  </section>
+
+  <div class="dash">
+    <section class="panel wide" aria-label="Level">
+      <h2 class="p-title">Your level</h2>
+      <div class="lv">
+        <p class="lv-name" id="lvName">—</p>
+        <p class="lv-perk" id="lvPerk"></p>
+      </div>
+      <span class="lv-next" id="lvNext"></span>
+      <div class="lv-tiers" id="lvTiers"></div>
+    </section>
+    <section class="panel" aria-label="Details">
+      <h2 class="p-title">Your details</h2>
+      <form id="detForm">
+        <div class="field"><label for="dName">Name</label><input id="dName" type="text" autocomplete="name" required /></div>
+        <div class="field"><label for="dPhone">Phone</label><div class="phone-combo"><select id="dPhoneCC" class="pc-cc" aria-label="Country code"></select><input id="dPhone" type="tel" autocomplete="tel" required /></div></div>
+        <div class="field"><label for="dEmail">E-mail</label><input id="dEmail" type="email" autocomplete="email" /></div>
+        <button type="submit" class="btn ghost" style="margin-top:20px">Save changes</button><span class="saved" id="savedTag" hidden>Saved ✦</span>
+        <div id="detOtp" hidden style="margin-top:18px;border:1px solid rgba(0,0,0,0.25);background:rgba(254,254,241,0.6);padding:16px 18px">
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.5;color:rgba(0,0,0,0.78)">To keep your account safe, confirm this change with the code we just texted to your phone.</p>
+          <div class="au-code" id="detCode"><input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 1" /><input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 2" /><input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 3" /><input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 4" /></div>
+          <p id="detErr" style="display:none;margin:8px 0 0;font-size:12px;color:#B3261E">Enter the 4-digit code from the SMS.</p>
+          <div style="display:flex;gap:10px;margin-top:14px"><button type="button" class="btn" id="detConfirm">Confirm change</button><button type="button" class="btn ghost" id="detCancel">Cancel</button></div>
+        </div>
+      </form>
+    </section>
+    <section class="panel" aria-label="Gift cards">
+      <h2 class="p-title">Gift balance</h2>
+      <div class="gc-hero" id="gcHero"></div>
+      <h2 class="p-title" style="margin-top:28px" id="gcMineTitle" hidden>Your cards</h2>
+      <div id="pGiftIn"></div>
+      <h2 class="p-title" style="margin-top:28px" id="gcSentTitle" hidden>Sent to others</h2>
+      <div id="pGiftOut"></div>
+      <a class="btn ghost" href="Vouchers.html">Send a gift card</a>
+    </section>
+    <section class="panel" aria-label="Bookings">
+      <h2 class="p-title">Appointments</h2>
+      <div id="pBookings"></div>
+      <a class="btn" href="Book.html">Book an appointment</a>
+    </section>
+    <section class="panel" aria-label="Visit history">
+      <h2 class="p-title">Visit history<span class="mono-tag" id="visitCount"></span></h2>
+      <div id="pVisits"></div>
+    </section>
+    <section class="panel" aria-label="Orders">
+      <h2 class="p-title">Orders<span class="mono-tag" id="orderCount"></span></h2>
+      <div id="pOrders"></div>
+      <h2 class="p-title" style="margin-top:28px" id="rsTitle" hidden>Restock requests</h2>
+      <div id="pRestocks"></div>
+    </section>
+  </div>
+</main>
+<script src="assets/site.js"></script>
+<script src="assets/phone.js"></script>
+<script src="assets/gift.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+(() => {
+  const A = window.IncensoAuth;
+  const $ = (id) => document.getElementById(id);
+  const money = (n) => '$' + n;
+  const nice = (iso) => new Date(iso + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  const render = () => {
+    const on = A.signedIn();
+    document.body.classList.toggle('locked', !on);
+    if (!on) { $('hi').textContent = 'Your account.'; $('phoneLine').textContent = ''; $('pfp').hidden = true; return; }
+    const a = A.get();
+    $('hi').textContent = 'Hello, ' + a.name.split(' ')[0] + '.';
+    $('pfp').hidden = false;
+    $('pfp').classList.toggle('has', !!a.photo);
+    $('pfp').style.backgroundImage = a.photo ? 'url(' + a.photo + ')' : '';
+    $('phoneLine').textContent = a.phone;
+    const spend = A.yearSpend(a);
+    const tier = A.tierFor(spend), next = A.nextTier(spend);
+    $('lvName').textContent = tier.name;
+    $('lvPerk').textContent = money(spend) + ' spent in the last 12 months \u00b7 ' + (next ? 'Spend ' + money(next.min - spend) + ' more within the year to reach ' + next.name + (next.name === 'Insider' ? ' and unlock 10% off everything' : ' and unlock 20% off everything') : tier.perk);
+    $('pfp').style.boxShadow = 'none';
+    $('lvNext').textContent = '';
+    $('lvTiers').innerHTML = A.TIERS.map((t, i) => {
+      const hi = A.TIERS[i + 1] ? A.TIERS[i + 1].min : null;
+      const range = hi ? money(t.min) + ' – ' + money(hi) : money(t.min) + '+';
+      const tint = ['#7DD3FC40', '#F9A8D440', '#FDE04740'][i];
+      const big = i === 0 ? 'Welcome ✦' : (i === 1 ? '10% off' : '20% off');
+      const on = t.name === tier.name;
+      const pct = on ? (hi ? Math.min(96, Math.max(4, Math.round((spend - t.min) / (hi - t.min) * 100))) : 100) : 0;
+      const mini = on ? '<div class="mini"><i style="width:' + pct + '%"></i><span class="amt" style="left:' + pct + '%">' + money(spend) + '</span></div>' : '';
+      return '<div class="lv-tier' + (on ? ' on' : '') + '" style="--tbg:' + tint + '"><div class="tn"><span>' + t.name + '</span>' + (on ? '<span class="you">You are here</span>' : '') + '</div><p class="tp">' + big + '</p><p class="tr">' + range + ' / 12 mo</p>' + mini + '</div>';
+    }).join('');
+    const rows = (list, fn, empty) => list && list.length ? list.map(fn).join('') : '<p class="none">' + empty + '</p>';
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const bk = (a.bookings || []).slice().sort((x, y) => x.date < y.date ? -1 : 1);
+    const isPast = (b) => new Date(b.date + 'T23:59:59') < new Date() && !/cancel/i.test(b.status || '');
+    const upcoming = bk.filter((b) => !isPast(b) && !/cancel/i.test(b.status || ''));
+    const cancelled = bk.filter((b) => /cancel/i.test(b.status || '')).reverse();
+    const bkRow = (b, muted) => '<a class="r r-link' + (muted ? ' muted' : '') + '" href="Booking.html?ref=' + b.ref + '"><span class="a"><b>' + b.service + '</b><small>' + b.staff + ' · ' + nice(b.date) + ' · ' + b.time + '</small></span><span class="v">' + money(b.price) + '<small style="color:' + (muted ? '#B3261E' : '#1F9A56') + ';font-weight:600">' + (muted ? 'Cancelled' : 'Upcoming') + ' · ' + b.pay + '</small></span></a>';
+    $('pBookings').innerHTML = (upcoming.length ? upcoming.map((b) => bkRow(b, false)).join('') : '<p class="none">Nothing coming up.</p>') + (cancelled.length ? cancelled.map((b) => bkRow(b, true)).join('') : '');
+    const visits = bk.filter(isPast).map((b) => ({ service: b.service, staff: b.staff, date: b.date, price: b.price, ref: b.ref })).concat(a.visits || []).sort((x, y) => x.date < y.date ? 1 : -1);
+    $('pVisits').innerHTML = rows(visits, (v) =>
+      (v.ref ? '<a class="r r-link" href="Booking.html?ref=' + v.ref + '">' : '<div class="r">') + '<span class="a"><b>' + v.service + '</b><small>' + v.staff + ' · ' + nice(v.date) + '</small></span><span class="v">' + money(v.price) + '</span>' + (v.ref ? '</a>' : '</div>'),
+      'Your first visit will show up here.');
+    $('visitCount').textContent = visits.length + ' visits';
+    const stColor = (s) => /cancel/i.test(s) ? '#B3261E' : (/courier|ready/i.test(s) ? '#3E7CB1' : (/deliver|collect/i.test(s) ? '#8B5CC4' : (/prepar/i.test(s) ? '#C9821B' : '#1F9A56')));
+    $('pOrders').innerHTML = rows(a.orders, (o) =>
+      '<a class="r r-link" href="Checkout.html?order=' + o.ref + '"><span class="a"><b>' + o.ref + '</b><small>' + o.items.map((it) => it.q + '× ' + it.name).join(', ') + '</small><small>' + nice(o.date) + ' · ' + o.method + ' · ' + o.pay + '</small></span><span class="v">' + money(o.total) + '<small style="color:' + stColor(o.status) + ';font-weight:600">' + o.status + '</small></span></a>',
+      'Nothing ordered yet — <a href="Shop.html">browse the shelf</a>.');
+    $('orderCount').textContent = (a.orders || []).length + ' orders';
+    const G = window.IncensoGift; G.attach(a);
+    const todayISO = new Date().toISOString().slice(0, 10);
+    const mineAll = G.load().filter((x) => G.same(x.toPhone, a.phone) || (a.extraGiftCodes || []).includes(x.code));
+    const mine = mineAll.filter((x) => G.confirmed(x) || G.same(x.buyerPhone, a.phone));
+    const others = G.boughtBy(a.phone).filter((x) => !G.same(x.toPhone, a.phone));
+    const bal = G.balanceFor(a);
+    const stOf = (x) => G.active(x) ? ['Ready', 'ok'] : x.status === 'Used' ? ['Used up', 'dim'] : !G.confirmed(x) ? ['Awaiting payment', 'warn'] : (x.expires && x.expires < todayISO) ? ['Expired', 'bad'] : [x.status, 'warn'];
+    const pill = (x) => { const s = stOf(x); return '<span class="gc-st ' + s[1] + '">' + s[0] + '</span>'; };
+    $('gcHero').innerHTML = '<span class="gc-amt">$' + bal + '</span><span class="gc-sub">' + (bal ? 'to spend on any booking or shelf purchase' + (G.spendable(a).length > 1 ? ' \u00b7 pooled across ' + G.spendable(a).length + ' cards' : '') : 'no balance yet \u2014 gift cards sent to ' + a.phone + ' land here') + '</span>' + (bal ? '<a class="btn" href="Book.html" style="margin:0">Use it on a booking</a>' : '');
+    $('gcMineTitle').hidden = !mine.length;
+    $('pGiftIn').innerHTML = mine.map((x) => '<a class="r r-link gc-row" href="GiftCard.html?code=' + x.code + '"><span class="a"><b>' + money(x.balance) + (x.balance !== x.amount ? ' <span class="of">of ' + money(x.amount) + '</span>' : '') + '</b><small>' + (G.same(x.buyerPhone, a.phone) ? 'Bought for yourself' : 'From ' + x.from) + ' \u00b7 valid to ' + nice(x.expires) + '</small></span>' + pill(x) + '</a>').join('');
+    $('gcSentTitle').hidden = !others.length;
+    $('pGiftOut').innerHTML = others.map((x) => '<a class="r r-link gc-row" href="GiftCard.html?code=' + x.code + '"><span class="a"><b>' + money(x.amount) + ' for ' + x.to + '</b><small>' + x.toPhone + ' \u00b7 ' + (G.confirmed(x) ? 'sent ' + nice((x.confirmed || x.created).slice(0, 10)) : 'reserved ' + nice(x.created.slice(0, 10)) + ' \u00b7 ' + x.pay) + (G.confirmed(x) && x.balance !== x.amount ? ' \u00b7 ' + money(x.balance) + ' left' : '') + '</small></span>' + pill(x) + '</a>').join('');
+    const rs = a.restocks || [];
+    $('rsTitle').hidden = rs.length === 0;
+    $('pRestocks').innerHTML = rs.length ? rs.map((r) =>
+      '<div class="r"><span class="a"><b>' + r.name + '</b><small>asked ' + nice(r.date) + ' · we\u2019ll message you on SMS and WhatsApp when it\u2019s back</small></span><span class="v"><button type="button" class="rm-rs" data-name="' + r.name + '" aria-label="Remove ' + r.name + ' from wait-list">&times;</button></span></div>').join('')
+      : '';
+    $('dName').value = a.name; $('dPhone').value = a.phone; $('dEmail').value = a.email || '';
+  };
+
+  $('signOut').addEventListener('click', () => { A.signOut(); location.href = '/'; });
+  $('pfp').addEventListener('click', () => $('pfpFile').click());
+  $('pfpFile').addEventListener('change', () => {
+    const f = $('pfpFile').files && $('pfpFile').files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { const a = A.get(); a.photo = r.result; A.set(a); if (A.sync) A.sync(); render(); };
+    r.readAsDataURL(f);
+  });
+  $('lockBtn').addEventListener('click', () => A.open(render));
+  $('detForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    $('detOtp').hidden = false;
+    $('detErr').style.display = 'none';
+    const ins = Array.from($('detCode').querySelectorAll('input'));
+    ins.forEach((x) => { x.value = ''; });
+    ins[0].focus();
+  });
+  const detIns = Array.from($('detCode').querySelectorAll('input'));
+  detIns.forEach((x, i) => {
+    x.addEventListener('input', () => { x.value = x.value.replace(/\D/g, '').slice(0, 1); if (x.value && detIns[i + 1]) detIns[i + 1].focus(); });
+    x.addEventListener('keydown', (e) => { if (e.key === 'Backspace' && !x.value && detIns[i - 1]) detIns[i - 1].focus(); });
+  });
+  $('detCancel').addEventListener('click', () => { $('detOtp').hidden = true; render(); });
+  $('detConfirm').addEventListener('click', () => {
+    if (detIns.map((x) => x.value).join('').length !== 4) { $('detErr').style.display = 'block'; return; }
+    const a = A.get();
+    a.name = $('dName').value.trim(); a.phone = $('dPhone').value.trim(); a.email = $('dEmail').value.trim();
+    A.set(a);
+    $('detOtp').hidden = true;
+    render();
+    $('savedTag').hidden = false;
+    setTimeout(() => { $('savedTag').hidden = true; }, 1800);
+  });
+  $('pRestocks').addEventListener('click', (e) => {
+    const b = e.target.closest('.rm-rs');
+    if (!b) return;
+    const a = A.get();
+    a.restocks = (a.restocks || []).filter((r) => r.name !== b.dataset.name);
+    A.set(a);
+    render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>

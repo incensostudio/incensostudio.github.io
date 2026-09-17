@@ -4,15 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <meta name="description" content="Incenso Studio — a beauty studio in Tripoli, Lebanon. Hair, nails, make-up and lashes, by appointment." />
-<meta name="theme-color" content="#f7f4eb" />
-<title>Incenso Studio</title>
+<meta name="theme-color" content="#e5dcc9" />
 <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
 <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<title>Incenso Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" />
 <style>
   :root {
     /* Incenso type — loaded directly, independent of any other project */
@@ -33,7 +32,7 @@
   }
 
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; background: #f7f4eb; }
+  html { scroll-behavior: smooth; background: #e5dcc9; }
   html, body { min-height: 100%; }
   body {
     margin: 0;
@@ -256,39 +255,6 @@
   }
 
   [hidden] { display: none !important; }
-  /* Language toggle */
-  .lang {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgba(0, 0, 0, 0.82);
-    user-select: none;
-  }
-  .lang button {
-    appearance: none;
-    background: transparent;
-    border: 0;
-    padding: 2px 0;
-    margin: 0;
-    cursor: pointer;
-    font: inherit;
-    letter-spacing: inherit;
-    text-transform: inherit;
-    color: inherit;
-    border-radius: 4px;
-    transition: color 160ms, opacity 160ms;
-    opacity: 0.55;
-  }
-  .lang button:hover { color: var(--fg-warm); opacity: 1; }
-  .lang button[aria-pressed="true"] {
-    color: var(--fg-warm);
-    opacity: 1;
-  }
-  .lang .lang-sep { opacity: 0.4; }
 
   /* ---- Top nav --------------------------------------------------------- */
   .nav {
@@ -524,8 +490,9 @@
   }
   .tb-cart .cart-badge[data-count="0"] { display: none; }
 
-  .btn-row { display: inline-flex; gap: 8px; align-items: center; }
   .tb-cart-left { display: none; }
+  .tb-account svg { width: 19px; height: 19px; }
+  .btn-row { display: inline-flex; gap: 8px; align-items: center; }
 
   /* ---- Live booking ticker --------------------------------------------- */
   .ticker {
@@ -1076,16 +1043,6 @@
     transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .ig-img.show { opacity: 1; }
-  .ig-vid {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-    transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .ig-vid.show { opacity: 1; }
   .ig-scrim {
     position: absolute;
     inset: 0;
@@ -1223,10 +1180,10 @@
   .tl { display: inline-flex; align-items: center; gap: 10px; }
   .br { display: inline-flex; align-items: center; gap: 12px; }
   /* Ambient radio toggle (icon-only, in BR) */
-  .radio-toggle{appearance:none;background:rgba(254,254,241,0.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(0,0,0,0.18);border-radius:999px;width:34px;height:34px;padding:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:rgba(0,0,0,0.65);position:relative;transition:background-color 220ms,border-color 220ms,color 220ms,transform 160ms}
+  .radio-toggle{appearance:none;background:rgba(254,254,241,0.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(0,0,0,0.18);border-radius:999px;width:40px;height:40px;padding:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:rgba(0,0,0,0.65);position:relative;transition:background-color 220ms,border-color 220ms,color 220ms,transform 160ms}
   .radio-toggle:hover{background:rgba(254,254,241,0.75);border-color:rgba(0,0,0,0.32);color:var(--fg-warm)}
   .radio-toggle:active{transform:scale(0.94)}
-  .radio-toggle svg.radio-icon{width:14px;height:14px;display:block}
+  .radio-toggle svg.radio-icon{width:17px;height:17px;display:block}
   .radio-toggle .radio-bars{display:none;align-items:flex-end;gap:2px;height:13px}
   .radio-toggle .radio-bars span{display:block;width:2px;background:currentColor;border-radius:1px;animation:barBounce 720ms ease-in-out infinite}
   .radio-toggle .radio-bars span:nth-child(2){animation-delay:-180ms}
@@ -1260,25 +1217,15 @@
     .frame .br { display: none; }
 
     .menu-toggle { display: inline-flex; }
-    .frame .bl { display: none; }
-    /* Mobile: cart moves to the top-left (its own .tl copy); hide the ticker
-       there and the right-side cart. Keeps the top row balanced without
-       crowding the hamburger. */
     .frame .tl .ticker { display: none; }
     .tl .tb-cart-left { display: inline-flex; }
     .btn-row .tb-cart { display: none; }
-    /* Melt the lattice into the page color at the top & bottom edges.
-       Done in screen space on the scrim (not the skewed grid layer, whose
-       own mask would be sheared and land off-screen) so the fade sits
-       exactly at the visible top/bottom of the viewport. */
-    .scrim {
-      background:
-        linear-gradient(to bottom, rgba(229,220,201,1) 0%, rgba(229,220,201,0) 10%),
-        linear-gradient(to top, rgba(229,220,201,1) 0%, rgba(229,220,201,0) 10%),
-        radial-gradient(ellipse 80% 60% at 50% 50%,
-          rgba(229, 220, 201, 0) 0%,
-          rgba(229, 220, 201, 0.35) 55%,
-          rgba(229, 220, 201, 0.75) 100%);
+    .btn-row .tb-account { display: none; }
+    .frame .bl { display: none; }
+    /* Seamless lattice fade into the page color at top & bottom */
+    .grid-wrap {
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
     }
     .ticker-stack { display: inline-flex; justify-content: center; margin: 0 auto 20px; }
     .social-row .pin-mobile { display: inline-flex; }
@@ -1306,24 +1253,9 @@
     .frame { padding: max(14px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); }
   }
 
-  /* ---- Arabic mode ----------------------------------------------------- */
-  html[lang="ar"] { --font-sans: "Tajawal", "Geist", "Helvetica Neue", sans-serif; }
-  /* Arabic has no caps and dislikes tracking — relax mono-styled chrome */
-  html[lang="ar"] .nav,
-  html[lang="ar"] .nav-menu a,
-  html[lang="ar"] .mobile-nav a,
-  html[lang="ar"] .meta-link,
-  html[lang="ar"] .ticker,
-  html[lang="ar"] .trust,
-  html[lang="ar"] .eyebrow {
-    font-family: "Tajawal", var(--font-mono);
-    letter-spacing: 0;
-    text-transform: none;
-  }
-  /* the 'incenso' logotype is the brand mark — always stays Latin/LTR */
-  html[lang="ar"] .wordmark { direction: ltr; }
 
 </style>
+<template id="__bundler_thumbnail" data-bg-color="#e5dcc9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#e5dcc9"/><text x="200" y="262" text-anchor="middle" font-family="Georgia,serif" font-size="180" fill="#000">i</text></svg></template>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -1353,7 +1285,7 @@
           <path class="wordmark-o" d="M984 189.676C984 145.506 1007.35 106.459 1045.99 89.6959C1058.86 84.1134 1073.44 81 1089.42 81C1104.88 81 1119.21 83.8833 1132.45 89.1591C1145.74 94.4656 1158.61 102.425 1171.92 112.854C1186.18 122.44 1204.38 132.7 1226.24 143.083C1248.11 153.466 1268.29 164.923 1278.49 178.496C1288.48 191.808 1284.77 206.378 1268.26 221.484C1259.99 229.045 1249.57 236.637 1238.27 243.876C1226.97 251.13 1214.87 257.924 1203.23 264.09C1179.98 276.282 1159.68 284.564 1141.54 289.288C1123.51 293.858 1106.92 296.558 1090.42 296.542C1074.56 296.573 1060.21 293.69 1047.37 288.414C1008.84 272.556 984 235.18 984 189.676ZM1100.66 280.914C1116.94 281.129 1140.85 277.985 1167.52 265.9C1180.95 259.857 1196.3 250.195 1210.71 237.956C1225.11 225.717 1235.17 211.746 1233.01 197.068C1230.81 182.115 1213.73 170.014 1195.25 159.125C1176.76 148.098 1161.34 137.117 1149.18 127.194C1137.32 117.087 1126.04 109.557 1114.71 104.542C1103.42 99.5574 1091.8 96.8888 1080.3 96.8888C1065.42 96.8888 1047.6 101.383 1033.51 113.453C1019.42 125.523 1009.04 145.184 1009.04 175.52C1009.04 205.856 1019.94 232.88 1036.56 251.391C1053.19 269.902 1075.7 280.638 1100.66 280.899V280.914Z"></path>
           <path d="M13.5156 285V89.7H39.0156V285H13.5156ZM192.182 285L82.682 117.6V285H56.582V90H90.782L198.782 255.6V90H224.582V285H192.182ZM340.877 288.6C282.977 288.6 238.877 250.2 238.877 187.5C238.877 124.8 282.977 86.4 340.877 86.4C392.777 86.4 433.577 117.6 438.077 164.7H411.377C407.177 131.1 376.877 109.2 340.577 109.2C299.177 109.2 264.977 138 264.977 187.2C264.977 236.7 299.477 265.5 340.877 265.5C377.477 265.5 407.777 243 411.977 204.9H438.077C434.177 256.8 393.677 288.6 340.877 288.6ZM454.434 285V90H605.334V112.8H479.634V175.2H596.334V198H479.634V262.2H604.134V285H454.434ZM756.44 285L646.94 117.6V285H620.84V90H655.04L763.04 255.6V90H788.84V285H756.44ZM890.378 288.6C845.078 288.6 804.278 268.8 804.878 222.3H831.278C831.578 254.7 857.678 266.7 889.778 266.7C913.178 266.7 939.578 256.8 939.578 232.5C939.578 207 912.878 201.9 883.178 197.4C847.778 192.3 809.378 186.3 809.378 141.9C809.378 108.3 838.478 86.4 879.578 86.4C932.678 86.4 959.078 116.4 959.078 147.9H932.078C931.778 123.3 911.678 108 879.578 108C854.078 108 835.178 121.8 835.178 142.2C835.178 168 861.578 169.8 890.978 174.6C926.078 180.3 965.678 186.9 965.378 231.9C965.078 267 930.878 288.6 890.378 288.6Z"></path>
         </svg>
-        <p class="sub" data-ar-html="الجمال طقس. الانضباط رفاهية.<br/>للمرأة التي ترى في المرآة نقطة الانطلاق.">Beauty as ritual. Discipline as luxury.<br/>For the woman who treats the mirror as a starting line.</p>
+        <p class="sub">Beauty as ritual. Discipline as luxury.<br/>For the woman who treats the mirror as a starting line.</p>
 
         <a class="trust" id="trust" href="https://maps.google.com/?cid=5268585506035239909" target="_blank" rel="noopener" aria-label="Read all reviews on Google">
           <span class="stars" aria-label="Rated 5.0 out of 5">
@@ -1365,58 +1297,59 @@
           </span>
           <span class="rating" id="trustRating">5.0</span>
           <span class="sep">/</span>
-          <span class="reviews" id="trustReviews" data-ar="١٨ تقييم">18 reviews</span>
+          <span class="reviews" id="trustReviews">18 reviews</span>
         </a>
 
         <div class="stories" id="stories" aria-label="Story highlights"></div>
 
         <div class="cta-row">
-          <a class="btn btn-primary" href="https://wa.me/96171930290?text=Hi%2C%20I%27d%20like%20to%20book%20an%20appointment" target="_blank" rel="noopener" data-ar="احجزي الآن">Book Now</a>
+          <a class="btn btn-primary" href="Book.html">Book Now</a>
         </div>
       </div>
     </div>
 
     <div class="frame">
       <div class="tl">
+        <a class="tb-cart tb-cart-left" href="Cart.html" aria-label="Cart">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l1.4 10.3a1.4 1.4 0 0 0 1.4 1.2h8a1.4 1.4 0 0 0 1.4-1.1l1.3-6.4H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
+            <span class="cart-badge" data-count="0">0</span>
+        </a>
         <div class="ticker" aria-live="polite">
           <span class="ticker-dot" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2 L13.5 8 L8 14 L2.5 8 Z"/></svg></span>
           <span class="ticker-text">…</span>
         </div>
-        <a class="tb-cart tb-cart-left" href="Cart.html" aria-label="Cart" data-ar-label="عربة التسوق">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l1.4 10.3a1.4 1.4 0 0 0 1.4 1.2h8a1.4 1.4 0 0 0 1.4-1.1l1.3-6.4H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
-            <span class="cart-badge" data-count="0">0</span>
-        </a>
       </div>
 
       <div class="tc">
         <nav class="nav" id="nav" aria-label="Primary">
-          <a href="Shop.html" data-ar="المتجر">Shop</a>
+          <a href="Shop.html">Shop</a>
           <div class="has-menu" aria-expanded="false">
             <button type="button" class="nav-item" data-toggle="services" aria-haspopup="true" aria-expanded="false" aria-controls="services-menu">
-              <span data-ar="الخدمات">Services</span>
+              <span>Services</span>
               <svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M2 4 L5 7 L8 4" />
               </svg>
             </button>
             <div class="nav-menu" id="services-menu" role="menu">
-              <a href="Hair.html" role="menuitem" data-ar="الشعر">Hair</a>
-              <a href="Nails.html" role="menuitem" data-ar="الأظافر">Nails</a>
-              <a href="Makeup.html" role="menuitem" data-ar="المكياج">Make-up</a>
-              <a href="Brows-Lashes.html" role="menuitem" data-ar="الحواجب والرموش">Brows &amp; Lashes</a>
+              <a href="Hair.html" role="menuitem">Hair</a>
+              <a href="Nails.html" role="menuitem">Nails</a>
+              <a href="Makeup.html" role="menuitem">Make-up</a>
+              <a href="Brows-Lashes.html" role="menuitem">Brows &amp; Lashes</a>
                     </div>
           </div>
-          <a href="Our-Work.html" data-ar="أعمالنا">Our Work</a>
-          <a href="The-Space.html" data-ar="المكان">The Space</a>
-          <a href="Vouchers.html" data-ar="هدايا">Gift</a>
+          <a href="Our-Work.html">Our Work</a>
+          <a href="The-Space.html">The Space</a>
+          <a href="Vouchers.html">Gift</a>
         </nav>
       </div>
 
       <div class="tr">
         <div class="btn-row">
-          <a class="tb-cart" href="Cart.html" aria-label="Cart" data-ar-label="عربة التسوق">
+          <a class="tb-cart" href="Cart.html" aria-label="Cart">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l1.4 10.3a1.4 1.4 0 0 0 1.4 1.2h8a1.4 1.4 0 0 0 1.4-1.1l1.3-6.4H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
             <span class="cart-badge" data-count="0">0</span>
           </a>
+          <a class="tb-cart tb-account" href="Account.html" data-account-btn aria-label="Sign in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"></circle><path d="M5 19.5c1.3-3.2 4-4.8 7-4.8s5.7 1.6 7 4.8"></path></svg></a>
           <button type="button" class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav">
             <svg class="icon-open" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
               <path d="M2 5 H14 M2 11 H14" />
@@ -1493,19 +1426,21 @@
   </div>
 
     <nav class="mobile-nav" id="mobileNav" aria-label="Mobile primary" aria-hidden="true">
-    <a href="Shop.html" data-ar="المتجر">Shop</a>
+    <a href="Book.html">Book an appointment</a>
+    <a href="Shop.html">Shop</a>
     <details class="m-services">
-      <summary><span data-ar="الخدمات">Services</span><svg class="m-caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4 L5 7 L8 4"></path></svg></summary>
+      <summary><span>Services</span><svg class="m-caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4 L5 7 L8 4"></path></svg></summary>
       <div class="m-sub">
-      <a href="Hair.html" data-ar="الشعر">Hair</a>
-      <a href="Nails.html" data-ar="الأظافر">Nails</a>
-      <a href="Makeup.html" data-ar="المكياج">Make-up</a>
-      <a href="Brows-Lashes.html" data-ar="الحواجب والرموش">Brows &amp; Lashes</a>
+      <a href="Hair.html">Hair</a>
+      <a href="Nails.html">Nails</a>
+      <a href="Makeup.html">Make-up</a>
+      <a href="Brows-Lashes.html">Brows &amp; Lashes</a>
       </div>
     </details>
-    <a href="Our-Work.html" data-ar="أعمالنا">Our Work</a>
-    <a href="The-Space.html" data-ar="المكان">The Space</a>
-    <a href="Vouchers.html" data-ar="هدايا">Gift</a>
+    <a href="Our-Work.html">Our Work</a>
+    <a href="The-Space.html">The Space</a>
+    <a href="Vouchers.html">Gift</a>
+    <a href="Account.html" data-account-btn>Account</a>
   </nav>
 
   <!-- Instagram-style story viewer (opened by the highlight rings) -->
@@ -1606,9 +1541,6 @@
     }
 
     // ── Hover chime — 5 selectable voices, all on a pentatonic scale ──
-    // Web Audio synthesis: instant, low-latency, endlessly polyphonic. We ask
-    // iOS for a "playback" audio session (navigator.audioSession) so it stays
-    // audible in Safari even with the silent switch on — no laggy workarounds.
     const SoundFX = (() => {
       let ctx = null, master = null, enabled = false, lastNoteT = 0, step = 0;
       // C major pentatonic across two octaves — every note pleases
@@ -1618,7 +1550,6 @@
       ];
       const init = () => {
         if (ctx) return;
-        try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
         const AC = window.AudioContext || window.webkitAudioContext;
         if (!AC) return;
         ctx = new AC();
@@ -1658,7 +1589,6 @@
       return {
         wake() {
           init();
-          try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
           if (ctx && ctx.state === 'suspended') ctx.resume();
           if (ctx && master) {
             enabled = true;
@@ -1678,8 +1608,6 @@
         },
       };
     })();
-    // Ask for the playback session as early as possible too (harmless if unsupported).
-    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
     const wakeAudio = () => SoundFX.wake();
     window.addEventListener('pointerdown', wakeAudio, { once: true });
     window.addEventListener('keydown', wakeAudio, { once: true });
@@ -2041,7 +1969,7 @@
     if (tickerTexts.length) {
       // Open daily 10:00 AM – 7:00 PM — except Saturday, open until 8:00 PM.
       const OPEN_MIN  = 10 * 60;   // 10:00 AM
-      const closeMinFor = (day) => (day === 6 ? 20 * 60 : 19 * 60); // Sat (6) → 8 PM, else 7 PM
+      const closeMinFor = (day) => (day === 5 || day === 6 ? 20 * 60 : 19 * 60); // Fri (5) & Sat (6) → 8 PM, else 7 PM
       const fmt = (mins) => {
         let h = Math.floor(mins / 60), m = mins % 60;
         const ap = h >= 12 ? 'PM' : 'AM';
@@ -2156,35 +2084,25 @@
 
     // Each ring is a HIGHLIGHT carrying many stories. Cover = stories[0].img.
     const HIGHLIGHTS = [
-      { name: 'Bombshell', cover: 'assets/highlights/mint.svg', stories: [
+      { name: 'Bombshell', stories: [
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23b06a4a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23e8c4a8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Sunlit copper',   when: '2 days ago' },
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c9a86a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23efe3c8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E', label: 'Beach waves',     when: '3 days ago' },
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c98a96%27/%3E%3Cstop offset=%271%27 stop-color=%27%23f2dcda%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Full glam',       when: '4 days ago' },
       ]},
-      { name: 'Hair', cover: 'assets/highlights/yellow.svg', stories: [
-        { img: 'assets/hair/v7.jpg', video: 'assets/hair/v7.mp4', label: '', when: '' },
-        { img: 'assets/hair/v1.jpg', video: 'assets/hair/v1.mp4', label: '', when: '' },
-        { img: 'assets/hair/v2.jpg', video: 'assets/hair/v2.mp4', label: '', when: '' },
-        { img: 'assets/hair/v3.jpg', video: 'assets/hair/v3.mp4', label: '', when: '' },
-        { img: 'assets/hair/v4.jpg', video: 'assets/hair/v4.mp4', label: '', when: '' },
-        { img: 'assets/hair/v5.jpg', video: 'assets/hair/v5.mp4', label: '', when: '' },
-        { img: 'assets/hair/v6.jpg', video: 'assets/hair/v6.mp4', label: '', when: '' },
-        { img: 'assets/hair/v8.jpg', video: 'assets/hair/v8.mp4', label: '', when: '' },
-        { img: 'assets/hair/p1.jpg', label: '', when: '' },
-        { img: 'assets/hair/p2.jpg', label: '', when: '' },
-        { img: 'assets/hair/p3.jpg', label: '', when: '' },
-        { img: 'assets/hair/p4.jpg', label: '', when: '' },
-        { img: 'assets/hair/p5.jpg', label: '', when: '' },
+      { name: 'Glam prep', stories: [
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%238a7f8f%27/%3E%3Cstop offset=%271%27 stop-color=%27%23d9d3dc%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',  label: 'Rollers in',      when: '4 days ago' },
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c98a96%27/%3E%3Cstop offset=%271%27 stop-color=%27%23f2dcda%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Eyes first',      when: '5 days ago' },
+        { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23b06a4a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23e8c4a8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'The reveal',      when: '6 days ago' },
       ]},
-      { name: 'Make-up', cover: 'assets/highlights/pink.svg', stories: [
+      { name: 'Make-up', stories: [
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c98a96%27/%3E%3Cstop offset=%271%27 stop-color=%27%23f2dcda%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Soft glam',       when: '1 week ago' },
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23b06a4a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23e8c4a8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Sunlit skin',     when: '1 week ago' },
       ]},
-      { name: 'Balayage', cover: 'assets/highlights/lilac.svg', stories: [
+      { name: 'Balayage', stories: [
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c9a86a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23efe3c8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E', label: 'Lived-in waves',  when: '1 week ago' },
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23b06a4a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23e8c4a8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',   label: 'Copper gloss',    when: '2 weeks ago' },
       ]},
-      { name: 'Blow-out', cover: 'assets/highlights/blue.svg', stories: [
+      { name: 'Blow-out', stories: [
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%238a7f8f%27/%3E%3Cstop offset=%271%27 stop-color=%27%23d9d3dc%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E',  label: 'Volume set',      when: '2 weeks ago' },
         { img: 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23c9a86a%27/%3E%3Cstop offset=%271%27 stop-color=%27%23efe3c8%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%27400%27 height=%27600%27 fill=%27url(%23g)%27/%3E%3C/svg%3E', label: 'The finish',      when: '3 weeks ago' },
       ]},
@@ -2194,7 +2112,7 @@
     const wrap = document.getElementById('stories');
     if (!wrap) return;
     HIGHLIGHTS.forEach((hl, i) => {
-      const cover = hl.cover || hl.stories[0].img;
+      const cover = hl.stories[0].img;
       const n = hl.stories.length;
       const segs = Array.from({ length: n }, () => '<span class="sp-seg"><i></i></span>').join('');
       const btn = document.createElement('button');
@@ -2277,11 +2195,9 @@
     const nameEl = document.getElementById('igName');
     const whenEl = document.getElementById('igWhen');
     const capEl  = document.getElementById('igCap');
-    const avatarEl = document.querySelector('#igViewer .ig-avatar img');
 
     let hi = 0, si = 0, isOpen = false;
     let timer = null, startT = 0, remaining = DUR, activeFill = null;
-    let curVideo = null, mode = 'image';
 
     function stories() { return HIGHLIGHTS[hi].stories; }
 
@@ -2295,15 +2211,15 @@
     }
 
     function pauseStory() {
-      if (mode === 'video' && curVideo) { try { curVideo.pause(); } catch (e) {} }
+      if (!timer) return;
+      clearTimer();
+      remaining -= performance.now() - startT;
       if (activeFill) activeFill.style.animationPlayState = 'paused';
-      if (timer) { clearTimer(); remaining -= performance.now() - startT; }
     }
     function resumeStory() {
-      if (!isOpen) return;
-      if (mode === 'video' && curVideo) { curVideo.play().catch(() => {}); }
+      if (timer || !isOpen) return;
       if (activeFill) activeFill.style.animationPlayState = 'running';
-      if (mode === 'image' && !timer) startTimer(Math.max(400, remaining));
+      startTimer(Math.max(400, remaining));
     }
 
     function buildBars() {
@@ -2326,51 +2242,23 @@
       nameEl.textContent = HIGHLIGHTS[hi].name;
       whenEl.textContent = st.when || '';
       capEl.textContent = st.label || '';
-      if (avatarEl) avatarEl.src = HIGHLIGHTS[hi].cover || AVATAR;
 
-      clearTimer();
-      if (curVideo) { try { curVideo.pause(); } catch (e) {} curVideo = null; }
-      buildBars();
+      // crossfade media
       media.innerHTML = '';
+      const img = new Image();
+      img.className = 'ig-img';
+      img.alt = '';
+      img.src = st.img;
+      media.appendChild(img);
+      const show = () => requestAnimationFrame(() => img.classList.add('show'));
+      if (img.complete) show(); else img.onload = show;
 
-      if (st.video) {
-        // Video story: plays with sound through its own length, then advances.
-        mode = 'video';
-        const v = document.createElement('video');
-        v.className = 'ig-vid';
-        v.src = st.video;
-        if (st.img) v.poster = st.img;
-        v.playsInline = true;
-        v.setAttribute('playsinline', ''); v.setAttribute('webkit-playsinline', '');
-        v.muted = false; v.preload = 'auto';
-        curVideo = v;
-        media.appendChild(v);
-        // reveal immediately so the poster frame shows while the video buffers
-        requestAnimationFrame(() => v.classList.add('show'));
-        v.addEventListener('loadedmetadata', () => {
-          const ms = (isFinite(v.duration) && v.duration > 0) ? v.duration * 1000 : DUR;
-          if (activeFill) activeFill.style.setProperty('--dur', ms + 'ms');
-        }, { once: true });
-        v.addEventListener('ended', () => { if (isOpen) nextStory(); });
-        // Opening the viewer is a user tap, so sound-on autoplay is allowed.
-        // If a browser still blocks it, don't mute — fall back to a timed advance.
-        v.play().catch(() => { mode = 'image'; startTimer(DUR); });
-      } else {
-        // Image story: fixed duration.
-        mode = 'image';
-        const img = new Image();
-        img.className = 'ig-img';
-        img.alt = '';
-        img.src = st.img;
-        media.appendChild(img);
-        const show = () => requestAnimationFrame(() => img.classList.add('show'));
-        if (img.complete) show(); else img.onload = show;
-        startTimer(DUR);
-      }
-
-      // preload next poster/image
+      // preload next
       const nx = stories()[si + 1];
-      if (nx && nx.img) { const p = new Image(); p.src = nx.img; }
+      if (nx) { const p = new Image(); p.src = nx.img; }
+
+      buildBars();
+      startTimer(DUR);
     }
 
     function openViewer(index) {
@@ -2383,7 +2271,6 @@
     function closeViewer() {
       isOpen = false;
       clearTimer();
-      if (curVideo) { try { curVideo.pause(); } catch (e) {} curVideo = null; }
       viewer.classList.remove('open');
       viewer.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
@@ -2444,10 +2331,15 @@
   })();
 </script>
 
+
+
 <script>
-  /* ---- Live Google rating + review count -------------------------------- */
-  /* Fetches from a cached Supabase edge function (server-side key, refreshed
-     at most twice a day). Falls back silently to the baked-in numbers. */
+(() => { try { const n = parseInt(localStorage.getItem('incenso-cart-count') || '0', 10) || 0; document.querySelectorAll('.cart-badge').forEach((b) => { b.dataset.count = n; b.textContent = n; }); } catch (e) {} })();
+</script>
+<script src="assets/phone.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+  /* Live Google rating + review count (cached edge function; falls back to baked-in) */
   (function () {
     var ENDPOINT = 'https://gcqkkruzgxpqpqxeymqx.supabase.co/functions/v1/google-reviews';
     var ratingEl = document.getElementById('trustRating');
@@ -2455,7 +2347,6 @@
     var starsEl = document.querySelector('.trust .stars');
     var trustEl = document.getElementById('trust');
     if (!ratingEl || !reviewsEl) return;
-
     fetch(ENDPOINT, { headers: { 'Accept': 'application/json' } })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
@@ -2466,9 +2357,8 @@
         if (starsEl) starsEl.setAttribute('aria-label', 'Rated ' + rating + ' out of 5');
         if (trustEl && d.uri) trustEl.href = d.uri;
       })
-      .catch(function () { /* keep baked-in numbers */ });
+      .catch(function () {});
   })();
 </script>
-
 </body>
 </html>

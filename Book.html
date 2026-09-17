@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="description" content="Incenso Studio — book an appointment. Hair, nails, make-up, brows & lashes. Tripoli, Lebanon." />
+<meta name="theme-color" content="#e5dcc9" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<title>Book — Incenso Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" />
+<link rel="stylesheet" href="assets/site.css" />
+<style>
+.bk-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,380px);gap:clamp(28px,4.5vw,64px);align-items:start;margin-bottom:clamp(48px,7vw,96px)}
+.bk{max-width:640px;min-width:0}
+.step{padding:clamp(20px,2.6vw,30px) 0;border-top:1px solid var(--card-line);transition:opacity 260ms cubic-bezier(0.16,1,0.3,1)}
+.step.locked{opacity:0.38;pointer-events:none}
+.step.locked *{user-select:none}
+.st-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 0 16px}
+.f-step{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:rgba(0,0,0,0.82);display:flex;align-items:baseline;gap:12px;margin:0}
+.f-step .n{color:rgba(0,0,0,0.4)}
+.st-sum{font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;color:rgba(0,0,0,0.55);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55%}
+.step.flash{animation:stepFlash 900ms cubic-bezier(0.16,1,0.3,1)}
+@keyframes stepFlash{0%{background:rgba(200,30,45,0.08)}100%{background:transparent}}
+.cats{display:flex;flex-wrap:wrap;gap:clamp(14px,2vw,26px);margin-bottom:14px}
+.svc-search{position:relative;margin-bottom:18px;max-width:380px}
+.svc-search input{appearance:none;width:100%;height:42px;padding:0 16px 0 40px;border-radius:999px;border:1px solid rgba(0,0,0,0.25);background:rgba(254,254,241,0.5);font:inherit;font-size:14px;color:var(--fg-warm);transition:border-color 160ms}
+.svc-search input::placeholder{color:rgba(0,0,0,0.4)}
+.svc-search input:focus{outline:none;border-color:rgba(0,0,0,0.6)}
+.svc-search input::-webkit-search-cancel-button{-webkit-appearance:none}
+.svc-search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:15px;height:15px;opacity:0.55;pointer-events:none}
+.svc-count{font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(0,0,0,0.5);margin:0;padding:10px 6px}
+.svc-none{padding:22px 6px;font-size:13px;line-height:1.55;color:rgba(0,0,0,0.62)}
+.cat{appearance:none;background:transparent;border:0;padding:4px 0;cursor:pointer;font-family:var(--font-mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(0,0,0,0.55);position:relative;transition:color 160ms;display:inline-flex;align-items:center;gap:8px}
+.cat::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:center;transition:transform 240ms cubic-bezier(0.16,1,0.3,1)}
+.cat:hover,.cat[aria-pressed="true"]{color:var(--fg-warm)}
+.cat[aria-pressed="true"]::after{transform:scaleX(1)}
+.cat .cnt{display:inline-grid;place-items:center;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--fg-warm);color:#FEFEF1;font-size:9px;letter-spacing:0}
+.svc{border-top:1px solid var(--grid-line);max-height:calc(4 * 84px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.3) transparent;-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 28px),transparent)}
+.svc.at-end{-webkit-mask-image:none;mask-image:none}
+.svc button{appearance:none;display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:14px;width:100%;padding:14px 6px;border:0;border-bottom:1px solid var(--grid-line);background:transparent;font:inherit;text-align:left;cursor:pointer;transition:background-color 160ms}
+.svc button:hover{background:rgba(254,254,241,0.5)}
+.svc .bx{width:18px;height:18px;border-radius:5px;border:1px solid rgba(0,0,0,0.45);margin-top:2px;display:grid;place-items:center;transition:background-color 160ms,border-color 160ms}
+.svc .bx svg{width:11px;height:11px;display:none;stroke:#FEFEF1}
+.svc button[aria-pressed="true"] .bx{background:var(--fg-warm);border-color:var(--fg-warm)}
+.svc button[aria-pressed="true"] .bx svg{display:block}
+.svc .nm{font-weight:600;font-size:15px;letter-spacing:-0.01em;line-height:1.3}
+.svc .nm small{display:block;font-weight:400;font-size:12px;color:rgba(0,0,0,0.55);margin-top:3px;font-family:var(--font-mono);letter-spacing:0.06em}
+.svc .nm small.d{font-family:var(--font-sans);font-size:12.5px;letter-spacing:0;line-height:1.45;text-wrap:pretty}
+.q{display:inline-block;font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;border:1px solid rgba(0,0,0,0.4);border-radius:999px;padding:4px 9px;color:rgba(0,0,0,0.75);white-space:nowrap}
+.svc button[aria-pressed="true"] .q{border-color:rgba(254,254,241,0.6);color:#FEFEF1}
+.quote-note{margin:10px 0 0;padding:12px 14px;border:1px dashed rgba(0,0,0,0.35);background:rgba(254,254,241,0.5);font-size:12.5px;line-height:1.5;color:rgba(0,0,0,0.75)}
+.quote-note[hidden]{display:none}
+.svc-group{font-family:var(--font-mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(0,0,0,0.45);margin:0;padding:14px 6px 6px;position:sticky;top:0;background:var(--bg-warm);z-index:1}
+.svc-group:first-child{padding-top:8px}
+.svc .pr{font-family:var(--font-mono);font-size:13px;font-weight:500;white-space:nowrap;text-align:right;line-height:1.3}
+.svc .pr small{display:block;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.5);margin-top:4px;font-weight:400}
+.pills{display:flex;flex-wrap:wrap;gap:10px}
+.pill{appearance:none;height:40px;padding:0 20px;border-radius:999px;border:1px solid rgba(0,0,0,0.35);background:rgba(254,254,241,0.5);font:inherit;font-size:14px;font-weight:500;color:rgba(0,0,0,0.7);cursor:pointer;transition:background-color 200ms,color 200ms,border-color 200ms;display:inline-flex;align-items:center}
+.pill:hover{border-color:var(--fg-warm);color:var(--fg-warm)}
+.pill[aria-pressed="true"]{background:var(--fg-warm);border-color:var(--fg-warm);color:#FEFEF1}
+.pill small{font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;margin-left:8px;opacity:0.65}
+.staff-row + .staff-row{margin-top:16px}
+.staff-row .sg-h{margin-bottom:8px}
+.prefs{display:flex;flex-direction:column;gap:18px;margin-bottom:18px}
+.prefs .sg-h{margin-bottom:8px}
+.chip{height:36px;padding:0 16px;font-size:13px}
+.d-note{margin:14px 0 0;font-size:13px;line-height:1.55;color:rgba(0,0,0,0.62);text-wrap:pretty}
+.when{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:clamp(20px,3vw,36px);align-items:start}
+.cal{border:1px solid rgba(0,0,0,0.25);background:rgba(254,254,241,0.5);padding:14px}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-head b{font-size:14px;font-weight:600;letter-spacing:-0.01em}
+.cal-nav{appearance:none;width:32px;height:32px;border-radius:999px;border:1px solid rgba(0,0,0,0.25);background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--fg-warm);transition:background-color 160ms}
+.cal-nav:hover:not(:disabled){background:rgba(0,0,0,0.05)}
+.cal-nav:disabled{opacity:0.3;cursor:default}
+.cal-nav svg{width:12px;height:12px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dow{font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.45);text-align:center;padding:4px 0 6px}
+.day{appearance:none;aspect-ratio:1;border:0;border-radius:999px;background:transparent;font-family:var(--font-mono);font-size:12.5px;color:var(--fg-warm);cursor:pointer;position:relative;display:grid;place-items:center;transition:background-color 160ms;padding:0}
+.day:hover:not(:disabled){background:rgba(0,0,0,0.07)}
+.day:disabled{color:rgba(0,0,0,0.25);cursor:default}
+.day.full:disabled{text-decoration:line-through}
+.day.today::before{content:"";position:absolute;bottom:4px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:999px;background:currentColor;opacity:0.6}
+.day.lo:not(:disabled)::after{content:"";position:absolute;top:4px;right:6px;width:5px;height:5px;border-radius:999px;background:#C49232}
+.day[aria-pressed="true"]{background:var(--fg-warm);color:#FEFEF1}
+.cal-key{display:flex;gap:14px;margin:10px 2px 0;font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.5)}
+.cal-key i{display:inline-block;width:5px;height:5px;border-radius:999px;background:#C49232;margin-right:6px;vertical-align:middle}
+.slots-wrap{min-width:0}
+.sg{margin-bottom:14px}
+.sg-h{font-family:var(--font-mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(0,0,0,0.45);margin:0 0 8px}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
+.slot{appearance:none;height:38px;border-radius:999px;border:1px solid rgba(0,0,0,0.35);background:rgba(254,254,241,0.5);font-family:var(--font-mono);font-size:12px;font-weight:500;color:rgba(0,0,0,0.75);cursor:pointer;transition:background-color 200ms,color 200ms,border-color 200ms;white-space:nowrap}
+.slot:hover:not(:disabled){border-color:var(--fg-warm);color:var(--fg-warm)}
+.slot[aria-pressed="true"]{background:var(--fg-warm);border-color:var(--fg-warm);color:#FEFEF1}
+.slot:disabled{opacity:0.3;cursor:not-allowed;text-decoration:line-through}
+.slot.yours:disabled{opacity:0.7;text-decoration:none;border-style:dashed;font-size:10px;letter-spacing:0.08em;text-transform:uppercase}
+.slots-empty{border:1px dashed rgba(0,0,0,0.3);padding:22px;font-size:13px;line-height:1.55;color:rgba(0,0,0,0.62);text-wrap:pretty}
+.slots-empty b{display:block;color:var(--fg-warm);margin-bottom:4px}
+.pay-locked{display:flex;align-items:center;gap:12px;padding:14px 18px;border:1px solid rgba(0,0,0,0.25);background:rgba(254,254,241,0.5);font-size:14px;line-height:1.5;max-width:520px;margin-bottom:16px}
+.pay-locked[hidden]{display:none}
+#payOptsLbl{margin-bottom:10px}
+#payOptsLbl[hidden]{display:none}
+.pay-opts[hidden]{display:none}
+.pay-locked svg{width:16px;height:16px;flex:none;opacity:0.6}
+.pay-locked b{font-weight:600}
+.pay-opts .pill{height:40px}
+.qr-pane{display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;align-items:center;margin-top:16px;padding:16px;border:1px solid rgba(0,0,0,0.25);background:rgba(254,254,241,0.5)}
+.qr-pane[hidden]{display:none}
+.qr-pane image-slot{width:150px;height:150px;display:block}
+.qr-h{font-family:var(--font-mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(0,0,0,0.5);margin:0 0 8px}
+.qr-txt p{margin:0 0 6px;font-size:14px;line-height:1.5;text-wrap:pretty}
+.qr-txt .qr-s{font-size:12.5px;color:rgba(0,0,0,0.6);margin:0}
+.qr-txt .qr-amt{font-family:var(--font-mono)}
+#cardFields[hidden]{display:none}
+.card-wrap{position:relative}
+.card-wrap .brand{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(0,0,0,0.5);pointer-events:none}
+.field input.bad{border-color:#C81E2D}
+.f-err{font-size:12px;color:#C81E2D;margin:-1px 0 0 2px;display:none}
+.f-err.show{display:block}
+.err{color:#C81E2D;font-size:13px;margin:14px 0 0;display:none;line-height:1.5}
+.err.show{display:block}
+.summary{position:sticky;top:calc(clamp(24px,3.2vw,40px) + 110px);border:1px solid rgba(0,0,0,0.25);background:rgba(254,254,241,0.6);padding:clamp(24px,3vw,34px)}
+.s-head{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:rgba(0,0,0,0.82);margin:0 0 14px}
+.s-row{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:8px 0;font-size:14px;color:rgba(0,0,0,0.78)}
+.s-row .v{font-weight:600;color:var(--fg-warm);text-align:right;letter-spacing:-0.01em;min-width:0;text-wrap:pretty}
+.s-row[hidden],[hidden]{display:none}
+.s-svcs{padding:4px 0}
+.s-svcs .s-row{padding:5px 0}
+.s-svcs .s-row span:first-child{color:var(--fg-warm);font-weight:500}
+.s-svcs .s-row .v{font-family:var(--font-mono);font-weight:500}
+.s-svcs .s-row small{display:block;font-size:11.5px;color:rgba(0,0,0,0.5);font-weight:400}
+.s-empty{font-size:13px;color:rgba(0,0,0,0.5);padding:6px 0}
+.s-total{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-top:8px;padding-top:16px;border-top:1px solid var(--card-line);font-weight:600;font-size:16px}
+.s-total .v{font-family:var(--font-mono);font-size:20px}
+.s-bal{margin-top:0;padding-top:10px;border-top:0;font-size:15px}
+.s-bal .v{font-size:18px}
+.s-bal.refund .v{color:#1F9A56}
+.s-bal[hidden]{display:none}
+.gift-row .v{color:#1F9A56}
+.gift-row small{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;color:rgba(0,0,0,0.5);margin-top:3px}
+.gift-x{appearance:none;border:0;background:none;font:inherit;font-size:10px;letter-spacing:0.1em;color:rgba(0,0,0,0.6);cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:2px}
+.gift-x:hover{color:var(--fg-warm)}
+.gift-ctl{margin-top:8px}
+.gift-ctl[hidden]{display:none}
+.gift-mine{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px dashed rgba(0,0,0,0.35);background:rgba(134,239,172,0.18);font-size:13px;line-height:1.45;margin-top:10px}
+.gift-mine b{font-weight:600}
+.gift-mine small{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;color:rgba(0,0,0,0.55);margin-top:2px}
+.gift-mine .btn{height:34px;padding:0 14px;font-size:13px;flex:none;white-space:nowrap}
+.gift-mine > span{min-width:0}
+.summary > .btn{width:100%;margin-top:18px}
+.summary > .btn:disabled{opacity:0.6;cursor:wait}
+.s-note{margin:14px 0 0;font-size:12px;color:rgba(0,0,0,0.55);line-height:1.5}
+.s-note button{appearance:none;border:0;background:none;font:inherit;color:var(--fg-warm);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0}
+.mbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:15;padding:12px var(--gutter) max(12px,env(safe-area-inset-bottom));background:rgba(229,220,201,0.92);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);box-shadow:0 -1px 0 var(--card-line);align-items:center;justify-content:space-between;gap:16px}
+.mbar .mb-l{display:block;font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.55);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mbar strong{font-family:var(--font-mono);font-size:18px}
+.mbar .btn{flex:none}
+@media (max-width:1024px){.bk-wrap{grid-template-columns:1fr}.summary{position:static;max-width:640px}.mbar{display:flex}.page{padding-bottom:84px}}
+@media (max-width:640px){.when{grid-template-columns:1fr}.cal{max-width:340px}.st-sum{display:none}.svc button{grid-template-columns:18px minmax(0,1fr) auto}.qr-pane{grid-template-columns:1fr}}
+</style>
+<template id="__bundler_thumbnail" data-bg-color="#e5dcc9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#e5dcc9"/><text x="200" y="262" text-anchor="middle" font-family="Georgia,serif" font-size="180" fill="#000">i</text></svg></template>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to booking</a>
+<main class="page" id="main" data-screen-label="Book">
+<section class="intro">
+<h1 id="h1">Book your chair.</h1>
+<p id="introP">Choose your services, the hands you trust, and a time that suits you — live availability, tailored to your preferences, confirmed in seconds.</p>
+</section>
+<div class="bk-wrap">
+<div class="bk">
+<section class="step" id="step1">
+<div class="st-head"><p class="f-step"><span class="n">01</span>Service</p><span class="st-sum" id="sum1"></span></div>
+<div class="svc-search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"></circle><path d="M10.5 10.5 L14 14"></path></svg><input id="svcQ" type="search" placeholder="Search all services…" aria-label="Search services" autocomplete="off" /></div>
+<div class="cats" role="group" aria-label="Service category" id="cats"></div>
+<div class="svc" id="svc" role="group" aria-label="Services"></div>
+<p class="d-note">Pick more than one — we'll line them up back to back in a single visit.</p>
+</section>
+<section class="step locked" id="step2">
+<div class="st-head"><p class="f-step"><span class="n">02</span>With</p><span class="st-sum" id="sum2"></span></div>
+<div id="staff"></div>
+<p class="d-note" id="staffNote"></p>
+</section>
+<section class="step locked" id="step3">
+<div class="st-head"><p class="f-step"><span class="n">03</span>When</p><span class="st-sum" id="sum3"></span></div>
+<div class="when">
+<div class="cal" role="group" aria-label="Choose a day">
+<div class="cal-head"><button type="button" class="cal-nav" id="calPrev" aria-label="Previous month"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 2 L3.5 6 L7.5 10"></path></svg></button><b id="calTitle"></b><button type="button" class="cal-nav" id="calNext" aria-label="Next month"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 2 L8.5 6 L4.5 10"></path></svg></button></div>
+<div class="cal-grid" id="calGrid"></div>
+<div class="cal-key"><span><i></i>Few left</span></div>
+</div>
+<div class="slots-wrap"><div id="slots" aria-live="polite"></div><p class="d-note" id="slotNote"></p></div>
+</div>
+</section>
+<section class="step locked" id="step4">
+<div class="st-head"><p class="f-step"><span class="n">04</span>Details</p></div>
+<div class="prefs" id="prefs">
+<div><p class="sg-h">The chair</p><div class="pills" id="mood" role="group" aria-label="Conversation preference"></div></div>
+<div><p class="sg-h">Good to know</p><div class="pills" id="flags" role="group" aria-label="Things we should know"></div></div>
+<div><p class="sg-h">On arrival</p><div class="pills" id="drink" role="group" aria-label="Drink on arrival"></div></div>
+<div><p class="sg-h">Smoking</p><div class="pills" id="smoke" role="group" aria-label="Smoking"></div><p class="d-note" style="margin-top:10px">The studio is IQOS-only — no cigarettes. Don’t have one? We keep IQOS at the studio for you.</p></div>
+</div>
+<div class="field" style="margin-top:0"><label for="bkNotes">Anything else? <span class="opt">— optional</span></label><textarea id="bkNotes" rows="2" placeholder="Which allergy, inspiration, how you like your coffee, running late…"></textarea></div>
+</section>
+<section class="step locked" id="step5">
+<div class="st-head"><p class="f-step"><span class="n">05</span>Payment</p></div>
+<div class="pay-locked" id="payLocked" hidden><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"></rect><path d="M5.5 7 V5 a2.5 2.5 0 0 1 5 0 V7"></path></svg><span id="payLockedTxt"></span></div>
+<p class="sg-h" id="payOptsLbl" hidden>Settle the difference</p>
+<div class="pills pay-opts" id="payOpts" role="group" aria-label="Payment"><button type="button" class="pill" data-pay="later" aria-pressed="true">Pay at the studio</button><button type="button" class="pill" data-pay="card" aria-pressed="false">Card</button><button type="button" class="pill" data-pay="whish" aria-pressed="false">Whish Money</button><button type="button" class="pill" data-pay="omt" aria-pressed="false">OMT Pay</button></div>
+<div id="cardFields" hidden>
+<div class="field"><label for="cNum">Card number</label><div class="card-wrap"><input id="cNum" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="19" /><span class="brand" id="cBrand"></span></div><p class="f-err" id="eNum">That number doesn't check out — have another look.</p></div>
+<div class="row2">
+<div class="field"><label for="cExp">Expiry</label><input id="cExp" type="text" inputmode="numeric" autocomplete="cc-exp" placeholder="MM / YY" maxlength="7" /><p class="f-err" id="eExp">Use MM / YY, and a date that hasn't passed.</p></div>
+<div class="field"><label for="cCvc">CVC</label><input id="cCvc" type="text" inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4" /><p class="f-err" id="eCvc">3 digits — 4 on Amex.</p></div>
+</div>
+<div class="field"><label for="cName">Name on card</label><input id="cName" type="text" autocomplete="cc-name" /><p class="f-err" id="eName">The name as printed on the card.</p></div>
+</div>
+<div class="qr-pane" id="qrWhish" hidden><image-slot id="qr-whish" shape="rect" fit="contain" placeholder="Whish Money QR"></image-slot><div class="qr-txt"><p class="qr-h">Whish Money</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan the code in the Whish app, pay the total, then confirm below. We match the transfer to your booking number.</p></div></div>
+<div class="qr-pane" id="qrOmt" hidden><image-slot id="qr-omt" shape="rect" fit="contain" placeholder="OMT Pay QR"></image-slot><div class="qr-txt"><p class="qr-h">OMT Pay</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan the code in OMT Pay, pay the total, then confirm below. We match the transfer to your booking number.</p></div></div>
+<p class="d-note" id="payNote">Cash or card at the studio, after your appointment.</p>
+</section>
+</div>
+<aside class="summary" aria-label="Booking summary">
+<h2 class="s-head">Your appointment</h2>
+<div class="s-svcs" id="sSvcs"></div>
+<div class="s-row"><span>With</span><span class="v" id="sStaff">—</span></div>
+<div class="s-row"><span>When</span><span class="v" id="sWhen">—</span></div>
+<div class="s-row"><span>Takes</span><span class="v" id="sDur">—</span></div>
+<div class="s-row" id="discRow" hidden><span id="discLabel"></span><span class="v" id="sDisc"></span></div>
+<div class="s-total"><span>Total</span><span class="v" id="sPrice">$0</span></div>
+<div class="s-row gift-row" id="giftRow" hidden><span>Gift balance<small><span id="giftCodeLbl"></span> · <button type="button" class="gift-x" id="giftRemove">Don’t use</button></small></span><span class="v" id="sGift"></span></div>
+<div class="s-total s-bal" id="dueRow" hidden><span>To pay</span><span class="v" id="sDue"></span></div>
+<div class="gift-ctl" id="giftCtl">
+<div id="giftMine"></div>
+</div>
+<p class="quote-note" id="quoteNote" hidden></p>
+<p class="s-note" id="priceNote" hidden style="margin-top:6px">Starting prices — the final amount depends on length, thickness or design and is confirmed in the chair. Anything paid ahead counts toward it.</p>
+<div class="s-row" id="paidRow" hidden><span>Already paid</span><span class="v" id="sPaid"></span></div>
+<div class="s-total s-bal" id="balRow" hidden><span id="balLbl">Balance due</span><span class="v" id="sBal"></span></div>
+<button type="button" class="btn" id="confirmBtn">Confirm booking</button>
+<p class="err" id="bkErr" role="alert"></p>
+<p class="s-note" id="sWho"></p>
+</aside>
+</div>
+<div class="mbar" id="mbar"><div style="min-width:0"><span class="mb-l" id="mbLabel">Nothing picked yet</span><strong id="mbPrice">$0</strong></div><button type="button" class="btn" id="mbBtn">Confirm</button></div>
+</main>
+<script src="assets/site.js"></script>
+<script src="assets/catalog.js"></script>
+<script src="assets/gift.js"></script>
+<script src="assets/image-slot.js"></script>
+<script src="assets/phone.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+(() => {
+const A = window.IncensoAuth;
+const $ = (id) => document.getElementById(id);
+const pad = (n) => String(n).padStart(2, '0');
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+const C = window.IncensoCatalog, CATS = C.CATS.map((c) => c.name), SERVICES = C.SERVICES, STAFF = C.STAFF;
+const STUDIO_WA = '96171930290', OPEN_H = 10, LEAD_MIN = 60, MAX_DAYS = 60, BUSY_PCT = 22, DRAFT = 'incenso-book-draft';
+const closeH = (dow) => (dow === 5 || dow === 6) ? 20 : 19;
+let q = '';
+
+const beirut = () => new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Beirut' }));
+const iso = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const fromISO = (s) => new Date(s + 'T12:00:00');
+const TODAY = iso(beirut());
+const MAX = iso(new Date(fromISO(TODAY).getTime() + MAX_DAYS * 864e5));
+const fmt12 = (m) => { const h = Math.floor(m / 60); return (((h + 11) % 12) + 1) + ':' + pad(m % 60) + ' ' + (h >= 12 ? 'PM' : 'AM'); };
+const nice = (s) => fromISO(s).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+const niceLong = (s) => fromISO(s).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+const dur = (m) => m >= 60 ? Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : '') : m + ' min';
+
+let cat = 'Hair';
+const MOODS = ['Happy to chat', 'Quiet, please'], DRINKS = ['Speciality mango', 'Turkish coffee', 'Espresso', 'Tea', 'Water', 'Cookies', 'Nothing, thanks'], SMOKES = ['I don\u2019t smoke', 'I\u2019ll bring my IQOS', 'Lend me an IQOS'];
+const FLAGS = ['Hijab \u2014 women-only studio, please', 'Sensitive skin or scalp', 'Allergies (say which below)', 'Fragrance-free products only', 'Pregnant or nursing', 'Recent colour, keratin or relaxer', 'Skin condition or medication', 'Tight schedule \u2014 must leave on time', 'First time here', 'No photos of me, please', 'Bringing reference photos'];
+const st = { svcs: [], staffBy: {}, date: '', time: '', start: -1, pay: 'later', notes: '', mood: '', flags: [], drink: [], smoke: '', gift: false };
+const G = window.IncensoGift;
+const t0 = fromISO(TODAY);
+const view = { y: t0.getFullYear(), m: t0.getMonth() };
+
+const sel = () => st.svcs.map((n) => SERVICES.find((s) => s.name === n)).filter(Boolean);
+const selCats = () => [...new Set(sel().map((s) => s.cat))];
+const totalMins = () => sel().reduce((a, s) => a + s.mins, 0);
+const chunks = () => Math.max(1, Math.ceil(totalMins() / 30));
+const pick = (c) => st.staffBy[c] && st.staffBy[c] !== 'any' ? st.staffBy[c] : '';
+const named = () => selCats().map(pick).filter(Boolean);
+const staffLabel = () => { const cs = selCats(), n = named(); if (!n.length) return 'First available'; if (cs.length === 1) return n[0]; return cs.map((c) => (pick(c) || 'First available') + ' (' + c + ')').join(' \u00b7 '); };
+const withTxt = () => named().length ? ' with ' + named().join(' & ') : '';
+
+// Availability — deterministic per date/staff/half-hour so the calendar is stable across reloads
+const hash = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+const busy = (name, date, i) => hash(date + '|' + name + '|' + i) % 100 < BUSY_PCT;
+const freeFor = (name, date, i, n) => { for (let k = 0; k < n; k++) if (busy(name, date, i + k)) return false; return true; };
+// Services in different categories run back to back, so each category only needs its own block free — in sequence
+const catChunks = (c) => Math.max(1, Math.ceil(sel().filter((s) => s.cat === c).reduce((x, s) => x + s.mins, 0) / 30));
+const teamFree = (c, date, i, k) => { const p = pick(c); if (p) return freeFor(p, date, i, k); const team = STAFF.filter((s) => s.cats.includes(c)); return team.length ? team.some((s) => freeFor(s.name, date, i, k)) : freeFor('studio-' + c, date, i, k); };
+const slotFree = (date, i, n) => {
+const cs = selCats();
+if (!cs.length) return STAFF.some((s) => freeFor(s.name, date, i, n));
+let off = 0;
+return cs.every((c) => { const k = catChunks(c); const ok = teamFree(c, date, i + off, k); off += k; return ok; });
+};
+const mine = (date, label) => { const a = A.signedIn() && A.get(); return !!(a && (a.bookings || []).some((b) => b.date === date && b.time === label && b.ref !== editing && /upcoming/i.test(b.status || ''))); };
+const daySlots = (date) => {
+const total = (closeH(fromISO(date).getDay()) - OPEN_H) * 2, n = chunks(), now = beirut();
+const nowMin = now.getHours() * 60 + now.getMinutes(), today = date === TODAY, out = [];
+for (let i = 0; i + n <= total; i++) {
+const start = OPEN_H * 60 + i * 30, label = fmt12(start), past = today && start < nowMin + LEAD_MIN, yours = mine(date, label);
+out.push({ start, label, past, yours, free: !past && !yours && slotFree(date, i, n) });
+}
+return out;
+};
+const freeCount = (date) => daySlots(date).filter((s) => s.free).length;
+
+// Renders
+const renderCats = () => {
+$('cats').innerHTML = CATS.map((c) => { const k = sel().filter((s) => s.cat === c).length; return '<button type="button" class="cat" data-cat="' + esc(c) + '" aria-pressed="' + (c === cat) + '">' + c + (k ? '<span class="cnt">' + k + '</span>' : '') + '</button>'; }).join('');
+};
+const renderSvc = () => {
+const term = q.trim().toLowerCase();
+const list = term ? SERVICES.filter((s) => (s.name + ' ' + s.group + ' ' + s.cat).toLowerCase().includes(term)) : SERVICES.filter((s) => s.cat === cat);
+let lastGroup = '';
+$('svc').innerHTML = (term ? (list.length ? '<p class="svc-count">' + list.length + (list.length === 1 ? ' match' : ' matches') + ' across all categories</p>' : '<p class="svc-none">Nothing matches “' + esc(q.trim()) + '” — try another word, or ask us on WhatsApp.</p>') : '') +
+list.map((s) => { const gh = !term && s.group !== lastGroup ? '<p class="svc-group">' + s.group + '</p>' : ''; lastGroup = s.group; return gh +
+'<button type="button" aria-pressed="' + st.svcs.includes(s.name) + '" data-svc="' + esc(s.name) + '"><span class="bx"><svg viewBox="0 0 12 12" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5 L5 9 L9.5 3.5"></path></svg></span><span class="nm">' + s.name + (term ? '<small>' + s.cat + ' \u00b7 ' + s.group + '</small>' : '') + '</span><span class="pr">' + (s.price == null ? '<span class="q">Custom quote</span>' : C.priceLabel(s)) + '<small>' + dur(s.mins) + '</small></span></button>'; }).join('');
+svcFade();
+};
+const svcFade = () => { const el = $('svc'); el.classList.toggle('at-end', el.scrollHeight - el.scrollTop - el.clientHeight < 6); };
+const renderStaff = () => {
+const cs = selCats();
+$('staff').innerHTML = cs.map((c) => '<div class="staff-row" role="group" aria-label="' + esc(c) + '">' + (cs.length > 1 ? '<p class="sg-h">' + c + '</p>' : '') + '<div class="pills">' +
+['any'].concat(STAFF.filter((s) => s.cats.includes(c)).map((s) => s.name)).map((n) => '<button type="button" class="pill" data-cat="' + esc(c) + '" data-staff="' + esc(n) + '" aria-pressed="' + ((st.staffBy[c] || 'any') === n) + '">' + (n === 'any' ? 'First available' : n + '<small>' + STAFF.find((s) => s.name === n).role + '</small>') + '</button>').join('') + '</div></div>').join('');
+$('staffNote').textContent = !cs.length ? '' : (cs.length > 1 ? 'Your visit spans ' + cs.join(' and ') + ' \u2014 ask for someone by name for each, or let us line up the soonest hands back to back.' : 'First available gets you the soonest chair. Ask for someone by name and we\u2019ll show only their times.');
+};
+const renderPrefs = () => {
+const pills = (list, cur, key) => list.map((x) => '<button type="button" class="pill chip" data-key="' + key + '" data-val="' + esc(x) + '" aria-pressed="' + (Array.isArray(cur) ? cur.includes(x) : cur === x) + '">' + x + '</button>').join('');
+$('mood').innerHTML = pills(MOODS, st.mood, 'mood'); $('flags').innerHTML = pills(FLAGS, st.flags, 'flags'); $('drink').innerHTML = pills(DRINKS, st.drink, 'drink'); $('smoke').innerHTML = pills(SMOKES, st.smoke, 'smoke');
+};
+const renderCal = () => {
+const first = new Date(view.y, view.m, 1), title = first.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+$('calTitle').textContent = title;
+$('calPrev').disabled = view.y === t0.getFullYear() && view.m === t0.getMonth();
+const mx = fromISO(MAX);
+$('calNext').disabled = view.y === mx.getFullYear() && view.m === mx.getMonth();
+let html = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((d) => '<span class="cal-dow">' + d + '</span>').join('');
+const off = (first.getDay() + 6) % 7, days = new Date(view.y, view.m + 1, 0).getDate();
+for (let i = 0; i < off; i++) html += '<span></span>';
+for (let d = 1; d <= days; d++) {
+const s = iso(new Date(view.y, view.m, d)), out = s < TODAY || s > MAX;
+const n = out ? -1 : freeCount(s), full = !out && n === 0;
+html += '<button type="button" class="day' + (s === TODAY ? ' today' : '') + (full ? ' full' : '') + (n > 0 && n <= 3 ? ' lo' : '') + '" data-date="' + s + '" ' + (out || full ? 'disabled' : '') + ' aria-pressed="' + (s === st.date) + '" aria-label="' + niceLong(s) + (full ? ', fully booked' : (n > 0 ? ', ' + n + ' free times' : '')) + '">' + d + '</button>';
+}
+$('calGrid').innerHTML = html;
+};
+const renderSlots = () => {
+const box = $('slots'), note = $('slotNote');
+if (!st.date) { box.innerHTML = '<div class="slots-empty"><b>Pick a day</b>Free times appear here. Fridays &amp; Saturdays we\u2019re open till 8 PM.</div>'; note.textContent = ''; return; }
+const all = daySlots(st.date), free = all.filter((s) => s.free);
+if (!free.length) { box.innerHTML = '<div class="slots-empty"><b>Nothing fits on ' + nice(st.date) + '</b>' + (totalMins() > 60 ? dur(totalMins()) + ' needs a longer gap \u2014 try another day, or ' : 'Try another day, or ') + (named().length ? 'switch to first available.' : 'message us on WhatsApp and we\u2019ll squeeze you in.') + '</div>'; note.textContent = ''; return; }
+const groups = [['Morning', (s) => s.start < 12 * 60], ['Afternoon', (s) => s.start >= 12 * 60 && s.start < 17 * 60], ['Evening', (s) => s.start >= 17 * 60]];
+box.innerHTML = groups.map(([g, f]) => { const list = all.filter(f); if (!list.length) return ''; return '<div class="sg"><p class="sg-h">' + g + '</p><div class="slots">' + list.map((s) =>
+'<button type="button" class="slot' + (s.yours ? ' yours' : '') + '" data-start="' + s.start + '" ' + (s.free ? '' : 'disabled') + ' aria-pressed="' + (s.start === st.start) + '"' + (s.yours ? ' title="You already have an appointment here"' : '') + '>' + (s.yours ? 'Yours' : s.label) + '</button>').join('') + '</div></div>'; }).join('');
+note.textContent = (dropped ? dropped + ' no longer fits' + withTxt() + ' \u2014 pick another time. ' : '') + free.length + ' free ' + (free.length === 1 ? 'time' : 'times') + ' on ' + nice(st.date) + ' for ' + dur(totalMins()) + withTxt() + '. Struck-through slots are taken.';
+dropped = '';
+};
+const discInfo = () => {
+if (!A.signedIn()) return { rate: 0, name: '' };
+const t = A.tierFor(A.yearSpend(A.get()));
+return { rate: t.name === 'Insider' ? 0.1 : (t.name === 'Loyal' ? 0.2 : 0), name: t.name };
+};
+const gross = () => sel().reduce((a, s) => a + (s.price || 0), 0);
+const anyFrom = () => sel().some((s) => s.from);
+const anyQuote = () => sel().some((s) => s.price == null);
+const quoteOnly = () => anyQuote() && net() === 0;
+const priceTxt = (n) => quoteOnly() ? 'Custom quote' : (anyFrom() ? 'from ' : '') + '$' + n + (anyQuote() ? ' + quote' : '');
+const net = () => Math.round(gross() * (1 - discInfo().rate));
+const giftAcc = () => A.signedIn() ? A.get() : { phone: '' };
+const giftPool = () => G.spendable(giftAcc());
+const giftBal = () => giftPool().reduce((a, x) => a + x.balance, 0);
+const giftAmt = () => { if (!st.gift) return 0; const base = orig && orig.paid > 0 ? Math.max(0, net() - orig.paid) : net(); return Math.min(giftBal(), base); };
+const renderGift = () => {
+const s = sel(), pool = giftPool(), bal = giftBal(), on = st.gift && bal > 0;
+$('giftRow').hidden = !on; if (on) { $('giftCodeLbl').textContent = '$' + bal + ' available' + (bal - giftAmt() > 0 ? ' \u00b7 $' + (bal - giftAmt()) + ' stays' : ''); $('sGift').textContent = '\u2212$' + giftAmt(); }
+$('giftMine').innerHTML = !on && bal > 0 && s.length ? '<div class="gift-mine"><span><b>$' + bal + '</b> gift balance</span><button type="button" class="btn" data-use="1">Use it</button></div>' : '';
+$('giftCtl').hidden = !s.length || quoteOnly();
+};
+const renderSum = () => {
+const s = sel(), d = discInfo(), when = st.date && st.time ? nice(st.date) + ' \u00b7 ' + st.time : '';
+$('sSvcs').innerHTML = s.length ? s.map((x, i) => { const off = s.slice(0, i).reduce((a, y) => a + y.mins, 0); const tm = st.start >= 0 ? fmt12(st.start + off) + ' \u2013 ' + fmt12(st.start + off + x.mins) : dur(x.mins); return '<div class="s-row"><span>' + x.name + '<small>' + tm + (st.start >= 0 ? ' \u00b7 ' + dur(x.mins) : '') + '</small></span><span class="v">' + (x.price == null ? '<span class="q">Custom quote</span>' : C.priceLabel(x)) + '</span></div>'; }).join('') : '<p class="s-empty">No service picked yet.</p>';
+$('sStaff').textContent = s.length ? staffLabel() : '\u2014';
+$('sWhen').textContent = when ? when + (s.length && st.start >= 0 ? ' \u2013 ' + fmt12(st.start + totalMins()) : '') : '\u2014';
+$('sDur').textContent = s.length ? dur(totalMins()) : '\u2014';
+$('discRow').hidden = !(s.length && d.rate);
+if (s.length && d.rate) { $('discLabel').textContent = d.name + ' \u00b7 ' + Math.round(d.rate * 100) + '% off'; $('sDisc').textContent = '\u2212$' + (gross() - net()); }
+$('sPrice').textContent = s.length ? priceTxt(net()) : '$0';
+$('priceNote').hidden = !(s.length && anyFrom());
+const qi = s.filter((x) => x.price == null);
+$('quoteNote').hidden = !qi.length;
+if (qi.length) $('quoteNote').innerHTML = '<b>' + qi.map((x) => esc(x.name)).join(', ') + '</b> ' + (qi.length > 1 ? 'are' : 'is') + ' priced by hair length and thickness \u2014 you\u2019ll get the exact quote in the chair before we start, and pay for ' + (qi.length > 1 ? 'them' : 'it') + ' at the studio. Nothing is charged now.';
+renderGift();
+const locked = !!(orig && orig.paid > 0), diff = locked ? net() - orig.paid : 0, amt = Math.max(0, (locked ? Math.max(0, diff) : net()) - giftAmt());
+$('dueRow').hidden = !(giftAmt() > 0 && s.length); if (giftAmt() > 0) $('sDue').textContent = '$' + amt;
+$('paidRow').hidden = !locked; if (locked) $('sPaid').textContent = '\u2212$' + orig.paid;
+$('balRow').hidden = !locked || diff === 0; $('balRow').classList.toggle('refund', diff < 0);
+if (locked && diff) { $('balLbl').textContent = diff > 0 ? 'Balance due' : 'We refund you'; $('sBal').textContent = '$' + Math.abs(diff); }
+renderPay(locked, diff);
+const qr = st.pay === 'whish' || st.pay === 'omt', verb = editing ? 'update' : 'confirm', plain = editing ? 'Update booking' : 'Confirm booking';
+$('confirmBtn').textContent = quoteOnly() && !locked ? (editing ? 'Update & request quote' : 'Book & request quote') : !s.length || (locked && diff <= 0) || (giftAmt() > 0 && amt === 0) ? plain : st.pay === 'card' ? 'Pay $' + amt + ' & ' + verb : qr ? 'I\u2019ve sent $' + amt + ' \u2014 ' + verb : plain;
+$('mbBtn').textContent = quoteOnly() && !locked ? 'Request quote' : !s.length || (locked && diff <= 0) || (giftAmt() > 0 && amt === 0) ? (editing ? 'Update' : 'Confirm') : st.pay === 'card' ? 'Pay & ' + verb : qr ? 'Sent \u2014 ' + verb : (editing ? 'Update' : 'Confirm');
+document.querySelectorAll('.qr-amt').forEach((x) => { x.textContent = '$' + (s.length ? amt : 0); });
+$('mbPrice').textContent = s.length ? (giftAmt() > 0 ? '$' + amt : priceTxt(net())) : '$0';
+$('mbLabel').textContent = !s.length ? 'Nothing picked yet' : s.length + (s.length === 1 ? ' service' : ' services') + ' \u00b7 ' + dur(totalMins()) + (when ? ' \u00b7 ' + when : '');
+const acc = A.signedIn() ? A.get() : null;
+$('sWho').innerHTML = acc ? 'Booking as <b>' + esc(acc.name) + '</b> \u00b7 ' + esc(acc.phone) + '. <button type="button" id="switchAcc">Not you?</button>' : 'You\u2019ll sign in by phone at confirmation \u2014 no password. Confirmation and reminders arrive by SMS and WhatsApp.';
+$('sum1').textContent = s.length ? s.map((x) => x.name).join(' + ') : '';
+$('sum2').textContent = s.length ? staffLabel() : '';
+$('sum3').textContent = when;
+};
+const renderSteps = () => {
+const has = sel().length > 0, when = !!(st.date && st.time);
+$('step2').classList.toggle('locked', !has);
+$('step3').classList.toggle('locked', !has);
+$('step4').classList.toggle('locked', !(has && when));
+$('step5').classList.toggle('locked', !(has && when));
+};
+const save = () => { if (editing) return; try { localStorage.setItem(DRAFT, JSON.stringify(Object.assign({ cat }, st))); } catch (e) {} };
+const renderAll = () => { renderCats(); renderSvc(); renderStaff(); renderPrefs(); renderCal(); renderSlots(); renderSum(); renderSteps(); save(); };
+let dropped = '';
+const revalidate = () => {
+Object.keys(st.staffBy).forEach((c) => { if (!selCats().includes(c)) delete st.staffBy[c]; else if (st.staffBy[c] !== 'any' && !STAFF.some((s) => s.name === st.staffBy[c] && s.cats.includes(c))) st.staffBy[c] = 'any'; });
+if (st.date && st.start >= 0) { const ok = daySlots(st.date).some((s) => s.start === st.start && s.free); if (!ok) { dropped = st.time; st.time = ''; st.start = -1; } }
+if (st.date && !sel().length) { st.time = ''; st.start = -1; }
+};
+
+// Events
+$('cats').addEventListener('click', (e) => { const b = e.target.closest('.cat'); if (!b) return; cat = b.dataset.cat; q = ''; $('svcQ').value = ''; renderCats(); renderSvc(); $('svc').scrollTop = 0; save(); });
+$('svcQ').addEventListener('input', () => { q = $('svcQ').value; renderSvc(); $('svc').scrollTop = 0; });
+$('svc').addEventListener('scroll', svcFade, { passive: true });
+$('svc').addEventListener('click', (e) => {
+const b = e.target.closest('[data-svc]'); if (!b) return;
+const n = b.dataset.svc; st.svcs = st.svcs.includes(n) ? st.svcs.filter((x) => x !== n) : st.svcs.concat(n);
+revalidate(); renderAll();
+});
+$('staff').addEventListener('click', (e) => { const b = e.target.closest('.pill'); if (!b) return; st.staffBy[b.dataset.cat] = b.dataset.staff; revalidate(); renderCal(); renderSlots(); renderSum(); renderSteps(); renderStaff(); save(); });
+$('calPrev').addEventListener('click', () => { view.m -= 1; if (view.m < 0) { view.m = 11; view.y -= 1; } renderCal(); });
+$('calNext').addEventListener('click', () => { view.m += 1; if (view.m > 11) { view.m = 0; view.y += 1; } renderCal(); });
+$('calGrid').addEventListener('click', (e) => { const b = e.target.closest('.day'); if (!b || b.disabled) return; st.date = b.dataset.date; st.time = ''; st.start = -1; renderCal(); renderSlots(); renderSum(); renderSteps(); save(); });
+$('slots').addEventListener('click', (e) => { const b = e.target.closest('.slot'); if (!b || b.disabled) return; st.start = +b.dataset.start; st.time = fmt12(st.start); renderSlots(); renderSum(); renderSteps(); save(); });
+$('bkNotes').addEventListener('input', () => { st.notes = $('bkNotes').value; save(); });
+$('prefs').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (!b) return; const k = b.dataset.key, v = b.dataset.val; if (k === 'flags' || k === 'drink') st[k] = st[k].includes(v) ? st[k].filter((x) => x !== v) : st[k].concat(v); else st[k] = st[k] === v ? '' : v; renderPrefs(); renderSum(); save(); });
+const PAYS = { later: 'Pay at studio', card: 'Paid by card', whish: 'Paid via Whish Money', omt: 'Paid via OMT Pay' };
+const PAY_NOTE = { later: 'Cash or card at the studio, after your appointment.', card: 'Charged securely now \u2014 nothing to settle at the studio.', whish: 'Instant transfer from your Whish wallet \u2014 nothing to settle at the studio.', omt: 'Instant transfer with OMT Pay \u2014 nothing to settle at the studio.' };
+const setPay = (p) => {
+if (!PAYS[p]) p = 'later';
+st.pay = p;
+document.querySelectorAll('#payOpts .pill').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pay === p)));
+renderSum(); save();
+if (p === 'card' && !$('cardFields').hidden) $('cNum').focus();
+};
+const origLabel = () => !orig ? '' : [orig.cash > 0 ? esc(orig.pay) + ' $' + orig.cash : '', orig.gift > 0 ? 'gift balance $' + orig.gift : ''].filter(Boolean).join(' + ');
+const renderPay = (locked, diff) => {
+const coveredByGift = sel().length > 0 && giftAmt() > 0 && (locked ? Math.max(0, diff) : net()) - giftAmt() <= 0 && !quoteOnly();
+if (coveredByGift) {
+if (st.pay !== 'later') { st.pay = 'later'; document.querySelectorAll('#payOpts .pill').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pay === 'later'))); }
+$('payLocked').hidden = false; $('payLockedTxt').innerHTML = '<b>Covered by your gift balance</b> \u00b7 $' + giftAmt() + ' comes off your gift cards. Nothing else to pay.';
+['payOpts', 'payOptsLbl', 'cardFields', 'qrWhish', 'qrOmt'].forEach((id) => { $(id).hidden = true; }); $('payNote').textContent = '';
+return;
+}
+if (quoteOnly() && !locked) {
+if (st.pay !== 'later') { st.pay = 'later'; document.querySelectorAll('#payOpts .pill').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pay === 'later'))); }
+$('payLocked').hidden = false; $('payLockedTxt').innerHTML = '<b>Custom quote</b> \u00b7 priced by hair length and thickness. You\u2019ll get the exact quote in the chair before we start, and pay at the studio.';
+['payOpts', 'payOptsLbl', 'cardFields', 'qrWhish', 'qrOmt'].forEach((id) => { $(id).hidden = true; }); $('payNote').textContent = '';
+return;
+}
+$('payLocked').hidden = !locked;
+if (locked) $('payLockedTxt').innerHTML = '<b>Already covered</b> \u00b7 ' + origLabel() + (diff > 0 ? '. Your changes add <b>$' + diff + '</b> \u2014 settle it below, or at the studio.' : diff < 0 ? '. Your changes bring it down \u2014 ' + (Math.min(-diff, orig.gift) > 0 ? '<b>$' + Math.min(-diff, orig.gift) + '</b> goes straight back on your gift balance' + (-diff - Math.min(-diff, orig.gift) > 0 ? ' and <b>$' + (-diff - Math.min(-diff, orig.gift)) + '</b> is refunded the same way you paid, within a few days' : '') : 'we refund <b>$' + (-diff) + '</b> the same way you paid, within a few days') + '.' : '. Nothing more to pay.');
+const opts = !locked || diff > 0;
+$('payOpts').hidden = !opts; $('payOptsLbl').hidden = !(locked && diff > 0);
+$('cardFields').hidden = !(opts && st.pay === 'card'); $('qrWhish').hidden = !(opts && st.pay === 'whish'); $('qrOmt').hidden = !(opts && st.pay === 'omt');
+$('payNote').textContent = opts ? PAY_NOTE[st.pay] : '';
+};
+$('payOpts').addEventListener('click', (e) => { const b = e.target.closest('[data-pay]'); if (b) setPay(b.dataset.pay); });
+$('giftMine').addEventListener('click', (e) => { if (e.target.closest('[data-use]')) { st.gift = true; renderSum(); save(); } });
+$('giftRemove').addEventListener('click', () => { st.gift = false; renderSum(); save(); });
+document.addEventListener('click', (e) => { if (e.target.closest('#switchAcc')) { A.signOut(); renderSum(); A.open(() => { renderCal(); renderSlots(); renderSum(); }); } });
+
+// Card fields
+const cNum = $('cNum'), cExp = $('cExp'), cCvc = $('cCvc'), cName = $('cName');
+const brand = (d) => /^3[47]/.test(d) ? 'Amex' : /^4/.test(d) ? 'Visa' : /^(5[1-5]|2[2-7])/.test(d) ? 'Mastercard' : '';
+const luhn = (d) => { let s = 0, alt = false; for (let i = d.length - 1; i >= 0; i--) { let n = +d[i]; if (alt) { n *= 2; if (n > 9) n -= 9; } s += n; alt = !alt; } return d.length >= 13 && s % 10 === 0; };
+cNum.addEventListener('input', () => { const d = cNum.value.replace(/\D/g, '').slice(0, 16); cNum.value = d.replace(/(.{4})/g, '$1 ').trim(); $('cBrand').textContent = brand(d); clr(cNum, 'eNum'); });
+cExp.addEventListener('input', () => { let d = cExp.value.replace(/\D/g, '').slice(0, 4); if (d.length >= 3) d = d.slice(0, 2) + ' / ' + d.slice(2); cExp.value = d; clr(cExp, 'eExp'); });
+cCvc.addEventListener('input', () => { cCvc.value = cCvc.value.replace(/\D/g, '').slice(0, 4); clr(cCvc, 'eCvc'); });
+cName.addEventListener('input', () => clr(cName, 'eName'));
+const clr = (inp, id) => { inp.classList.remove('bad'); $(id).classList.remove('show'); };
+const bad = (inp, id) => { inp.classList.add('bad'); $(id).classList.add('show'); };
+const cardErrors = () => {
+const d = cNum.value.replace(/\D/g, ''), ex = cExp.value.replace(/\D/g, ''), now = beirut();
+let first = null;
+if (!luhn(d)) { bad(cNum, 'eNum'); first = first || cNum; }
+const mm = +ex.slice(0, 2), yy = 2000 + +ex.slice(2, 4);
+if (ex.length !== 4 || mm < 1 || mm > 12 || yy < now.getFullYear() || (yy === now.getFullYear() && mm < now.getMonth() + 1)) { bad(cExp, 'eExp'); first = first || cExp; }
+if (cCvc.value.length !== (brand(d) === 'Amex' ? 4 : 3)) { bad(cCvc, 'eCvc'); first = first || cCvc; }
+if (cName.value.trim().length < 2) { bad(cName, 'eName'); first = first || cName; }
+return first;
+};
+
+// Confirm
+const scrollTo = (el) => window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 130, behavior: 'smooth' });
+const fail = (stepId, msg, focus) => {
+const err = $('bkErr'); err.textContent = msg; err.classList.add('show');
+const s = $(stepId); s.classList.remove('flash'); void s.offsetWidth; s.classList.add('flash');
+scrollTo(s); if (focus) setTimeout(() => focus.focus(), 400);
+};
+let placing = false;
+const confirm = () => {
+if (placing) return;
+$('bkErr').classList.remove('show');
+const s = sel();
+if (!s.length) return fail('step1', 'Pick at least one service first.');
+if (!st.date || !st.time) return fail('step3', 'Pick a day and a time.');
+if (st.pay === 'card' && !$('cardFields').hidden) { const f = cardErrors(); if (f) return fail('step5', 'Check the card details, or switch to pay at the studio.', f); }
+const place = (acc) => {
+acc = acc || A.get();
+const clash = (acc.bookings || []).find((b) => b.date === st.date && b.time === st.time && b.ref !== editing && /upcoming/i.test(b.status || ''));
+if (clash) { placing = false; return fail('step3', 'You already have ' + clash.service + ' at ' + st.time + ' that day \u2014 pick another time.'); }
+placing = true;
+[$('confirmBtn'), $('mbBtn')].forEach((b) => { b.disabled = true; b.textContent = 'Confirming\u2026'; });
+setTimeout(() => {
+const ref = editing || 'IS-' + String(Math.floor(1000 + Math.random() * 9000));
+const b = { ref, service: s.map((x) => x.name).join(' + '), services: s.map((x) => x.name), staff: staffLabel(), date: st.date, time: st.time, start: st.start, mins: totalMins(), serviceMins: s.map((x) => x.mins), price: net(), priceFrom: anyFrom(), quote: anyQuote(), quoteItems: s.filter((x) => x.price == null).map((x) => x.name), pay: PAYS[st.pay], gift: giftAmt() > 0 ? { amount: giftAmt() } : null, paid: st.pay === 'later' ? 0 : Math.max(0, net() - giftAmt()), due: st.pay === 'later' ? Math.max(0, net() - giftAmt()) : 0, status: 'Upcoming', notes: st.notes.trim(), mood: st.mood, flags: st.flags.slice(), drink: st.drink.slice(), smoke: st.smoke, created: new Date().toISOString() };
+if (editing) { const old = (acc.bookings || []).find((x) => x.ref === editing); if (old) { b.created = old.created || b.created; b.updated = new Date().toISOString(); }
+if (orig && orig.paid > 0) { const diff = net() - orig.paid - giftAmt(); b.pay = orig.pay; b.paid = orig.cash; b.due = 0; b.gift = old && old.gift ? old.gift : null; if (giftAmt() > 0) b.gift = { amount: giftAmt() + (old && old.gift ? old.gift.amount : 0), parts: (old && old.gift && old.gift.parts) || [] }; if (diff > 0) { if (st.pay === 'later') b.due = diff; else { b.paid = orig.cash + diff; if (orig.cash > 0 && PAYS[st.pay] !== orig.pay) b.pay = orig.pay + ' & ' + PAYS[st.pay].replace('Paid ', ''); else if (orig.cash === 0) b.pay = PAYS[st.pay]; } } else if (diff < 0) { const back = -diff; const fromGift = Math.min(back, orig.gift); if (fromGift > 0 && old && old.gift) { const parts = old.gift.parts || []; let left = fromGift; parts.slice().reverse().forEach((p) => { if (left <= 0) return; const r = Math.min(left, p.amount); G.refund(p.code, r, ref); p.amount -= r; left -= r; }); b.gift = { amount: orig.gift - fromGift + (giftAmt() || 0), parts: parts.filter((p) => p.amount > 0), codes: [...new Set(parts.filter((p) => p.amount > 0).map((p) => p.code))] }; if (b.gift.amount <= 0) b.gift = null; } const cashBack = back - fromGift; if (cashBack > 0) { b.paid = orig.cash - cashBack; b.refund = cashBack; } } }
+acc.bookings = (acc.bookings || []).map((x) => x.ref === editing ? b : x); } else acc.bookings = [b].concat(acc.bookings || []);
+acc.prefs = { mood: st.mood, flags: st.flags.slice(), drink: st.drink.slice(), smoke: st.smoke };
+if (giftAmt() > 0) { const parts = G.redeemFrom(acc, giftAmt(), ref, b.service); b.gift.parts = (b.gift.parts || []).concat(parts); b.gift.codes = [...new Set(b.gift.parts.map((p) => p.code))]; }
+G.attach(acc);
+A.set(acc);
+try { localStorage.removeItem(DRAFT); } catch (e) {}
+location.href = 'Booking.html?ref=' + encodeURIComponent(ref) + (editing ? '&updated=1' : '&new=1');
+}, 700);
+};
+if (A.signedIn()) place(); else A.open((acc) => { renderSum(); place(acc); });
+};
+$('confirmBtn').addEventListener('click', confirm);
+$('mbBtn').addEventListener('click', confirm);
+
+const resetCard = () => { [cNum, cExp, cCvc, cName].forEach((i) => { i.value = ''; i.classList.remove('bad'); }); $('cBrand').textContent = ''; ['eNum', 'eExp', 'eCvc', 'eName'].forEach((id) => $(id).classList.remove('show')); };
+
+// Edit / rebook an existing booking (?edit=REF or ?rebook=REF) — loads it into the form
+const loadBooking = (ref, keepTime) => {
+const acc = A.get(); const b = acc && (acc.bookings || []).find((x) => x.ref === ref); if (!b) return false;
+st.svcs = (b.services || [b.service]).filter((n) => SERVICES.some((s) => s.name === n));
+st.staffBy = {};
+const cs = [...new Set(st.svcs.map((n) => SERVICES.find((s) => s.name === n).cat))];
+if (cs.length === 1) { if (STAFF.some((x) => x.name === b.staff)) st.staffBy[cs[0]] = b.staff; }
+else String(b.staff || '').split(' \u00b7 ').forEach((part) => { const m = /^(.+?) \((.+)\)$/.exec(part.trim()); if (m && STAFF.some((x) => x.name === m[1])) st.staffBy[m[2]] = m[1]; });
+st.notes = b.notes || ''; st.mood = b.mood || ''; st.flags = (b.flags || []).filter((f) => FLAGS.includes(f)); st.drink = [].concat(b.drink || []).filter((x) => DRINKS.includes(x)); st.smoke = b.smoke || '';
+if (keepTime && b.date >= TODAY && b.date <= MAX) { st.date = b.date; st.start = typeof b.start === 'number' ? b.start : -1; st.time = st.start >= 0 ? fmt12(st.start) : ''; }
+$('bkNotes').value = st.notes;
+if (keepTime) { const cash = typeof b.paid === 'number' ? b.paid : (b.pay === 'Pay at studio' ? 0 : b.price); orig = { pay: b.pay, cash, gift: b.gift ? b.gift.amount : 0, paid: cash + (b.gift ? b.gift.amount : 0) }; setPay('later'); }
+if (st.svcs.length) cat = SERVICES.find((s) => s.name === st.svcs[0]).cat;
+return true;
+};
+const editRef = new URLSearchParams(location.search).get('edit'), rebookRef = new URLSearchParams(location.search).get('rebook');
+let editing = '', orig = null;
+if (editRef || rebookRef) {
+const go = () => {
+if (editRef && loadBooking(editRef, true)) { editing = editRef; $('h1').textContent = 'Change your booking.'; $('introP').textContent = 'Booking ' + editRef + ' \u2014 adjust anything below and update. Your original time stays yours until you do.' + (orig && orig.paid > 0 ? ' Payment stays as it was; any difference is settled or refunded.' : ' Since you\u2019re paying at the studio, you can also pay ahead now.'); document.title = 'Change booking \u2014 Incenso Studio'; }
+else if (rebookRef && loadBooking(rebookRef, false)) { $('introP').textContent = 'Same again \u2014 just pick a day and time.'; }
+if (st.date) { const dd = fromISO(st.date); view.y = dd.getFullYear(); view.m = dd.getMonth(); }
+revalidate(); renderAll();
+};
+if (A.signedIn()) go(); else A.open(go);
+}
+// Restore draft, then honour deep links (?svc=Name or ?cat=Nails)
+try {
+if (editRef || rebookRef) throw 0;
+const d = JSON.parse(localStorage.getItem(DRAFT) || 'null');
+if (d) {
+st.svcs = (d.svcs || []).filter((n) => SERVICES.some((s) => s.name === n));
+st.staffBy = d.staffBy || {}; st.notes = d.notes || ''; st.gift = !!d.gift; st.mood = d.mood || ''; st.flags = Array.isArray(d.flags) ? d.flags.filter((f) => FLAGS.includes(f)) : []; st.drink = [].concat(d.drink || []).filter((x) => DRINKS.includes(x)); st.smoke = d.smoke || ''; cat = CATS.includes(d.cat) ? d.cat : cat;
+if (d.date && d.date >= TODAY && d.date <= MAX) { st.date = d.date; st.start = typeof d.start === 'number' ? d.start : -1; st.time = st.start >= 0 ? fmt12(st.start) : ''; }
+if (d.pay && d.pay !== 'later') setPay(d.pay);
+$('bkNotes').value = st.notes;
+}
+} catch (e) {}
+if (A.signedIn() && !st.mood && !st.flags.length && !st.drink.length && !st.smoke) { const p = (A.get() || {}).prefs; if (p) { st.mood = p.mood || ''; st.flags = (p.flags || []).filter((f) => FLAGS.includes(f)); st.drink = [].concat(p.drink || []).filter((x) => DRINKS.includes(x)); st.smoke = p.smoke || ''; } }
+const params = new URLSearchParams(location.search);
+const qs = params.get('svc'), qc = params.get('cat');
+if (qs) { const s = SERVICES.find((x) => x.name.toLowerCase() === qs.toLowerCase()) || SERVICES.find((x) => x.name.toLowerCase().includes(qs.toLowerCase())); if (s) { cat = s.cat; st.svcs = [s.name]; st.staffBy = {}; st.date = ''; st.time = ''; st.start = -1; } }
+if (qc && CATS.some((c) => c.toLowerCase() === qc.toLowerCase())) cat = CATS.find((c) => c.toLowerCase() === qc.toLowerCase());
+const qStaff = params.get('staff'); if (qStaff && STAFF.some((s) => s.name === qStaff && s.cats.includes(cat))) st.staffBy[cat] = qStaff;
+if (st.date) { const dd = fromISO(st.date); view.y = dd.getFullYear(); view.m = dd.getMonth(); }
+revalidate();
+renderAll();
+})();
+</script>
+</body>
+</html>
