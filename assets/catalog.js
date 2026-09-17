@@ -87,8 +87,58 @@
     { name: 'Mia', cats: ['Make-up'], role: 'Make-up', accent: '#FCC67E', bio: 'Skin first, always. Mia builds a face in layers so thin you forget they are there — and it still reads in every photo at 2 AM.' },
     { name: 'Jana', cats: ['Brows & Lashes'], role: 'Brows · Lashes', accent: '#D8B4FE', bio: 'Jana reads a face in a glance and works with it, never against it. Brows that frame, lashes that lift, threading so quick you forget to flinch.' },
   ];
-  const HOURS = { open: 10, close: (dow) => (dow === 5 || dow === 6) ? 20 : 19 };
+  // ---- Hours + helpers ----
+  let hours = { open: 10, closeWeek: 19, closeWeekend: 20 };
+  const mkHours = (h) => ({ open: h.open, close: (dow) => (dow === 5 || dow === 6) ? h.closeWeekend : h.closeWeek });
   const priceLabel = (s) => s.price == null ? 'Custom quote' : (s.from ? 'from ' : '') + '$' + s.price + (s.unit ? ' / ' + s.unit : '');
-  const groupsOf = (cat) => [...new Set(SERVICES.filter((s) => s.cat === cat).map((s) => s.group))];
-  window.IncensoCatalog = { CATS, SERVICES, STAFF, HOURS, priceLabel, groupsOf, STUDIO_WA: '96171930290' };
+
+  // ---- Live data ----
+  // Starts from the built-in menu (instant, works offline) and any cached copy,
+  // then refreshes from Supabase so the studio edits everything in the dashboard.
+  let live = { CATS: CATS, SERVICES: SERVICES, STAFF: STAFF };
+  let studioWA = '96171930290';
+  try {
+    const cached = JSON.parse(localStorage.getItem('incenso-catalog'));
+    if (cached && cached.SERVICES && cached.SERVICES.length) {
+      live = { CATS: cached.CATS, SERVICES: cached.SERVICES, STAFF: cached.STAFF };
+      if (cached.hours) hours = cached.hours;
+      if (cached.wa) studioWA = cached.wa;
+    }
+  } catch (e) {}
+
+  const groupsOf = (cat) => [...new Set(live.SERVICES.filter((s) => s.cat === cat).map((s) => s.group))];
+
+  window.IncensoCatalog = {
+    get CATS() { return live.CATS; },
+    get SERVICES() { return live.SERVICES; },
+    get STAFF() { return live.STAFF; },
+    get HOURS() { return mkHours(hours); },
+    priceLabel, groupsOf,
+    get STUDIO_WA() { return studioWA; },
+    ready: null,
+  };
+
+  // ---- Refresh from Supabase (public read via RLS) ----
+  const SB = 'https://gcqkkruzgxpqpqxeymqx.supabase.co';
+  const KEY = 'sb_publishable_cRcQdQ7ZPXQMUoBOGm71DA_2d22DyLu';
+  const HDR = { apikey: KEY, Authorization: 'Bearer ' + KEY };
+  const q = (path) => fetch(SB + '/rest/v1/' + path, { headers: HDR }).then((r) => r.ok ? r.json() : Promise.reject(r.status));
+  window.IncensoCatalog.ready = Promise.all([
+    q('web_categories?select=*&active=eq.true&order=sort'),
+    q('web_services?select=*&active=eq.true&order=sort'),
+    q('web_staff?select=*&active=eq.true&order=sort'),
+    q('web_config?select=*'),
+  ]).then(([cats, svcs, staff, cfg]) => {
+    if (!cats || !cats.length || !svcs || !svcs.length) return;
+    const CATS2 = cats.map((c) => ({ name: c.name, file: c.file, ar: c.ar, h1: c.h1, intro: c.intro, chairs: c.chairs }));
+    const SERVICES2 = svcs.map((s) => ({ cat: s.cat, group: s.grp, name: s.name, mins: s.mins, price: s.price, from: !!s.is_from, unit: s.unit || '', desc: s.descr || '', brands: s.brands || '', note: '' }));
+    const STAFF2 = staff.map((st) => ({ name: st.name, cats: st.cats || [], role: st.role, accent: st.accent, bio: st.bio, photo: st.photo_url || '' }));
+    const cfgMap = {}; (cfg || []).forEach((r) => { cfgMap[r.key] = r.value; });
+    if (cfgMap.hours) hours = cfgMap.hours;
+    if (cfgMap.studio && cfgMap.studio.wa) studioWA = cfgMap.studio.wa;
+    live = { CATS: CATS2, SERVICES: SERVICES2, STAFF: STAFF2 };
+    try { localStorage.setItem('incenso-catalog', JSON.stringify({ CATS: CATS2, SERVICES: SERVICES2, STAFF: STAFF2, hours, wa: studioWA })); } catch (e) {}
+    try { document.dispatchEvent(new Event('catalog:updated')); } catch (e) {}
+    return window.IncensoCatalog;
+  }).catch(() => window.IncensoCatalog);
 })();
