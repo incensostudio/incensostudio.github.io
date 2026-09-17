@@ -295,7 +295,29 @@ const withTxt = () => named().length ? ' with ' + named().join(' & ') : '';
 
 // Availability — deterministic per date/staff/half-hour so the calendar is stable across reloads
 const hash = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
-const busy = (name, date, i) => hash(date + '|' + name + '|' + i) % 100 < BUSY_PCT;
+// Real availability: BUSY[date][staff] = Set of taken 30-min slot indices (from Supabase).
+// Falls back to a stable estimate for days not yet loaded (calendar dots only).
+const BUSY = {};
+const busy = (name, date, i) => {
+  const d = BUSY[date];
+  if (d) { const s = d[name]; return s ? s.has(i) : false; }
+  return hash(date + '|' + name + '|' + i) % 100 < BUSY_PCT;
+};
+const loadBusy = (date) => {
+  if (!date || BUSY[date] || !window.SB) return;
+  BUSY[date] = {};
+  window.SB.rpc('day_busy', { p_date: date }).then(({ data }) => {
+    const map = {};
+    (data || []).forEach((r) => {
+      const startI = Math.round((r.start_min - OPEN_H * 60) / 30);
+      const cnt = Math.max(1, Math.ceil(r.mins / 30));
+      const set = (map[r.staff_name] = map[r.staff_name] || new Set());
+      for (let k = 0; k < cnt; k++) set.add(startI + k);
+    });
+    BUSY[date] = map;
+    try { renderSlots(); renderSum(); } catch (e) {}
+  }, (e) => { console.warn('[Incenso] day_busy', e); });
+};
 const freeFor = (name, date, i, n) => { for (let k = 0; k < n; k++) if (busy(name, date, i + k)) return false; return true; };
 // Services in different categories run back to back, so each category only needs its own block free — in sequence
 const catChunks = (c) => Math.max(1, Math.ceil(sel().filter((s) => s.cat === c).reduce((x, s) => x + s.mins, 0) / 30));
@@ -361,6 +383,7 @@ $('calGrid').innerHTML = html;
 const renderSlots = () => {
 const box = $('slots'), note = $('slotNote');
 if (!st.date) { box.innerHTML = '<div class="slots-empty"><b>Pick a day</b>Free times appear here. Fridays &amp; Saturdays we\u2019re open till 8 PM.</div>'; note.textContent = ''; return; }
+loadBusy(st.date);
 const all = daySlots(st.date), free = all.filter((s) => s.free);
 if (!free.length) { box.innerHTML = '<div class="slots-empty"><b>Nothing fits on ' + nice(st.date) + '</b>' + (totalMins() > 60 ? dur(totalMins()) + ' needs a longer gap \u2014 try another day, or ' : 'Try another day, or ') + (named().length ? 'switch to first available.' : 'message us on WhatsApp and we\u2019ll squeeze you in.') + '</div>'; note.textContent = ''; return; }
 const groups = [['Morning', (s) => s.start < 12 * 60], ['Afternoon', (s) => s.start >= 12 * 60 && s.start < 17 * 60], ['Evening', (s) => s.start >= 17 * 60]];
