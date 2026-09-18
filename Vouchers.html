@@ -85,7 +85,7 @@
 @media (max-width:880px){
 .gv-wrap{display:flex;flex-direction:column;gap:0;margin-bottom:0}
 .preview{display:contents}
-.preview .vcard{order:-1;width:100%;align-self:stretch;margin:0 0 14px;padding:18px 20px;border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,0.14);position:sticky;top:calc(max(clamp(24px,3.2vw,40px),env(safe-area-inset-top)) + 60px);z-index:6}
+.preview .vcard{order:-1;position:fixed;top:calc(max(clamp(24px,3.2vw,40px),env(safe-area-inset-top)) + 60px);left:var(--gutter);right:var(--gutter);width:auto;margin:0;padding:18px 20px;border-radius:18px;box-shadow:0 14px 34px rgba(0,0,0,0.16);z-index:6}
 .vcard::after{inset:8px;border-radius:12px}
 .vcard .amt{font-size:clamp(40px,12vw,56px)}
 .vcard .to{font-size:14px;margin-top:10px}
@@ -269,6 +269,23 @@ if (A.signedIn()) go(); else A.open(go);
 $('mBuy').addEventListener('click', () => $('buyBtn').click());
 if (window.IncensoPhone) window.IncensoPhone.fill($('toPhoneWrap'));
 renderAmts(); render();
+// Mobile: the live card is pinned under the header (position:fixed) — push the
+// form down so it starts just below the card and scrolls beneath it.
+const gvWrap = document.querySelector('.gv-wrap');
+const vcard = document.querySelector('.preview .vcard');
+const pinCard = () => {
+  if (!gvWrap || !vcard) return;
+  if (window.matchMedia('(max-width:880px)').matches) {
+    const cardTop = parseFloat(getComputedStyle(vcard).top) || 0;
+    const wrapTop = gvWrap.getBoundingClientRect().top + window.scrollY;
+    gvWrap.style.paddingTop = Math.max(0, Math.round(cardTop + vcard.offsetHeight + 16 - wrapTop)) + 'px';
+  } else {
+    gvWrap.style.paddingTop = '';
+  }
+};
+pinCard();
+window.addEventListener('resize', pinCard);
+window.addEventListener('orientationchange', pinCard);
 })();
 </script>
 </body>
