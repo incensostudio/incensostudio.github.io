@@ -39,10 +39,15 @@
   const orToRow = (o, uid) => ({ ref: o.ref, user_id: uid, items: o.items || [], total: o.total || 0, status: o.status || 'Placed', method: o.method || null, pay: o.pay || null, name: o.name || null, phone: o.phone || null, email: o.email || null, address: (typeof o.address === 'string' ? { text: o.address } : (o.address || {})), discount: o.discount || 0, tier: o.tier || null });
 
   let currentUid = null;
+  let lastPersist = Promise.resolve();
   const persist = async (a) => {
     if (!SB || !a) return;
     try {
-      const { data: { user } } = await SB.auth.getUser();
+      // Prefer the locally-cached session (no network round-trip) so a save can
+      // finish before a page navigation; fall back to getUser if needed.
+      let user = null;
+      try { const s = await SB.auth.getSession(); user = s && s.data && s.data.session ? s.data.session.user : null; } catch (e) {}
+      if (!user) { const u = await SB.auth.getUser(); user = u && u.data ? u.data.user : null; }
       if (!user) return;
       const uid = user.id; currentUid = uid;
       await SB.from('profiles').upsert({ id: uid, phone: a.phone || null, name: a.name || null, email: a.email || null, photo_url: a.photo || null, prefs: a.prefs || {}, tier: (tierFor(yearSpend(a)) || {}).name || 'Member', spend_12mo: yearSpend(a), updated_at: new Date().toISOString() }, { onConflict: 'id' });
@@ -51,7 +56,10 @@
       if ((a.restocks || []).length) await SB.from('restock_requests').upsert(a.restocks.map((r) => ({ user_id: uid, product: r.name, phone: a.phone || null })), { onConflict: 'user_id,product' });
     } catch (e) { console.warn('[Incenso] persist failed', e); }
   };
-  const set = (a) => { acc = a; writeLocal(a); persist(a); return a; };
+  const set = (a) => { acc = a; writeLocal(a); lastPersist = persist(a).catch(() => {}); return a; };
+  // Resolves once the most recent save() has finished writing to Supabase.
+  // Callers that navigate right after set() should await this first.
+  const flush = () => lastPersist;
 
   const hydrate = async (uid) => {
     if (!SB) return null;
@@ -254,7 +262,7 @@
   const findByPhone = () => null;
   const all = () => ({});
 
-  window.IncensoAuth = { get, set, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, TIERS, sync: syncButtons, findByPhone, all, hydrate };
+  window.IncensoAuth = { get, set, flush, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, TIERS, sync: syncButtons, findByPhone, all, hydrate };
 
   // ---- Newsletter subscribe (persists to Supabase; members pass straight through) ----
   document.addEventListener('submit', (e) => {

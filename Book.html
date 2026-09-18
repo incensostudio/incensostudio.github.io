@@ -566,7 +566,10 @@ if (giftAmt() > 0) { const parts = G.redeemFrom(acc, giftAmt(), ref, b.service);
 G.attach(acc);
 A.set(acc);
 try { localStorage.removeItem(DRAFT); } catch (e) {}
-location.href = 'Booking.html?ref=' + encodeURIComponent(ref) + (editing ? '&updated=1' : '&new=1');
+const dest = 'Booking.html?ref=' + encodeURIComponent(ref) + (editing ? '&updated=1' : '&new=1');
+// Wait for the booking to finish saving to Supabase before navigating, so the
+// in-flight request isn't cancelled by the page change (max 3s, then go anyway).
+Promise.race([ (A.flush ? A.flush() : Promise.resolve()), new Promise((r) => setTimeout(r, 3000)) ]).then(() => { location.href = dest; });
 }, 700);
 };
 if (A.signedIn()) place(); else A.open((acc) => { renderSum(); place(acc); });
