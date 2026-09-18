@@ -364,9 +364,14 @@
       });
       const d = await r.json().catch(() => ({}));
       if (r.ok && d && d.url) { location.href = d.url; return true; }
-      console.warn('[Incenso] checkout failed', d);
+      console.warn('[Incenso] checkout failed', r.status, d);
+      alert('Card payment couldn’t start' + (d && (d.error || d.detail) ? ' (' + (d.detail || d.error) + ')' : '') + '. Please try again in a moment, or choose another payment method.');
       return false;
-    } catch (e) { console.warn('[Incenso] checkout error', e); return false; }
+    } catch (e) {
+      console.warn('[Incenso] checkout error', e);
+      alert('Card payment couldn’t start — please check your connection and try again.');
+      return false;
+    }
   };
 
   window.IncensoAuth = { get, set, flush, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, orderTotal, payLabel, nextRef, TIERS, sync: syncButtons, findByPhone, all, hydrate, sendDetailOtp, verifyDetailOtp, stripeCheckout };
