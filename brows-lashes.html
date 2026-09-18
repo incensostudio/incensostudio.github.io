@@ -111,7 +111,7 @@ document.getElementById('introP').textContent = cat.intro;
 const staff = C.STAFF.filter((s) => s.cats.includes(catName));
 const list = C.SERVICES.filter((s) => s.cat === catName);
 document.getElementById('svcCount').textContent = list.length + ' services';
-document.getElementById('svcCount').textContent = list.length + ' services \u00b7 from $' + Math.min.apply(null, list.filter((s) => s.price != null && !s.unit).map((s) => s.price));
+document.getElementById('svcCount').textContent = list.length + ' services \u00b7 from $' + (function(a){return a.length?Math.min.apply(null,a):0})(list.filter((s) => s.price != null && !s.unit).map((s) => s.price));
 document.getElementById('svPhoto').style.setProperty('--acc', staff[0] ? staff[0].accent : '#D8B4FE');
 if (!staff.length) document.querySelector('.chairs').hidden = true;
 else document.getElementById('chSub').textContent = staff.length === 1 ? staff[0].name + ' takes every ' + catName.toLowerCase() + ' appointment.' : staff.map((s) => s.name).join(', ').replace(/, ([^,]*)$/, ' and $1') + ' \u2014 pick who you book with.';

@@ -180,7 +180,7 @@ const tEl = document.querySelector('.bk-timer'); if (window._bkTimer) clearInter
 else if (cancelled && /not received/i.test(b.cancelReason || '')) banner('Released', 'We didn\u2019t receive your ' + esc(b.pay) + ' transfer by the deadline, so this slot was released. Nothing was charged \u2014 book again any time.');
 else if (cardTopupPending) { banner('Finish your card top-up', 'The $' + b.extra.amount + ' added to booking ' + b.ref + ' hasn\u2019t been charged yet \u2014 your chair is held. Pay it securely by card to complete it.<br><button type="button" class="bk-topup-again" style="margin-top:14px;appearance:none;border:0;border-radius:999px;background:#000;color:#FEFEF1;height:44px;padding:0 24px;font:inherit;font-size:14px;font-weight:500;cursor:pointer">Pay $' + b.extra.amount + ' by card</button>');
   const pt = document.querySelector('.bk-topup-again'); if (pt) pt.addEventListener('click', async () => { pt.disabled = true; pt.textContent = 'Starting\u2026'; if (!(A && await A.stripeCheckout('booking', b.ref))) { pt.disabled = false; pt.textContent = 'Pay $' + b.extra.amount + ' by card'; } }); }
-$('h1').textContent = cancelled ? 'This booking was cancelled.' : done ? 'Thanks for coming in.' : 'Your chair is booked.';
+$('h1').textContent = cancelled ? 'This booking was cancelled.' : done ? 'Thanks for coming in.' : awaiting ? (cardAwait ? 'Held for you — finish your payment.' : 'Held for you — send your payment.') : cardTopupPending ? 'Held for you — finish your top-up.' : 'Your chair is booked.';
 $('dDow').textContent = d.toLocaleDateString('en-GB', { weekday: 'long' });
 $('dDay').textContent = d.getDate();
 $('dMo').textContent = d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });

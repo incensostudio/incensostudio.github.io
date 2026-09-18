@@ -233,7 +233,7 @@
   const stepPhone = (prefill) => {
     const pre = prefill || (acc ? String(acc.phone) : '');
     body().innerHTML = '<p class="au-kicker">Incenso Studio</p><h2 class="au-title">Enter your phone to continue</h2>' +
-      '<p class="au-sub">Enter your number and we’ll text you a one-time code — no password needed. New here? Your account is created automatically.</p>' +
+      '<p class="au-sub">Enter your number and we’ll message you a one-time code on WhatsApp — no password needed. New here? Your account is created automatically.</p>' +
       '<form id="auPhoneForm"><div class="au-field"><label for="auPhone">Phone</label><div class="phone-combo"><select class="pc-cc" aria-label="Country code"></select><input id="auPhone" type="tel" inputmode="tel" placeholder="Phone number" required value="' + pre.replace(/^\+[\d]+\s*/, '') + '" /></div></div>' +
       '<p class="au-err" id="auErr"></p>' +
       '<button type="submit" class="au-btn" id="auSend">Send code</button></form>';
@@ -248,7 +248,7 @@
       err.style.display = 'none'; btn.disabled = true; btn.textContent = 'Sending…';
       if (!SB) { err.textContent = 'Sign-in is being connected. Please try again shortly.'; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Send code'; return; }
       const { error } = await SB.auth.signInWithOtp({ phone: pendingE164 });
-      if (error) { err.textContent = /provider|sms|not enabled|unsupported/i.test(error.message) ? 'Text sign-in is being switched on — hang tight, it’s almost ready.' : error.message; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Send code'; return; }
+      if (error) { err.textContent = /provider|sms|not enabled|unsupported/i.test(error.message) ? 'WhatsApp sign-in is being switched on — hang tight, it’s almost ready.' : error.message; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Send code'; return; }
       stepCode();
     });
   };

@@ -186,14 +186,14 @@
   $('mTabs').addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (b) showTab(b.dataset.tab); });
   showTab((location.hash || '').replace('#', '') || (() => { try { return sessionStorage.getItem('inc_acc_tab'); } catch (e) { return ''; } })() || 'level');
   const money = (n) => '$' + n;
-  const nice = (iso) => new Date(iso + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  const nice = (iso) => iso ? new Date(String(iso).slice(0, 10) + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
 
   const render = () => {
     const on = A.signedIn();
     document.body.classList.toggle('locked', !on);
     if (!on) { $('hi').textContent = 'Your account.'; $('phoneLine').textContent = ''; $('pfp').hidden = true; return; }
     const a = A.get();
-    $('hi').textContent = 'Hello, ' + a.name.split(' ')[0] + '.';
+    $('hi').textContent = 'Hello, ' + ((a.name || '').split(' ')[0] || 'there') + '.';
     $('pfp').hidden = false;
     $('pfp').classList.toggle('has', !!a.photo);
     $('pfp').style.backgroundImage = a.photo ? 'url(' + a.photo + ')' : '';
@@ -225,7 +225,7 @@
     const isPast = (b) => !/cancel/i.test(b.status || '') && ((b.final && typeof b.final.total === 'number') || /complet/i.test(b.status || ''));
     const upcoming = bk.filter((b) => !isPast(b) && !/cancel/i.test(b.status || ''));
     const cancelled = bk.filter((b) => /cancel/i.test(b.status || '')).reverse();
-    const bkRow = (b, muted) => '<a class="r r-link' + (muted ? ' muted' : '') + '" href="/booking?ref=' + b.ref + '"><span class="a"><b>' + b.service + '</b><small>' + b.staff + ' · ' + nice(b.date) + ' · ' + b.time + '</small></span><span class="v">' + money(b.price) + '<small style="color:' + (muted ? '#B3261E' : (b.payStatus === 'pending' || /await/i.test(b.status || '')) ? '#C9821B' : '#1F9A56') + ';font-weight:600">' + (muted ? 'Cancelled' : ((b.payStatus === 'pending' || /await/i.test(b.status || '')) ? A.payLabel(b) : 'Upcoming · ' + A.payLabel(b))) + '</small></span></a>';
+    const bkRow = (b, muted) => '<a class="r r-link' + (muted ? ' muted' : '') + '" href="/booking?ref=' + b.ref + '"><span class="a"><b>' + b.service + '</b><small>' + b.staff + ' · ' + nice(b.date) + ' · ' + b.time + '</small></span><span class="v">' + (b.quote && !b.price ? 'Custom quote' : (b.priceFrom ? 'from ' : '') + money(b.price)) + '<small style="color:' + (muted ? '#B3261E' : (b.payStatus === 'pending' || /await/i.test(b.status || '')) ? '#C9821B' : '#1F9A56') + ';font-weight:600">' + (muted ? 'Cancelled' : ((b.payStatus === 'pending' || /await/i.test(b.status || '')) ? A.payLabel(b) : 'Upcoming · ' + A.payLabel(b))) + '</small></span></a>';
     $('pBookings').innerHTML = upcoming.length ? upcoming.map((b) => bkRow(b, false)).join('') : '<p class="none">Nothing coming up.</p>';
     const visits = bk.filter((b) => isPast(b) || /cancel/i.test(b.status || '')).map((b) => ({ service: b.final && b.final.items ? b.final.items.map((x) => x.name).join(' + ') : b.service, staff: b.staff, date: b.date, price: b.final && typeof b.final.total === 'number' ? b.final.total : b.price, ref: b.ref, cancelled: /cancel/i.test(b.status || '') })).concat(a.visits || []).sort((x, y) => x.date < y.date ? 1 : -1);
     $('pVisits').innerHTML = rows(visits, (v) =>
