@@ -226,6 +226,22 @@ if (params.get('new')) banner('All set \u2726', 'Confirmation is on its way by W
 if (params.get('updated')) banner('Updated \u2726', 'Your new booking is set \u2014 confirmation sent by WhatsApp.');
 if (A.signedIn()) { const acc0 = A.get(); let dirty = false; (acc0.bookings || []).forEach((x) => { if (x.payStatus === 'pending' && !/cancel/i.test(x.status || '') && Date.now() > (x.payDeadline || ((x.placedAt || 0) + 86400000)) && (x.payDeadline || x.placedAt)) { x.status = 'Cancelled'; x.cancelled = new Date().toISOString(); x.cancelReason = 'Payment not received within 24 hours.'; dirty = true; } }); if (dirty) A.set(acc0); }
 if (A.signedIn()) render(); else A.open(render);
+// Refresh when the account is re-hydrated from the server, and — coming back from a
+// card payment (?paid=1) — poll the server until the booking shows as paid, then re-render.
+document.addEventListener('account:updated', () => { if (A.signedIn()) render(); });
+if (params.get('paid') && window.SB && A.signedIn()) {
+  (async () => {
+    for (let i = 0; i < 12; i++) {
+      const { data } = await window.SB.from('bookings').select('pay_status, status, paid, due').eq('ref', ref).maybeSingle();
+      if (data && data.pay_status === 'paid') {
+        const acc0 = A.get(); const lb = acc0 && (acc0.bookings || []).find((x) => x.ref === ref);
+        if (lb) { lb.payStatus = 'paid'; lb.status = data.status || 'Upcoming'; lb.paid = data.paid; lb.due = data.due || 0; lb.pay = 'Paid by card'; A.set(acc0); render(); banner('Payment received ✦', 'Your booking is confirmed — see you soon.'); }
+        break;
+      }
+      await new Promise((r) => setTimeout(r, 800));
+    }
+  })();
+}
 if (!A.signedIn()) { document.body.classList.add('missing'); $('ref').textContent = 'Booking'; $('status').hidden = true; $('h1').textContent = 'Sign in to see it.'; $('missingMsg').textContent = 'This booking lives in your account \u2014 sign in with your phone to open it.'; }
 })();
 </script>

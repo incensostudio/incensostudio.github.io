@@ -163,6 +163,17 @@ $('acts').innerHTML = (recipient && G.active(v) ? '<a class="btn" href="/book">U
 };
 document.getElementById('acts').addEventListener('click', (e) => { const b = e.target.closest('#resend'); if (!b) return; b.disabled = true; b.textContent = 'Sending\u2026'; setTimeout(() => { b.textContent = 'Sent by WhatsApp \u2726'; setTimeout(() => { b.disabled = false; b.textContent = 'Resend'; }, 2600); }, 700); });
 if (A.signedIn()) render(); else { render(); A.open(render); }
+// Coming back from a card payment (?paid=1) — wait for the server to activate the card, then re-render.
+document.addEventListener('account:updated', () => render());
+if (new URLSearchParams(location.search).get('paid') && window.SB && code) {
+  (async () => {
+    for (let i = 0; i < 12; i++) {
+      const { data } = await window.SB.from('gift_cards').select('status, confirmed').eq('code', code).maybeSingle();
+      if (data && (data.status === 'Active' || data.confirmed === true)) { if (G.refresh) await G.refresh(); render(); break; }
+      await new Promise((r) => setTimeout(r, 800));
+    }
+  })();
+}
 })();
 </script>
 </body>
