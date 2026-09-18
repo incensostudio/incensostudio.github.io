@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <meta name="description" content="Incenso Studio — checkout. Shipping or studio pickup in Tripoli, Lebanon." />
 <meta name="theme-color" content="#e5dcc9" />
-<link rel="icon" href="favicon.svg" type="image/svg+xml" />
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
-<link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <title>Checkout — Incenso Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -146,7 +146,23 @@
   body.placed .intro{display:none}
   body.placed .co-wrap{display:none}
   body.placed .empty{display:none !important}
-  .op-kicker.cx .dot{background:#B3261E;box-shadow:0 0 8px #B3261E}
+  .s-bal{margin-top:0;padding-top:10px;border-top:0;font-size:15px}
+  .s-bal .v{font-size:18px}
+  .s-bal[hidden]{display:none}
+  .s-row[hidden],#giftMine:empty,#payOpts[hidden]{display:none}
+  .gift-row .v{color:#1F9A56}
+  .gift-row small{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;color:rgba(0,0,0,0.5);margin-top:3px}
+  .gift-x{appearance:none;border:0;background:none;font:inherit;font-size:10px;letter-spacing:0.1em;color:rgba(0,0,0,0.6);cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:2px}
+  .gift-x:hover{color:var(--fg-warm)}
+  .gift-ctl{margin-top:8px}
+  .gift-mine{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px dashed rgba(0,0,0,0.35);background:rgba(134,239,172,0.18);font-size:13px;line-height:1.45}
+  .gift-mine b{font-weight:600}
+  .gift-mine > span{min-width:0}
+  .gift-mine .btn{appearance:none;display:inline-flex;align-items:center;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--fg-warm);background:var(--fg-warm);color:#FEFEF1;font:inherit;font-size:13px;font-weight:600;cursor:pointer;flex:none;white-space:nowrap}
+  .op-kicker.cx{--kc:#B3261E}
+  .op-kicker.wt{--kc:#C9821B}
+  .op-step.wait .bar{background:#C9821B}
+  .op-timer{font-family:var(--font-mono);font-weight:600;color:#8C5A10;font-variant-numeric:tabular-nums}
   .oi .nm{justify-self:start}
   .oi .v{justify-self:end;text-align:right}
   .oi .ph{width:48px;aspect-ratio:4/5;border:1px solid var(--card-line);display:grid;place-items:center}
@@ -160,7 +176,7 @@
   .op-note strong{font-weight:600;color:#8C1D18}
   .op-head{padding:clamp(28px,5vw,64px) 0 clamp(22px,3vw,34px)}
   .op-kicker{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:rgba(0,0,0,0.7);margin:0 0 16px;display:inline-flex;align-items:center;gap:10px}
-  .op-kicker .dot{width:7px;height:7px;border-radius:999px;background:#1F9A56;box-shadow:0 0 8px #1F9A56}
+  .op-kicker .dot{width:7px;height:7px;border-radius:999px;background:var(--kc,#1F9A56);box-shadow:0 0 8px var(--kc,#1F9A56)}
   .op-ref{font-family:var(--font-sans);font-weight:600;font-size:clamp(30px,4.4vw,52px);line-height:1.05;letter-spacing:-0.025em;margin:0}
   .op-sub{margin:14px 0 0;font-size:clamp(15px,1.3vw,17px);line-height:1.55;color:rgba(0,0,0,0.75);max-width:56ch;text-wrap:pretty}
   .op-track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;padding:clamp(24px,3.4vw,40px) 0;border-bottom:1px solid var(--card-line)}
@@ -370,7 +386,7 @@
             </div>
             <div class="field"><label for="fNotes">Delivery notes <span class="opt">— optional</span></label><textarea id="fNotes" name="notes" placeholder="Best time, call first…"></textarea></div>
           </div>
-          <p class="d-note" id="dNote">Collect at the studio — Tripoli, Lebanon. We'll message you on SMS and WhatsApp the moment it's ready.</p>
+          <p class="d-note" id="dNote">Collect at the studio — Tripoli, Lebanon. Ready to collect as soon as you order. Paying at the studio? We hold it for 3 days, then the order is cancelled.</p>
         </fieldset>
         <fieldset>
           <legend class="f-step"><span class="n">03</span>Payment</legend>
@@ -380,8 +396,8 @@
             <button type="button" class="pill" data-pay="whish" aria-pressed="false">Whish Money</button>
             <button type="button" class="pill" data-pay="omt" aria-pressed="false">OMT Pay</button>
           </div>
-          <div class="qr-pane" id="qrWhish" hidden><image-slot id="qr-whish" shape="rect" fit="contain" placeholder="Whish Money QR"></image-slot><div class="qr-txt"><p class="qr-h">Whish Money</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan the code in the Whish app, pay the total, then place your order. We match the transfer to your order number.</p></div></div>
-          <div class="qr-pane" id="qrOmt" hidden><image-slot id="qr-omt" shape="rect" fit="contain" placeholder="OMT Pay QR"></image-slot><div class="qr-txt"><p class="qr-h">OMT Pay</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan the code in OMT Pay, pay the total, then place your order. We match the transfer to your order number.</p></div></div>
+          <div class="qr-pane" id="qrWhish" hidden><image-slot id="qr-whish" shape="rect" fit="contain" placeholder="Whish Money QR"></image-slot><div class="qr-txt"><p class="qr-h">Whish Money</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan the code in the Whish app, pay the total, then place your order. We match the transfer to your order number and confirm on WhatsApp — unpaid orders are cancelled after 24 hours.</p></div></div>
+          <div class="qr-pane" id="qrOmt" hidden><image-slot id="qr-omt" shape="rect" fit="contain" placeholder="OMT Pay QR"></image-slot><div class="qr-txt"><p class="qr-h">OMT Pay</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan the code in OMT Pay, pay the total, then place your order. We match the transfer to your order number and confirm on WhatsApp — unpaid orders are cancelled after 24 hours.</p></div></div>
           <div id="cardFields" hidden>
             <div class="field"><label for="cNum">Card number</label><input id="cNum" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="19" /></div>
             <div class="row2">
@@ -393,7 +409,7 @@
         </fieldset>
         <div class="place-row">
           <button type="submit" class="checkout" id="placeBtn">Place order — $0<svg viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="15" r="13.5"></circle><path d="M10 15 H20 M16 11 L20 15 L16 19"></path></svg></button>
-          <p class="place-note">Confirmation and every step after it arrive by SMS and WhatsApp.</p>
+          <p class="place-note">Confirmation and every step after it arrive by WhatsApp.</p>
         </div>
       </form>
       <a class="s-back" href="Cart.html">← Edit cart</a>
@@ -405,6 +421,9 @@
       <div class="s-row" id="discRow" hidden><span id="discLabel">Member discount</span><span class="v" id="sumDiscount"></span></div>
       <div class="s-row"><span>Delivery</span><span class="v" id="sumDelivery">Free — pickup</span></div>
       <div class="s-total"><span>Total</span><span class="v" id="sumTotal">$0</span></div>
+      <div class="s-row gift-row" id="giftRow" hidden><span>Gift balance<small><span id="giftLbl"></span> · <button type="button" class="gift-x" id="giftRemove">Don’t use</button></small></span><span class="v" id="sumGift"></span></div>
+      <div class="s-total s-bal" id="dueRow" hidden><span>To pay</span><span class="v" id="sumDue"></span></div>
+      <div class="gift-ctl" id="giftCtl"><div id="giftMine"></div></div>
     </aside>
   </div>
 
@@ -428,7 +447,7 @@
     <div class="f-col">
       <span>© Incenso Studio</span>
       <span class="ticker" aria-live="polite"><span class="ticker-dot" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2 L13.5 8 L8 14 L2.5 8 Z"></path></svg></span><span class="ticker-text">Open daily 10 AM – 7 PM</span></span>
-      <a href="https://maps.google.com/?cid=5268585506035239909" target="_blank" rel="noopener">Tripoli · Lebanon</a>
+      <a href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x1521f75831aec263:0x491dc69a84008be5?sa=X&amp;ved=1t:8290&amp;ictx=111" target="_blank" rel="noopener">Tripoli · Lebanon</a>
     </div>
     <div class="f-col">
       <a href="Terms.html">Terms &amp; Conditions</a>
@@ -506,6 +525,10 @@
   let pay = 'later';
   let mode = 'pickup';
   let discAmt = 0, discTier = '';
+  let useGift = false;
+  const G = () => window.IncensoGift, A0 = () => window.IncensoAuth;
+  const giftBal = () => { const g = G(), a = A0(); return g && a && a.signedIn() ? g.balanceFor(a.get()) : 0; };
+  const giftAmt = (total) => useGift ? Math.min(giftBal(), total) : 0;
   const setMode = (m) => {
     mode = m;
     const ship = m === 'ship';
@@ -515,13 +538,21 @@
     ['fGov', 'fCity', 'fStreet', 'fBldg'].forEach((fid) => { document.getElementById(fid).required = ship; });
     dNote.textContent = ship
       ? 'Courier across Lebanon, usually 1–3 days — flat $5, added to your total.'
-      : 'Collect at the studio — Tripoli, Lebanon. We\u2019ll message you on SMS and WhatsApp the moment it\u2019s ready.';
+      : 'Collect at the studio — Tripoli, Lebanon. ' + (pay === 'whish' || pay === 'omt' ? 'Ready to collect once we confirm your transfer.' : 'Ready to collect as soon as you order.') + (pay === 'later' ? ' Paying at the studio? We hold it for 3 days, then the order is cancelled.' : '');
     payLater.textContent = ship ? 'Cash on delivery' : 'Pay at the studio';
     sumDelivery.textContent = ship ? '$5' : 'Free';
     const total = subtotal - discAmt + (ship ? 5 : 0);
     document.getElementById('sumTotal').textContent = '$' + total;
-    placeBtn.childNodes[0].textContent = (pay === 'card' ? 'Pay $' + total + ' & place order' : (pay === 'whish' || pay === 'omt') ? 'I\u2019ve sent $' + total + ' \u2014 place order' : 'Place order \u2014 $' + total);
-    document.querySelectorAll('.qr-amt').forEach((x) => { x.textContent = '$' + total; });
+    const bal = giftBal(), g = giftAmt(total), toPay = total - g;
+    document.getElementById('giftRow').hidden = !g;
+    if (g) { document.getElementById('sumGift').textContent = '\u2212$' + g; document.getElementById('giftLbl').textContent = '$' + bal + ' available' + (bal - g > 0 ? ' \u00b7 $' + (bal - g) + ' stays' : ''); }
+    document.getElementById('dueRow').hidden = !g; if (g) document.getElementById('sumDue').textContent = '$' + toPay;
+    document.getElementById('giftMine').innerHTML = !useGift && bal > 0 && subtotal > 0 ? '<div class="gift-mine"><span><b>$' + bal + '</b> gift balance</span><button type="button" class="btn" data-use="1">Use it</button></div>' : '';
+    const covered = g > 0 && toPay <= 0;
+    document.getElementById('payOpts').hidden = covered; document.getElementById('cardFields').hidden = covered || pay !== 'card'; document.getElementById('qrWhish').hidden = covered || pay !== 'whish'; document.getElementById('qrOmt').hidden = covered || pay !== 'omt';
+    if (covered) ['cNum', 'cExp', 'cCvc', 'cName'].forEach((id) => { document.getElementById(id).required = false; });
+    placeBtn.childNodes[0].textContent = covered ? 'Place order \u2014 covered by gift balance' : (pay === 'card' ? 'Pay $' + toPay + ' & place order' : (pay === 'whish' || pay === 'omt') ? 'I\u2019ve sent $' + toPay + ' \u2014 place order' : 'Place order \u2014 $' + toPay);
+    document.querySelectorAll('.qr-amt').forEach((x) => { x.textContent = '$' + toPay; });
   };
   segPickup.addEventListener('click', () => setMode('pickup'));
   segShip.addEventListener('click', () => setMode('ship'));
@@ -565,34 +596,58 @@
     cCvc.value = cCvc.value.replace(/\D/g, '').slice(0, 4);
   });
   payOpts.addEventListener('click', (e) => { const b = e.target.closest('[data-pay]'); if (b) setPay(b.dataset.pay); });
+  document.getElementById('giftMine').addEventListener('click', (e) => { if (e.target.closest('[data-use]')) { useGift = true; setMode(mode); } });
+  document.getElementById('giftRemove').addEventListener('click', () => { useGift = false; setMode(mode); });
   setPay('later');
 
   // Order page renderer — used on placing an order and when opening ?order=REF from the account
   const ACCENTS = ['#7DD3FC','#F9A8D4','#86EFAC','#FDE047','#FCA5A5','#D8B4FE','#93C5FD','#A5B4FC','#C4B5FD','#FCC67E'];
+  // Put gift-balance parts back on the cards when an order is cancelled
+  const restoreGift = (o) => { if (o.gift && o.gift.parts && !o.giftRestored && window.IncensoGift) { window.IncensoGift.refundParts(o.gift.parts, o.ref); o.giftRestored = true; } };
+  const normOrder = (o) => { if (!o.payStatus) o.payStatus = /^Paid/.test(o.pay || '') ? 'paid' : /whish|omt/i.test(o.pay || '') ? 'pending' : 'due'; if (!o.placedAt) o.placedAt = new Date(o.date + 'T12:00:00').getTime(); if (o.method !== 'Shipped' && (o.payStatus === 'paid' || o.payStatus === 'due') && /^(placed|paid · preparing|preparing)$/i.test(o.status || '')) o.status = 'Ready for pickup'; return o; };
   const renderOrder = (o) => {
+    normOrder(o);
     const ship = o.method === 'Shipped';
-    const card = /^Paid (by|via)/.test(o.pay || '');
+    const transfer = /whish|omt/i.test(o.pay || '');
+    const awaiting = transfer && o.payStatus !== 'paid' && !/cancel/i.test(o.status);
+    const card = o.payStatus === 'paid' || (/^Paid (by|via)/.test(o.pay || '') && !transfer);
     const cancelled = /cancel/i.test(o.status);
+    const deadline = (o.placedAt || new Date(o.date + 'T12:00:00').getTime()) + 24 * 3600 * 1000;
+    const hoursLeft = Math.max(0, Math.ceil((deadline - Date.now()) / 3600000));
+    const unpaidExpired = /not received/i.test(o.cancelReason || '');
+    const cashHold = !ship && o.payStatus === 'due' && !cancelled && !/collect/i.test(o.status || '');
+    const holdUntil = (o.placedAt || new Date(o.date + 'T12:00:00').getTime()) + 3 * 86400000;
+    const holdDate = new Date(holdUntil).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const notCollected = /not collected/i.test(o.cancelReason || '');
     const act = o.items.filter((l) => !l.removed);
     const removed = o.items.filter((l) => l.removed);
     const actSub = act.reduce((s, l) => s + l.price * l.q, 0);
+    const fullSub = o.items.reduce((s, l) => s + l.price * l.q, 0);
+    const effDisc = removed.length && fullSub ? Math.round((o.discount || 0) * actSub / fullSub) : (o.discount || 0);
+    const effTotal = removed.length ? Math.max(0, actSub - effDisc + (ship ? 5 : 0)) : o.total;
+    const refundDiff = removed.length ? Math.max(0, o.total - effTotal) : 0;
     const steps = ship
       ? ['Placed', 'Preparing', 'With courier', 'Delivered']
       : ['Placed', 'Preparing', 'Ready for pickup', 'Collected'];
     const today = new Date().toISOString().slice(0, 10);
     const when0 = o.date === today ? 'Today' + (o.time ? ' · ' + o.time : '') : new Date(o.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const stepIdx = /deliver|collect/i.test(o.status) ? 3 : (/courier|ready/i.test(o.status) ? 2 : (/prepar/i.test(o.status) ? 1 : 0));
+    const stepIdx = ship
+      ? (/deliver/i.test(o.status) ? 3 : (/courier/i.test(o.status) ? 2 : (/prepar/i.test(o.status) ? 1 : 0)))
+      : (/collect/i.test(o.status) ? 3 : (/ready/i.test(o.status) ? 2 : (/prepar/i.test(o.status) ? 1 : 0)));
+    const last = 3, readyIdx = 2;
     const doneWord = ship ? 'Delivered' : 'Collected';
-    const kicker = cancelled ? 'Order cancelled' : (stepIdx === 3 ? doneWord : (stepIdx === 2 ? (ship ? 'With the courier' : 'Ready for pickup') : 'Order confirmed'));
+    const kicker = cancelled ? 'Order cancelled' : awaiting ? 'Awaiting your payment' : (stepIdx === last ? doneWord : (stepIdx === readyIdx ? (ship ? 'With the courier' : 'Ready for pickup') : 'Order confirmed'));
     const sub = cancelled
-      ? 'We had to cancel this order on our side — sorry about that. ' + (card ? 'You\u2019ve been refunded in full, the same way you paid.' : 'Nothing was charged.')
-      : stepIdx === 3
+      ? (unpaidExpired ? 'We didn\u2019t receive your ' + o.pay + ' transfer by the deadline, so this order was cancelled and the items released. Nothing was charged \u2014 you\u2019re welcome to order again.' : notCollected ? 'This order wasn\u2019t collected within the 3-day hold, so it was cancelled and the items went back on the shelf. Nothing was charged \u2014 order again any time.' : 'We had to cancel this order on our side — sorry about that. ' + (card ? 'You\u2019ve been refunded in full, the same way you paid.' : 'Nothing was charged.'))
+      : awaiting
+      ? 'Send $' + o.total + ' via ' + o.pay + ' to +961 71 930 290 with your order number. We confirm on WhatsApp the moment it lands and start preparing. ' + (hoursLeft > 0 ? 'Unpaid orders are cancelled after 24 hours \u2014 <b class="op-timer" data-deadline="' + deadline + '"></b> left.' : 'The 24-hour window has passed \u2014 this order will be cancelled unless payment arrives.')
+      : stepIdx === last
       ? (ship ? 'Delivered' : 'Collected at the studio') + ' ✦ ' + (card ? o.pay + ' — all settled.' : 'Paid in cash — all settled.')
-      : stepIdx === 2
-      ? (ship ? 'It’s with the courier and on its way to you' + (card ? ' — nothing more to pay.' : ' — pay cash when it arrives.') : 'It’s ready and waiting at the studio' + (card ? ' — already paid, just come collect it.' : ' — pay when you collect.'))
+      : stepIdx === readyIdx
+      ? (ship ? 'It’s with ' + (o.courier && o.courier.company ? o.courier.company : 'the courier') + ' and on its way to you' + (o.courier && o.courier.eta ? ' — expected ' + o.courier.eta : '') + (card ? '. Nothing more to pay.' : '. Have $' + effTotal + ' ready in cash.') : (card ? 'Paid ✦ ' : '') + 'It’s ready and waiting at the studio' + (card ? ' — just come collect it, any time we’re open.' : ' — pay when you collect. Held until ' + holdDate + ', then the order is cancelled.'))
       : (ship
         ? (card ? 'Paid ✦ We’re preparing it now, then it goes to the courier — nothing more to pay.' : 'We’re preparing it now, then it goes to the courier — pay cash when it arrives.')
-        : (card ? 'Paid ✦ We’re preparing it now — we’ll message you the moment it’s ready to collect.' : 'We’re preparing it now — we’ll message you the moment it’s ready. Pay when you collect.'));
+        : 'Ready the moment your payment is confirmed — we’ll message you on WhatsApp.');
     const thumb = (l) => { const i = Math.max(0, PRODUCTS.findIndex((p) => p.name === l.name)); return '<span class="ph" style="background:' + ACCENTS[i % ACCENTS.length] + '40"><span class="pl">Photo</span></span>'; };
     const itemsHtml = o.items.map((l) =>
       '<div class="oi' + (l.removed ? ' rm' : '') + '">' + thumb(l) +
@@ -600,29 +655,37 @@
       (l.removed ? '<span class="rm-note">' + (l.reason || 'Out of stock') + ' — removed, not charged</span>' : '') +
       '</span><span class="v">$' + l.price * l.q + '</span></div>').join('');
     const noteHtml = !cancelled && removed.length
-      ? '<div class="op-note"><strong>One item changed ·</strong> ' + removed.map((l) => l.name).join(', ') + ' turned out to be out of stock, so we went ahead with the rest of your order' + (card ? ' and refunded the difference the same way you paid.' : ' — you only pay for what you receive.') + '</div>'
+      ? '<div class="op-note"><strong>One item changed ·</strong> ' + removed.map((l) => l.name).join(', ') + ' turned out to be out of stock, so we went ahead with the rest of your order' + (card ? ' and refunded the $' + refundDiff + ' difference the same way you paid.' : ' — your total is now $' + effTotal + ', you only pay for what you receive.') + '</div>'
       : '';
     const trackHtml = cancelled
-      ? '<div class="op-note" style="margin-top:24px"><strong>Why ·</strong> ' + (o.cancelReason || 'We couldn’t fulfil this order.') + (card ? '<br><strong>Refund ·</strong> $' + o.total + ' is on its way back to you the same way you paid (3–5 business days).' : '') + '</div>'
+      ? '<div class="op-note" style="margin-top:24px"><strong>Why ·</strong> ' + (o.cancelReason || 'We couldn’t fulfil this order.') + (card && !unpaidExpired && !notCollected ? '<br><strong>Refund ·</strong> $' + o.total + ' is on its way back to you the same way you paid (3–5 business days).' : '') + '</div>'
       : '<div class="op-track" aria-label="Order status">' + steps.map((s, i) =>
-        '<div class="op-step' + (i <= stepIdx ? ' done' : '') + '" style="--sc:' + ['#1F9A56', '#C9821B', '#3E7CB1', '#8B5CC4'][i] + '"><div class="bar"></div><div class="st">' + s + '</div><p class="when">' + (i === 0 ? when0 : (i === stepIdx + 1 ? 'Up next' : '')) + '</p></div>').join('') + '</div>';
+        '<div class="op-step' + (i <= stepIdx && !(awaiting && i > 0) ? ' done' : '') + (awaiting && i === 0 ? ' wait' : '') + '" style="--sc:' + ['rgba(0,0,0,0.55)', '#C9821B', '#8B5CC4', '#1F9A56'][i] + '"><div class="bar"></div><div class="st">' + (awaiting && i === 0 ? 'Awaiting payment' : s) + '</div><p class="when">' + (i === 0 || (!ship && !awaiting && i <= stepIdx && i < 3) ? when0 : (awaiting ? (i === 1 ? 'After payment' : '') : (i === stepIdx + 1 ? 'Up next' : ''))) + '</p></div>').join('') + '</div>';
+    const giftAmtO = o.gift && o.gift.amount ? Math.min(o.gift.amount, effTotal) : 0, cashPart = Math.max(0, effTotal - giftAmtO);
     const payHtml = cancelled
-      ? '<strong>' + (card ? 'Refunded in full' : 'No payment taken') + '</strong><br>$' + o.total + (card ? ' — on its way back to you' : ' — nothing owed')
-      : '<strong>' + o.pay + '</strong><br>$' + o.total + (card || stepIdx === 3 ? ' — ' + (card ? 'charged' : 'paid in cash') : ' — due ' + (ship ? 'on delivery' : 'at pickup'));
+      ? '<strong>' + (card && !unpaidExpired && !notCollected ? 'Refunded in full' : 'No payment taken') + '</strong><br>$' + o.total + (giftAmtO ? ' — $' + giftAmtO + ' back on your gift balance' + (cashPart && card ? ', $' + cashPart + ' on its way back to you' : '') : (card && !unpaidExpired && !notCollected ? ' — on its way back to you' : ' — nothing owed'))
+      : giftAmtO && !cashPart
+      ? '<strong>Gift balance</strong><br>$' + giftAmtO + ' — covered in full, nothing more to pay'
+      : awaiting
+      ? '<strong>' + o.pay + ' · not yet received</strong><br>$' + o.total + ' — send within 24h of ordering'
+      : '<strong>' + o.pay + (transfer ? ' · confirmed' : '') + '</strong><br>$' + effTotal + (refundDiff && card ? ' (of $' + o.total + ' — $' + refundDiff + ' refunded)' : '') + (card || stepIdx === last ? ' — ' + (card ? 'charged' : 'paid in cash') : ' — due ' + (ship ? 'on delivery' : 'at pickup' + (cashHold ? ' · held until ' + holdDate : '')));
     const op = document.getElementById('orderPage');
+    if (op._timer) { clearInterval(op._timer); op._timer = null; }
     op.innerHTML =
-      '<div class="op-head"><p class="op-kicker' + (cancelled ? ' cx' : '') + '"><span class="dot"></span>' + kicker + '</p>' +
+      '<div class="op-head"><p class="op-kicker' + (cancelled ? ' cx' : awaiting ? ' wt' : '') + '" style="--kc:' + (cancelled ? '#B3261E' : awaiting ? '#C9821B' : ['rgba(0,0,0,0.55)', '#C9821B', '#8B5CC4', '#1F9A56'][stepIdx]) + '"><span class="dot"></span>' + kicker + '</p>' +
       '<h2 class="op-ref">Order ' + o.ref + '</h2>' +
-      '<p class="op-sub">' + sub + (cancelled || stepIdx === 3 ? '' : ' Every update reaches you by SMS and WhatsApp' + (o.email ? ', and e-mail' : '') + '.') + '</p></div>' +
+      '<p class="op-sub">' + sub + (cancelled || stepIdx === last ? '' : (awaiting ? '' : ' Every update reaches you by WhatsApp.')) + '</p></div>' +
       trackHtml + noteHtml +
       '<div class="op-grid"><div class="op-items"><h3>Items</h3>' + itemsHtml +
       '<div class="ot" style="margin-top:10px"><span>Subtotal</span><span class="v">$' + actSub + '</span></div>' +
-      (o.discount ? '<div class="ot"><span>' + (o.tier || 'Member') + ' discount</span><span class="v">\u2212$' + o.discount + '</span></div>' : '') +
+      (effDisc ? '<div class="ot"><span>' + (o.tier || 'Member') + ' discount</span><span class="v">\u2212$' + effDisc + '</span></div>' : '') +
+      (o.gift && o.gift.amount ? '<div class="ot"><span>Gift balance' + (cancelled ? ' — restored' : '') + '</span><span class="v" style="color:#1F9A56">\u2212$' + Math.min(o.gift.amount, effTotal) + '</span></div>' : '') +
       '<div class="ot"><span>Delivery</span><span class="v">' + (ship ? '$5' : 'Free — pickup') + '</span></div>' +
-      '<div class="ot total"><span>' + (cancelled && card ? 'Total (refunded)' : 'Total') + '</span><span class="v">$' + o.total + '</span></div></div>' +
+      (refundDiff ? '<div class="ot"><span>Originally</span><span class="v"><s>$' + o.total + '</s></span></div>' : '') + '<div class="ot total"><span>' + (cancelled && card ? 'Total (refunded)' : 'Total') + '</span><span class="v">$' + (cancelled ? o.total : effTotal) + '</span></div></div>' +
       '<aside><div class="op-card"><h3>' + (ship ? 'Shipping to' : 'Pickup at') + '</h3><p>' + (ship
-        ? '<strong>' + (o.name || '') + '</strong><br>' + (o.address || '') + '<br>Courier, usually 1–3 days'
-        : '<strong>Incenso Studio</strong><br>Tripoli, Lebanon<br>Open daily — bring your order number') + '</p></div>' +
+        ? '<strong>' + (o.name || '') + '</strong><br>' + (o.address || '') + (o.courier ? '' : '<br>Courier, usually 1–3 days')
+        : '<strong>Incenso Studio</strong><br>Tripoli, Lebanon<br>Open daily — bring your order number' + (cashHold ? '<br>Collect by ' + holdDate : '')) + '</p></div>' +
+      (ship && o.courier && !cancelled ? '<div class="op-card"><h3>Courier</h3><p>' + [o.courier.company && '<strong>' + o.courier.company + '</strong>', o.courier.driver && o.courier.driver, o.courier.phone && '<a href="tel:' + o.courier.phone.replace(/\s+/g, '') + '">' + o.courier.phone + '</a>', o.courier.tracking && (o.courier.trackingUrl ? '<a href="' + o.courier.trackingUrl + '" target="_blank" rel="noopener">Tracking ' + o.courier.tracking + '</a>' : 'Tracking ' + o.courier.tracking), o.courier.note && o.courier.note].filter(Boolean).join('<br>') + '</p></div>' : '') +
       '<div class="op-card"><h3>Payment</h3><p>' + payHtml + '</p></div>' +
       (o.name ? '<div class="op-card"><h3>Contact</h3><p><strong>' + o.name + '</strong>' + (o.phone ? '<br>' + o.phone : '') + (o.email ? '<br>' + o.email : '') + '</p></div>' : '') + '</aside></div>' +
       '<div class="op-actions"><a class="go" href="Shop.html">Back to the shelf</a>' +
@@ -631,25 +694,39 @@
     document.body.classList.add('placed');
     document.body.classList.remove('locked');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    const tEl = op.querySelector('.op-timer');
+    if (tEl) {
+      const tick = () => {
+        const ms = Number(tEl.dataset.deadline) - Date.now();
+        if (ms <= 0) { clearInterval(op._timer); op._timer = null; const A2 = window.IncensoAuth; if (A2 && A2.signedIn()) { const acc = A2.get(); const x = (acc.orders || []).find((y) => y.ref === o.ref); if (x && x.payStatus === 'pending') { x.status = 'Cancelled'; x.cancelReason = 'Payment not received within 24 hours.'; restoreGift(x); A2.set(acc); renderOrder(x); return; } } o.status = 'Cancelled'; o.cancelReason = 'Payment not received within 24 hours.'; renderOrder(o); return; }
+        const hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000), ss = Math.floor((ms % 60000) / 1000);
+        tEl.textContent = hh > 0 ? hh + 'h ' + String(mm).padStart(2, '0') + 'm' : mm + 'm ' + String(ss).padStart(2, '0') + 's';
+      };
+      tick(); op._timer = setInterval(tick, 1000);
+    }
   };
 
   // Place order
   document.getElementById('coForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    const ref = 'INC-' + String(Math.floor(1000 + Math.random() * 9000));
     const A = window.IncensoAuth;
+    const ref = A ? A.nextRef('INC') : 'INC-0001';
     const ship = mode === 'ship';
     const total = subtotal - discAmt + (ship ? 5 : 0);
-    const payLabel = pay === 'card' ? 'Paid by card' : pay === 'whish' ? 'Paid via Whish Money' : pay === 'omt' ? 'Paid via OMT Pay' : (ship ? 'Cash on delivery' : 'Pay at studio');
+    const g = giftAmt(total), toPay = total - g, covered = g > 0 && toPay <= 0;
+    const transfer = !covered && (pay === 'whish' || pay === 'omt');
+    const payLabel = covered ? 'Gift balance' : pay === 'card' ? 'Paid by card' : pay === 'whish' ? 'Whish Money' : pay === 'omt' ? 'OMT Pay' : (ship ? 'Cash on delivery' : 'Pay at studio');
     const gv = (id) => { const x = document.getElementById(id); return x ? x.value.trim() : ''; };
-    const name = gv('fName'), phone = (gv('fPhoneCC') + ' ' + gv('fPhone')).trim(), email = gv('fEmail');
+    const name = gv('fName'), phone = (/^\+/.test(gv('fPhone')) ? gv('fPhone') : (gv('fPhoneCC') + ' ' + gv('fPhone')).trim()), email = gv('fEmail');
     const address = ship ? [gv('fStreet'), gv('fBldg') && 'Bldg ' + gv('fBldg'), gv('fFloor'), gv('fCity'), gv('fGov'), 'Lebanon'].filter(Boolean).join(', ') : '';
-    const order = { ref: ref, date: new Date().toISOString().slice(0, 10), time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }), items: orderLines, total: total, status: pay === 'card' ? 'Paid · preparing' : 'Placed', method: ship ? 'Shipped' : 'Studio pickup', pay: payLabel, name: name, phone: phone, email: email, address: address, discount: discAmt, tier: discTier };
+    const order = { ref: ref, date: new Date().toISOString().slice(0, 10), time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }), items: orderLines, total: total, status: transfer ? 'Awaiting payment' : (!ship ? 'Ready for pickup' : (pay === 'card' || covered ? 'Paid · preparing' : 'Placed')), payStatus: covered ? 'paid' : pay === 'card' ? 'paid' : (transfer ? 'pending' : 'due'), gift: g > 0 ? { amount: g } : null, toPay: toPay, placedAt: Date.now(), method: ship ? 'Shipped' : 'Studio pickup', pay: payLabel, name: name, phone: phone, email: email, address: address, discount: discAmt, tier: discTier };
     if (A && A.signedIn()) {
       const acc = A.get();
+      if (g > 0 && window.IncensoGift) { const parts = window.IncensoGift.redeemFrom(acc, g, ref, 'Shop order'); order.gift.parts = parts; order.gift.codes = [...new Set(parts.map((p) => p.code))]; window.IncensoGift.attach(acc); }
       acc.orders = [order].concat(acc.orders || []);
       A.set(acc);
     }
+    useGift = false;
     renderOrder(order);
     items = {};
     try { localStorage.setItem(IKEY, '{}'); localStorage.setItem(KEY, '0'); } catch (err) {}
@@ -659,11 +736,21 @@
   // Sign-in gate — auth.js loads after this script, so wait for DOM ready
   document.addEventListener('DOMContentLoaded', () => {
     const A = window.IncensoAuth;
+    // 24-hour rule: Whish / OMT orders still unpaid a day after placing are cancelled automatically
+    if (A && A.signedIn()) {
+      const acc = A.get(); let dirty = false;
+      (acc.orders || []).forEach((o) => {
+        normOrder(o);
+        if (/whish|omt/i.test(o.pay || '') && o.payStatus === 'pending' && !/cancel/i.test(o.status) && o.placedAt && Date.now() - o.placedAt > 24 * 3600 * 1000) { o.status = 'Cancelled'; o.cancelReason = 'Payment not received within 24 hours.'; dirty = true; restoreGift(o); }
+        if (o.method !== 'Shipped' && o.payStatus === 'due' && !/cancel|collect/i.test(o.status) && o.placedAt && Date.now() - o.placedAt > 3 * 86400000) { o.status = 'Cancelled'; o.cancelReason = 'Not collected within the 3-day hold.'; dirty = true; restoreGift(o); }
+      });
+      if (dirty) A.set(acc);
+    }
     // Deep link: Checkout.html?order=INC-XXXX — show that order's page
     const ref = new URLSearchParams(location.search).get('order');
     if (ref && A && A.signedIn()) {
-      const o = (A.get().orders || []).find((x) => x.ref === ref);
-      if (o) { renderOrder(o); return; }
+      const acc1 = A.get(); const o = (acc1.orders || []).find((x) => x.ref === ref);
+      if (o) { const before = o.status; normOrder(o); if (o.status !== before) A.set(acc1); renderOrder(o); return; }
     }
     const gate = () => {
       const on = A && A.signedIn();
@@ -671,7 +758,7 @@
       if (on) {
         const acc = A.get();
         const f = (id, v) => { const x = document.getElementById(id); if (x && !x.value && v) x.value = v; };
-        f('fName', acc.name); f('fPhone', acc.phone); f('fEmail', acc.email);
+        const pm = String(acc.phone || '').match(/^(\+\d+)\s*(.*)$/); f('fName', acc.name); f('fPhone', pm ? pm[2] : acc.phone); if (pm) { const cc = document.getElementById('fPhoneCC'); if (cc) cc.value = pm[1]; } f('fEmail', acc.email);
         const t = A.tierFor(A.yearSpend(acc));
         const rate = t.name === 'Insider' ? 0.1 : (t.name === 'Loyal' ? 0.2 : 0);
         discAmt = Math.round(subtotal * rate);
@@ -772,5 +859,6 @@
 <script src="assets/image-slot.js"></script>
 <script src="assets/phone.js"></script>
 <script src="assets/auth.js"></script>
+<script src="assets/gift.js"></script>
 </body>
 </html>

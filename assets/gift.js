@@ -24,11 +24,14 @@
   const load = () => cards;
   const byCode = (c) => cards.find((x) => x.code.toUpperCase() === String(c || '').trim().toUpperCase().replace(/\s+/g, '')) || null;
   const active = (x) => !!x && x.status === 'Active' && x.balance > 0 && (!x.expires || x.expires >= today());
-  const confirmed = (x) => !!x && x.status !== 'Reserved';
+  // Payment window for a reserved card: 24 h for Whish / OMT, 3 days for pay-at-studio
+  const deadlineOf = (x) => new Date(x.created).getTime() + (/whish|omt/i.test(x.pay || '') ? 86400000 : 3 * 86400000);
+  const cancelled = (x) => !!x && x.status === 'Expired' && !!x.expiredReason; // never paid — invisible to the recipient
+  const confirmed = (x) => !!x && x.status !== 'Reserved' && !cancelled(x);
   const forPhone = (p) => cards.filter((x) => same(x.toPhone, p) && confirmed(x));
   const boughtBy = (p) => cards.filter((x) => same(x.buyerPhone, p));
   const totalFor = (p) => forPhone(p).filter(active).reduce((a, x) => a + x.balance, 0);
-  const cardsFor = (acc) => { if (!acc) return []; const seen = new Set(); const out = []; forPhone(acc.phone).concat((acc.extraGiftCodes || []).map(byCode).filter(Boolean)).forEach((x) => { if (!seen.has(x.code)) { seen.add(x.code); out.push(x); } }); return out; };
+  const cardsFor = (acc) => { if (!acc) return []; const seen = new Set(); const out = []; forPhone(acc.phone).forEach((x) => { if (!seen.has(x.code)) { seen.add(x.code); out.push(x); } }); return out; };
   const spendable = (acc) => cardsFor(acc).filter(active).sort((a, b) => (a.expires || '').localeCompare(b.expires || ''));
   const balanceFor = (acc) => spendable(acc).reduce((a, x) => a + x.balance, 0);
 
@@ -86,5 +89,5 @@
   const pending = () => cards.filter((x) => !confirmed(x));
   const update = (code, fn) => { const x = byCode(code); if (x) { fn(x); saveCache(); } return x; };
 
-  window.IncensoGift = { load, issue, update, byCode, forPhone, boughtBy, active, redeem, refund, confirm, confirmed, pending, attach, refresh, totalFor, same, cardsFor, spendable, balanceFor, redeemFrom, refundParts };
+  window.IncensoGift = { deadlineOf, cancelled, load, issue, update, byCode, forPhone, boughtBy, active, redeem, refund, confirm, confirmed, pending, attach, refresh, totalFor, same, cardsFor, spendable, balanceFor, redeemFrom, refundParts };
 })();

@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <meta name="description" content="Incenso Studio — book an appointment. Hair, nails, make-up, brows & lashes. Tripoli, Lebanon." />
 <meta name="theme-color" content="#e5dcc9" />
-<link rel="icon" href="favicon.svg" type="image/svg+xml" />
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
-<link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <title>Book — Incenso Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -198,9 +198,8 @@
 <section class="step locked" id="step4">
 <div class="st-head"><p class="f-step"><span class="n">04</span>Details</p></div>
 <div class="prefs" id="prefs">
-<div><p class="sg-h">The chair</p><div class="pills" id="mood" role="group" aria-label="Conversation preference"></div></div>
+<div><p class="sg-h">While you’re in the chair, would you rather…</p><div class="pills" id="mood" role="group" aria-label="Conversation preference"></div></div>
 <div><p class="sg-h">Good to know</p><div class="pills" id="flags" role="group" aria-label="Things we should know"></div></div>
-<div><p class="sg-h">On arrival</p><div class="pills" id="drink" role="group" aria-label="Drink on arrival"></div></div>
 <div><p class="sg-h">Smoking</p><div class="pills" id="smoke" role="group" aria-label="Smoking"></div><p class="d-note" style="margin-top:10px">The studio is IQOS-only — no cigarettes. Don’t have one? We keep IQOS at the studio for you.</p></div>
 </div>
 <div class="field" style="margin-top:0"><label for="bkNotes">Anything else? <span class="opt">— optional</span></label><textarea id="bkNotes" rows="2" placeholder="Which allergy, inspiration, how you like your coffee, running late…"></textarea></div>
@@ -218,8 +217,8 @@
 </div>
 <div class="field"><label for="cName">Name on card</label><input id="cName" type="text" autocomplete="cc-name" /><p class="f-err" id="eName">The name as printed on the card.</p></div>
 </div>
-<div class="qr-pane" id="qrWhish" hidden><image-slot id="qr-whish" shape="rect" fit="contain" placeholder="Whish Money QR"></image-slot><div class="qr-txt"><p class="qr-h">Whish Money</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan the code in the Whish app, pay the total, then confirm below. We match the transfer to your booking number.</p></div></div>
-<div class="qr-pane" id="qrOmt" hidden><image-slot id="qr-omt" shape="rect" fit="contain" placeholder="OMT Pay QR"></image-slot><div class="qr-txt"><p class="qr-h">OMT Pay</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan the code in OMT Pay, pay the total, then confirm below. We match the transfer to your booking number.</p></div></div>
+<div class="qr-pane" id="qrWhish" hidden><image-slot id="qr-whish" shape="rect" fit="contain" placeholder="Whish Money QR"></image-slot><div class="qr-txt"><p class="qr-h">Whish Money</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan the code in the Whish app, pay the total, then confirm below. We match the transfer to your booking number and confirm on WhatsApp — unpaid bookings are released after 24 hours.</p></div></div>
+<div class="qr-pane" id="qrOmt" hidden><image-slot id="qr-omt" shape="rect" fit="contain" placeholder="OMT Pay QR"></image-slot><div class="qr-txt"><p class="qr-h">OMT Pay</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan the code in OMT Pay, pay the total, then confirm below. We match the transfer to your booking number and confirm on WhatsApp — unpaid bookings are released after 24 hours.</p></div></div>
 <p class="d-note" id="payNote">Cash or card at the studio, after your appointment.</p>
 </section>
 </div>
@@ -277,9 +276,9 @@ const niceLong = (s) => fromISO(s).toLocaleDateString('en-GB', { weekday: 'long'
 const dur = (m) => m >= 60 ? Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : '') : m + ' min';
 
 let cat = 'Hair';
-const MOODS = ['Happy to chat', 'Quiet, please'], DRINKS = ['Speciality mango', 'Turkish coffee', 'Espresso', 'Tea', 'Water', 'Cookies', 'Nothing, thanks'], SMOKES = ['I don\u2019t smoke', 'I\u2019ll bring my IQOS', 'Lend me an IQOS'];
-const FLAGS = ['Hijab \u2014 women-only studio, please', 'Sensitive skin or scalp', 'Allergies (say which below)', 'Fragrance-free products only', 'Pregnant or nursing', 'Recent colour, keratin or relaxer', 'Skin condition or medication', 'Tight schedule \u2014 must leave on time', 'First time here', 'No photos of me, please', 'Bringing reference photos'];
-const st = { svcs: [], staffBy: {}, date: '', time: '', start: -1, pay: 'later', notes: '', mood: '', flags: [], drink: [], smoke: '', gift: false };
+const MOODS = ['Chat with your stylist', 'Enjoy the quiet'], SMOKES = ['I don\u2019t smoke', 'I\u2019ll bring my IQOS', 'Lend me an IQOS'];
+const FLAGS = ['Hijab \u2014 women-only studio, please', 'Allergies (say which below)', 'Fragrance-free products only', 'Pregnant or nursing', 'Recent colour, keratin or relaxer', 'Tight schedule \u2014 must leave on time', 'First time here', 'No photos of me, please'];
+const st = { svcs: [], staffBy: {}, date: '', time: '', start: -1, pay: 'later', notes: '', mood: '', flags: [], smoke: '', gift: false };
 const G = window.IncensoGift;
 const t0 = fromISO(TODAY);
 const view = { y: t0.getFullYear(), m: t0.getMonth() };
@@ -357,12 +356,12 @@ const svcFade = () => { const el = $('svc'); el.classList.toggle('at-end', el.sc
 const renderStaff = () => {
 const cs = selCats();
 $('staff').innerHTML = cs.map((c) => '<div class="staff-row" role="group" aria-label="' + esc(c) + '">' + (cs.length > 1 ? '<p class="sg-h">' + c + '</p>' : '') + '<div class="pills">' +
-['any'].concat(STAFF.filter((s) => s.cats.includes(c)).map((s) => s.name)).map((n) => '<button type="button" class="pill" data-cat="' + esc(c) + '" data-staff="' + esc(n) + '" aria-pressed="' + ((st.staffBy[c] || 'any') === n) + '">' + (n === 'any' ? 'First available' : n + '<small>' + STAFF.find((s) => s.name === n).role + '</small>') + '</button>').join('') + '</div></div>').join('');
-$('staffNote').textContent = !cs.length ? '' : (cs.length > 1 ? 'Your visit spans ' + cs.join(' and ') + ' \u2014 ask for someone by name for each, or let us line up the soonest hands back to back.' : 'First available gets you the soonest chair. Ask for someone by name and we\u2019ll show only their times.');
+(function () { const names = STAFF.filter((s) => s.cats.includes(c)).map((s) => s.name); if (names.length === 1) { if (st.staffBy[c] !== names[0]) st.staffBy[c] = names[0]; return names; } return ['any'].concat(names); })().map((n) => '<button type="button" class="pill" data-cat="' + esc(c) + '" data-staff="' + esc(n) + '" aria-pressed="' + ((st.staffBy[c] || 'any') === n) + '">' + (n === 'any' ? 'First available' : n + '<small>' + STAFF.find((s) => s.name === n).role + '</small>') + '</button>').join('') + '</div></div>').join('');
+$('staffNote').textContent = !cs.length ? '' : (cs.length > 1 ? 'Your visit spans ' + cs.join(' and ') + ' \u2014 ask for someone by name for each, or let us line up the soonest hands back to back.' : (STAFF.filter((s) => s.cats.includes(cs[0])).length === 1 ? STAFF.find((s) => s.cats.includes(cs[0])).name + ' takes every ' + cs[0].toLowerCase() + ' appointment.' : 'First available gets you the soonest chair. Ask for someone by name and we\u2019ll show only their times.'));
 };
 const renderPrefs = () => {
 const pills = (list, cur, key) => list.map((x) => '<button type="button" class="pill chip" data-key="' + key + '" data-val="' + esc(x) + '" aria-pressed="' + (Array.isArray(cur) ? cur.includes(x) : cur === x) + '">' + x + '</button>').join('');
-$('mood').innerHTML = pills(MOODS, st.mood, 'mood'); $('flags').innerHTML = pills(FLAGS, st.flags, 'flags'); $('drink').innerHTML = pills(DRINKS, st.drink, 'drink'); $('smoke').innerHTML = pills(SMOKES, st.smoke, 'smoke');
+$('mood').innerHTML = pills(MOODS, st.mood, 'mood'); $('flags').innerHTML = pills(FLAGS, st.flags, 'flags'); $('smoke').innerHTML = pills(SMOKES, st.smoke, 'smoke');
 };
 const renderCal = () => {
 const first = new Date(view.y, view.m, 1), title = first.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
@@ -386,10 +385,9 @@ if (!st.date) { box.innerHTML = '<div class="slots-empty"><b>Pick a day</b>Free 
 loadBusy(st.date);
 const all = daySlots(st.date), free = all.filter((s) => s.free);
 if (!free.length) { box.innerHTML = '<div class="slots-empty"><b>Nothing fits on ' + nice(st.date) + '</b>' + (totalMins() > 60 ? dur(totalMins()) + ' needs a longer gap \u2014 try another day, or ' : 'Try another day, or ') + (named().length ? 'switch to first available.' : 'message us on WhatsApp and we\u2019ll squeeze you in.') + '</div>'; note.textContent = ''; return; }
-const groups = [['Morning', (s) => s.start < 12 * 60], ['Afternoon', (s) => s.start >= 12 * 60 && s.start < 17 * 60], ['Evening', (s) => s.start >= 17 * 60]];
-box.innerHTML = groups.map(([g, f]) => { const list = all.filter(f); if (!list.length) return ''; return '<div class="sg"><p class="sg-h">' + g + '</p><div class="slots">' + list.map((s) =>
-'<button type="button" class="slot' + (s.yours ? ' yours' : '') + '" data-start="' + s.start + '" ' + (s.free ? '' : 'disabled') + ' aria-pressed="' + (s.start === st.start) + '"' + (s.yours ? ' title="You already have an appointment here"' : '') + '>' + (s.yours ? 'Yours' : s.label) + '</button>').join('') + '</div></div>'; }).join('');
-note.textContent = (dropped ? dropped + ' no longer fits' + withTxt() + ' \u2014 pick another time. ' : '') + free.length + ' free ' + (free.length === 1 ? 'time' : 'times') + ' on ' + nice(st.date) + ' for ' + dur(totalMins()) + withTxt() + '. Struck-through slots are taken.';
+box.innerHTML = '<div class="slots">' + all.map((s) =>
+'<button type="button" class="slot' + (s.yours ? ' yours' : '') + '" data-start="' + s.start + '" ' + (s.free ? '' : 'disabled') + ' aria-pressed="' + (s.start === st.start) + '"' + (s.yours ? ' title="You already have an appointment here"' : '') + '>' + (s.yours ? 'Yours' : s.label) + '</button>').join('') + '</div>';
+note.textContent = dropped ? dropped + ' no longer fits' + withTxt() + ' \u2014 pick another time.' : '';
 dropped = '';
 };
 const discInfo = () => {
@@ -440,7 +438,7 @@ document.querySelectorAll('.qr-amt').forEach((x) => { x.textContent = '$' + (s.l
 $('mbPrice').textContent = s.length ? (giftAmt() > 0 ? '$' + amt : priceTxt(net())) : '$0';
 $('mbLabel').textContent = !s.length ? 'Nothing picked yet' : s.length + (s.length === 1 ? ' service' : ' services') + ' \u00b7 ' + dur(totalMins()) + (when ? ' \u00b7 ' + when : '');
 const acc = A.signedIn() ? A.get() : null;
-$('sWho').innerHTML = acc ? 'Booking as <b>' + esc(acc.name) + '</b> \u00b7 ' + esc(acc.phone) + '. <button type="button" id="switchAcc">Not you?</button>' : 'You\u2019ll sign in by phone at confirmation \u2014 no password. Confirmation and reminders arrive by SMS and WhatsApp.';
+$('sWho').innerHTML = acc ? 'Booking as <b>' + esc(acc.name) + '</b> \u00b7 ' + esc(acc.phone) + '. <button type="button" id="switchAcc">Not you?</button>' : '';
 $('sum1').textContent = s.length ? s.map((x) => x.name).join(' + ') : '';
 $('sum2').textContent = s.length ? staffLabel() : '';
 $('sum3').textContent = when;
@@ -476,9 +474,13 @@ $('calNext').addEventListener('click', () => { view.m += 1; if (view.m > 11) { v
 $('calGrid').addEventListener('click', (e) => { const b = e.target.closest('.day'); if (!b || b.disabled) return; st.date = b.dataset.date; st.time = ''; st.start = -1; renderCal(); renderSlots(); renderSum(); renderSteps(); save(); });
 $('slots').addEventListener('click', (e) => { const b = e.target.closest('.slot'); if (!b || b.disabled) return; st.start = +b.dataset.start; st.time = fmt12(st.start); renderSlots(); renderSum(); renderSteps(); save(); });
 $('bkNotes').addEventListener('input', () => { st.notes = $('bkNotes').value; save(); });
-$('prefs').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (!b) return; const k = b.dataset.key, v = b.dataset.val; if (k === 'flags' || k === 'drink') st[k] = st[k].includes(v) ? st[k].filter((x) => x !== v) : st[k].concat(v); else st[k] = st[k] === v ? '' : v; renderPrefs(); renderSum(); save(); });
-const PAYS = { later: 'Pay at studio', card: 'Paid by card', whish: 'Paid via Whish Money', omt: 'Paid via OMT Pay' };
-const PAY_NOTE = { later: 'Cash or card at the studio, after your appointment.', card: 'Charged securely now \u2014 nothing to settle at the studio.', whish: 'Instant transfer from your Whish wallet \u2014 nothing to settle at the studio.', omt: 'Instant transfer with OMT Pay \u2014 nothing to settle at the studio.' };
+$('prefs').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (!b) return; const k = b.dataset.key, v = b.dataset.val; if (k === 'flags') st[k] = st[k].includes(v) ? st[k].filter((x) => x !== v) : st[k].concat(v); else st[k] = st[k] === v ? '' : v; renderPrefs(); renderSum(); save(); });
+const PAYS = { later: 'Pay at studio', card: 'Paid by card', whish: 'Whish Money', omt: 'OMT Pay' };
+const PAY_NOTE = { later: 'Cash or card at the studio, after your appointment.', card: 'Charged securely now \u2014 nothing to settle at the studio.', whish: 'Transfer from your Whish wallet \u2014 confirmed by the studio once it lands.', omt: 'Transfer with OMT Pay \u2014 confirmed by the studio once it lands.' };
+// Transfers must land before the visit: deadline is the earlier of 24 h after booking and the appointment time itself
+const apptTs = () => st.date && st.start >= 0 ? new Date(st.date + 'T00:00:00').getTime() + st.start * 60000 : 0;
+const transferDeadline = () => { const a = apptTs(); const d24 = Date.now() + 86400000; return a ? Math.min(d24, a) : d24; };
+const variablePrice = () => sel().some((x) => x.from || x.price == null);
 const setPay = (p) => {
 if (!PAYS[p]) p = 'later';
 st.pay = p;
@@ -506,7 +508,10 @@ if (locked) $('payLockedTxt').innerHTML = '<b>Already covered</b> \u00b7 ' + ori
 const opts = !locked || diff > 0;
 $('payOpts').hidden = !opts; $('payOptsLbl').hidden = !(locked && diff > 0);
 $('cardFields').hidden = !(opts && st.pay === 'card'); $('qrWhish').hidden = !(opts && st.pay === 'whish'); $('qrOmt').hidden = !(opts && st.pay === 'omt');
-$('payNote').textContent = opts ? PAY_NOTE[st.pay] : '';
+let note = opts ? PAY_NOTE[st.pay] : '';
+if (opts && (st.pay === 'whish' || st.pay === 'omt')) note += ' Send it by ' + new Date(transferDeadline()).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) + ' or the slot is released.';
+if (opts && st.pay !== 'later' && variablePrice()) note += ' Any difference against the final price agreed in the chair is settled at the studio.';
+$('payNote').textContent = note;
 };
 $('payOpts').addEventListener('click', (e) => { const b = e.target.closest('[data-pay]'); if (b) setPay(b.dataset.pay); });
 $('giftMine').addEventListener('click', (e) => { if (e.target.closest('[data-use]')) { st.gift = true; renderSum(); save(); } });
@@ -556,12 +561,16 @@ if (clash) { placing = false; return fail('step3', 'You already have ' + clash.s
 placing = true;
 [$('confirmBtn'), $('mbBtn')].forEach((b) => { b.disabled = true; b.textContent = 'Confirming\u2026'; });
 setTimeout(() => {
-const ref = editing || 'IS-' + String(Math.floor(1000 + Math.random() * 9000));
-const b = { ref, service: s.map((x) => x.name).join(' + '), services: s.map((x) => x.name), staff: staffLabel(), date: st.date, time: st.time, start: st.start, mins: totalMins(), serviceMins: s.map((x) => x.mins), price: net(), priceFrom: anyFrom(), quote: anyQuote(), quoteItems: s.filter((x) => x.price == null).map((x) => x.name), pay: PAYS[st.pay], gift: giftAmt() > 0 ? { amount: giftAmt() } : null, paid: st.pay === 'later' ? 0 : Math.max(0, net() - giftAmt()), due: st.pay === 'later' ? Math.max(0, net() - giftAmt()) : 0, status: 'Upcoming', notes: st.notes.trim(), mood: st.mood, flags: st.flags.slice(), drink: st.drink.slice(), smoke: st.smoke, created: new Date().toISOString() };
-if (editing) { const old = (acc.bookings || []).find((x) => x.ref === editing); if (old) { b.created = old.created || b.created; b.updated = new Date().toISOString(); }
-if (orig && orig.paid > 0) { const diff = net() - orig.paid - giftAmt(); b.pay = orig.pay; b.paid = orig.cash; b.due = 0; b.gift = old && old.gift ? old.gift : null; if (giftAmt() > 0) b.gift = { amount: giftAmt() + (old && old.gift ? old.gift.amount : 0), parts: (old && old.gift && old.gift.parts) || [] }; if (diff > 0) { if (st.pay === 'later') b.due = diff; else { b.paid = orig.cash + diff; if (orig.cash > 0 && PAYS[st.pay] !== orig.pay) b.pay = orig.pay + ' & ' + PAYS[st.pay].replace('Paid ', ''); else if (orig.cash === 0) b.pay = PAYS[st.pay]; } } else if (diff < 0) { const back = -diff; const fromGift = Math.min(back, orig.gift); if (fromGift > 0 && old && old.gift) { const parts = old.gift.parts || []; let left = fromGift; parts.slice().reverse().forEach((p) => { if (left <= 0) return; const r = Math.min(left, p.amount); G.refund(p.code, r, ref); p.amount -= r; left -= r; }); b.gift = { amount: orig.gift - fromGift + (giftAmt() || 0), parts: parts.filter((p) => p.amount > 0), codes: [...new Set(parts.filter((p) => p.amount > 0).map((p) => p.code))] }; if (b.gift.amount <= 0) b.gift = null; } const cashBack = back - fromGift; if (cashBack > 0) { b.paid = orig.cash - cashBack; b.refund = cashBack; } } }
-acc.bookings = (acc.bookings || []).map((x) => x.ref === editing ? b : x); } else acc.bookings = [b].concat(acc.bookings || []);
-acc.prefs = { mood: st.mood, flags: st.flags.slice(), drink: st.drink.slice(), smoke: st.smoke };
+const ref = editing || A.nextRef('IS');
+const b = { ref, service: s.map((x) => x.name).join(' + '), services: s.map((x) => x.name), staff: staffLabel(), date: st.date, time: st.time, start: st.start, mins: totalMins(), serviceMins: s.map((x) => x.mins), price: net(), priceFrom: anyFrom(), quote: anyQuote(), quoteItems: s.filter((x) => x.price == null).map((x) => x.name), pay: PAYS[st.pay], gift: giftAmt() > 0 ? { amount: giftAmt() } : null, paid: st.pay === 'later' ? 0 : Math.max(0, net() - giftAmt()), due: st.pay === 'later' ? Math.max(0, net() - giftAmt()) : 0, status: (st.pay === 'whish' || st.pay === 'omt') ? 'Awaiting payment' : 'Upcoming', payStatus: st.pay === 'card' ? 'paid' : (st.pay === 'whish' || st.pay === 'omt') ? 'pending' : 'due', placedAt: Date.now(), payDeadline: (st.pay === 'whish' || st.pay === 'omt') ? transferDeadline() : null, notes: st.notes.trim(), mood: st.mood, flags: st.flags.slice(), smoke: st.smoke, created: new Date().toISOString() };
+if (editing) { const old = (acc.bookings || []).find((x) => x.ref === editing); if (old) { b.created = old.created || b.created; b.updated = new Date().toISOString(); if (orig && orig.pendingTransfer && b.payStatus === 'pending' && old.placedAt) b.placedAt = old.placedAt; }
+if (orig && orig.paid > 0) { const diff = net() - orig.paid - giftAmt(); b.pay = orig.pay; b.paid = orig.cash; b.due = 0; b.gift = old && old.gift ? old.gift : null; if (giftAmt() > 0) b.gift = { amount: giftAmt() + (old && old.gift ? old.gift.amount : 0), parts: (old && old.gift && old.gift.parts) || [] }; b.status = 'Upcoming'; b.payStatus = 'paid'; b.placedAt = (old && old.placedAt) || b.placedAt;
+if (diff > 0) { if (st.pay === 'later') b.due = diff; else if (st.pay === 'card') { b.paid = orig.cash + diff; if (orig.cash > 0 && PAYS[st.pay] !== orig.pay) b.pay = orig.pay + ' & ' + PAYS[st.pay].replace('Paid ', ''); else if (orig.cash === 0) b.pay = PAYS[st.pay]; } else { b.paid = orig.cash; b.extra = { amount: diff, pay: PAYS[st.pay], status: 'pending', placedAt: Date.now() }; } } else if (diff < 0) { const back = -diff; const fromGift = Math.min(back, orig.gift); if (fromGift > 0 && old && old.gift) { const parts = old.gift.parts || []; let left = fromGift; parts.slice().reverse().forEach((p) => { if (left <= 0) return; const r = Math.min(left, p.amount); G.refund(p.code, r, ref); p.amount -= r; left -= r; }); b.gift = { amount: orig.gift - fromGift + (giftAmt() || 0), parts: parts.filter((p) => p.amount > 0), codes: [...new Set(parts.filter((p) => p.amount > 0).map((p) => p.code))] }; if (b.gift.amount <= 0) b.gift = null; } const cashBack = back - fromGift; if (cashBack > 0) { b.paid = orig.cash - cashBack; b.refund = cashBack; } } }
+acc.bookings = (acc.bookings || []).map((x) => x.ref === editing ? b : x); } else {
+// Gift balance already secures the booking: a Whish / OMT remainder is a pending top-up, not a hold on the slot
+if (giftAmt() > 0 && (st.pay === 'whish' || st.pay === 'omt') && b.paid > 0) { b.extra = { amount: b.paid, pay: PAYS[st.pay], status: 'pending', placedAt: Date.now() }; b.paid = 0; b.status = 'Upcoming'; b.payStatus = 'gift'; b.payDeadline = null; }
+acc.bookings = [b].concat(acc.bookings || []); }
+acc.prefs = { mood: st.mood, flags: st.flags.slice(), smoke: st.smoke };
 if (giftAmt() > 0) { const parts = G.redeemFrom(acc, giftAmt(), ref, b.service); b.gift.parts = (b.gift.parts || []).concat(parts); b.gift.codes = [...new Set(b.gift.parts.map((p) => p.code))]; }
 G.attach(acc);
 A.set(acc);
@@ -587,10 +596,15 @@ st.staffBy = {};
 const cs = [...new Set(st.svcs.map((n) => SERVICES.find((s) => s.name === n).cat))];
 if (cs.length === 1) { if (STAFF.some((x) => x.name === b.staff)) st.staffBy[cs[0]] = b.staff; }
 else String(b.staff || '').split(' \u00b7 ').forEach((part) => { const m = /^(.+?) \((.+)\)$/.exec(part.trim()); if (m && STAFF.some((x) => x.name === m[1])) st.staffBy[m[2]] = m[1]; });
-st.notes = b.notes || ''; st.mood = b.mood || ''; st.flags = (b.flags || []).filter((f) => FLAGS.includes(f)); st.drink = [].concat(b.drink || []).filter((x) => DRINKS.includes(x)); st.smoke = b.smoke || '';
+st.notes = b.notes || ''; st.mood = b.mood || ''; st.flags = (b.flags || []).filter((f) => FLAGS.includes(f)); st.smoke = b.smoke || '';
 if (keepTime && b.date >= TODAY && b.date <= MAX) { st.date = b.date; st.start = typeof b.start === 'number' ? b.start : -1; st.time = st.start >= 0 ? fmt12(st.start) : ''; }
 $('bkNotes').value = st.notes;
-if (keepTime) { const cash = typeof b.paid === 'number' ? b.paid : (b.pay === 'Pay at studio' ? 0 : b.price); orig = { pay: b.pay, cash, gift: b.gift ? b.gift.amount : 0, paid: cash + (b.gift ? b.gift.amount : 0) }; setPay('later'); }
+if (keepTime) {
+// Only money the studio actually holds is locked: card, or a Whish/OMT transfer the studio has confirmed. A transfer still awaited is treated as unpaid \u2014 the guest may switch method freely.
+const pendingTransfer = /whish|omt/i.test(b.pay || '') && b.payStatus !== 'paid';
+const cash = pendingTransfer ? 0 : (typeof b.paid === 'number' ? b.paid : (b.pay === 'Pay at studio' ? 0 : b.price));
+orig = { pay: b.pay, cash, gift: b.gift ? b.gift.amount : 0, paid: cash + (b.gift ? b.gift.amount : 0), pendingTransfer, placedAt: b.placedAt };
+setPay(pendingTransfer ? (/whish/i.test(b.pay) ? 'whish' : 'omt') : 'later'); }
 if (st.svcs.length) cat = SERVICES.find((s) => s.name === st.svcs[0]).cat;
 return true;
 };
@@ -610,14 +624,12 @@ try {
 if (editRef || rebookRef) throw 0;
 const d = JSON.parse(localStorage.getItem(DRAFT) || 'null');
 if (d) {
-st.svcs = (d.svcs || []).filter((n) => SERVICES.some((s) => s.name === n));
-st.staffBy = d.staffBy || {}; st.notes = d.notes || ''; st.gift = !!d.gift; st.mood = d.mood || ''; st.flags = Array.isArray(d.flags) ? d.flags.filter((f) => FLAGS.includes(f)) : []; st.drink = [].concat(d.drink || []).filter((x) => DRINKS.includes(x)); st.smoke = d.smoke || ''; cat = CATS.includes(d.cat) ? d.cat : cat;
-if (d.date && d.date >= TODAY && d.date <= MAX) { st.date = d.date; st.start = typeof d.start === 'number' ? d.start : -1; st.time = st.start >= 0 ? fmt12(st.start) : ''; }
-if (d.pay && d.pay !== 'later') setPay(d.pay);
+// A fresh visit starts clean on Hair with nothing picked \u2014 only personal preferences and notes carry over from a draft
+st.notes = d.notes || ''; st.mood = d.mood || ''; st.flags = Array.isArray(d.flags) ? d.flags.filter((f) => FLAGS.includes(f)) : []; st.smoke = d.smoke || '';
 $('bkNotes').value = st.notes;
 }
 } catch (e) {}
-if (A.signedIn() && !st.mood && !st.flags.length && !st.drink.length && !st.smoke) { const p = (A.get() || {}).prefs; if (p) { st.mood = p.mood || ''; st.flags = (p.flags || []).filter((f) => FLAGS.includes(f)); st.drink = [].concat(p.drink || []).filter((x) => DRINKS.includes(x)); st.smoke = p.smoke || ''; } }
+if (A.signedIn() && !st.mood && !st.flags.length && !st.smoke) { const p = (A.get() || {}).prefs; if (p) { st.mood = p.mood || ''; st.flags = (p.flags || []).filter((f) => FLAGS.includes(f)); st.smoke = p.smoke || ''; } }
 const params = new URLSearchParams(location.search);
 const qs = params.get('svc'), qc = params.get('cat');
 if (qs) { const s = SERVICES.find((x) => x.name.toLowerCase() === qs.toLowerCase()) || SERVICES.find((x) => x.name.toLowerCase().includes(qs.toLowerCase())); if (s) { cat = s.cat; st.svcs = [s.name]; st.staffBy = {}; st.date = ''; st.time = ''; st.start = -1; } }

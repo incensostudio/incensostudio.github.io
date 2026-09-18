@@ -16,18 +16,76 @@
 
   const TIERS = [
     { name: 'Member',  min: 0,    color: '#CFDFDD', perk: 'Welcome — every dollar counts toward Insider' },
-    { name: 'Insider', min: 500,  color: '#EED4D3', perk: '10% off everything — services and the shelf' },
-    { name: 'Loyal',   min: 1000, color: '#EFE2AF', perk: '20% off everything — services and the shelf' },
+    { name: 'Insider', min: 1000, color: '#EED4D3', perk: '10% off everything — services and the shelf' },
+    { name: 'Loyal',   min: 2000, color: '#EFE2AF', perk: '20% off everything — services and the shelf' },
   ];
   const tierFor = (spend) => TIERS.filter((t) => spend >= t.min).pop();
   const nextTier = (spend) => TIERS.find((t) => spend < t.min) || null;
+
+  // Effective order total after partial cancellations: active items minus a prorated discount plus delivery
+  const orderTotal = (o) => {
+    if (!o || !o.items) return (o && o.total) || 0;
+    const full = o.items.reduce((s, l) => s + l.price * l.q, 0);
+    const act = o.items.filter((l) => !l.removed).reduce((s, l) => s + l.price * l.q, 0);
+    if (act === full) return o.total || 0;
+    const disc = full ? Math.round((o.discount || 0) * act / full) : 0;
+    const ship = o.method === 'Shipped' ? 5 : 0;
+    return Math.max(0, act - disc + ship);
+  };
+
+  // Sequential references — IS-0001 (bookings), INC-0001 (orders), IS-G-0001 (gift cards).
+  // Prototype counter; the backend issues the real sequence in production.
+  const nextRef = (prefix) => { const k = 'incenso-seq'; let m = {}; try { m = JSON.parse(localStorage.getItem(k) || '{}') || {}; } catch (e) {} m[prefix] = (m[prefix] || 0) + 1; try { localStorage.setItem(k, JSON.stringify(m)); } catch (e) {} return prefix + '-' + String(m[prefix]).padStart(4, '0'); };
+
+  // One-line payment label for a booking, derived from the money actually held
+  const payLabel = (b) => {
+    if (!b) return '';
+    if (/no.?show/i.test(b.status || '')) return 'No-show · nothing charged';
+    if (/cancel/i.test(b.status || '')) return 'Cancelled';
+    if (b.final && typeof b.final.total === 'number') return 'Settled';
+    const price = b.price || 0, gift = b.gift && b.gift.amount ? b.gift.amount : 0;
+    const paid = typeof b.paid === 'number' ? b.paid : 0, due = typeof b.due === 'number' ? b.due : Math.max(0, price - gift - paid);
+    const extra = b.extra || null, method = (b.pay || '').replace(/^Paid (by|via) /, '');
+    if (b.payStatus === 'pending' || /await/i.test(b.status || '')) return 'Awaiting ' + method;
+    const parts = [];
+    if (gift > 0) parts.push(gift >= price && !extra && !due ? 'Gift balance' : '$' + gift + ' gift');
+    if (paid > 0) parts.push('$' + paid + ' ' + (/card/i.test(method) ? 'card' : method));
+    if (extra) parts.push('$' + extra.amount + (extra.pay === method && paid > 0 ? '' : ' ' + extra.pay) + (extra.status === 'paid' ? '' : ' pending'));
+    if (due > 0) parts.push('$' + due + ' at studio');
+    if (b.quote) parts.push(price ? '+ quote at studio' : 'Quote at studio');
+    if (b.refund > 0) parts.push('$' + b.refund + ' refund on its way');
+    if (!parts.length) parts.push(price ? (/studio/i.test(method) ? 'Pay at studio' : method) : 'Pay at studio');
+    return parts.join(' · ');
+  };
+
   const yearSpend = (a) => {
     if (!a) return 0;
     const cutoff = Date.now() - 365 * 24 * 3600 * 1000;
     let s = 0;
-    (a.visits || []).forEach((v) => { if (new Date(v.date + 'T12:00:00').getTime() >= cutoff) s += v.price || 0; });
-    (a.orders || []).forEach((o) => { if (!/cancel/i.test(o.status || '') && new Date((o.date || '') + 'T12:00:00').getTime() >= cutoff) s += o.total || 0; });
-    (a.bookings || []).forEach((b) => { const t = new Date(b.date + 'T23:59:59').getTime(); if (!/cancel/i.test(b.status || '') && t < Date.now() && t >= cutoff) s += b.price || 0; });
+    // Orders count once the money is real: card / confirmed transfer immediately, cash only when Delivered / Collected.
+    (a.orders || []).forEach((o) => {
+      if (/cancel/i.test(o.status || '') || new Date((o.date || '') + 'T12:00:00').getTime() < cutoff) return;
+      const paid = o.payStatus === 'paid' || (/^Paid (by|via)/.test(o.pay || '') && o.payStatus !== 'pending');
+      const og = o.gift && o.gift.amount ? o.gift.amount : 0; // gift money already counted for the buyer
+      if (paid || /deliver|collect/i.test(o.status || '')) s += Math.max(0, orderTotal(o) - og);
+    });
+    // Bookings — money counts only when it is real; final bill (settled) replaces every estimate.
+    (a.bookings || []).forEach((b) => {
+      const st = b.status || '';
+      if (/cancel|no.?show|await/i.test(st) || b.payStatus === 'pending') return;
+      const t = new Date(b.date + 'T23:59:59').getTime(); if (t < cutoff) return;
+      const giftPart = b.gift && b.gift.amount ? b.gift.amount : 0;
+      if (b.final && typeof b.final.total === 'number') { s += Math.max(0, b.final.total - giftPart); return; }
+      const completed = /complet/i.test(st) || b.completed === true;
+      const prepaid = b.payStatus === 'paid' || (b.paid > 0 && b.payStatus !== 'due');
+      const extraPaid = b.extra && b.extra.status === 'paid' ? b.extra.amount || 0 : 0;
+      if (prepaid) s += (b.paid || 0) + (completed ? (b.due || 0) : 0) + extraPaid;
+      else if (completed) s += Math.max(0, (b.price || 0) - giftPart);
+      else s += extraPaid;
+    });
+    // Gift cards bought by this account count for the buyer once paid.
+    const G = window.IncensoGift;
+    if (G && G.boughtBy) G.boughtBy(a.phone).forEach((x) => { if (x.status === 'Reserved' || (x.status === 'Expired' && x.expiredReason)) return; const t = new Date(x.confirmed || x.created).getTime(); if (t >= cutoff) s += x.amount || 0; });
     return s;
   };
   const seed = (name, phone, email) => ({ name, phone, email: email || '', created: new Date().toISOString(), visits: [], orders: [], bookings: [], prefs: {} });
@@ -160,10 +218,10 @@
 
   const stepCode = () => {
     body().innerHTML = '<p class="au-kicker">Verify</p><h2 class="au-title">Enter the code</h2>' +
-      '<p class="au-sub">Sent by SMS to ' + pendingPhone + '.</p>' +
+      '<p class="au-sub">Sent by WhatsApp to ' + pendingPhone + '.</p>' +
       '<form id="auCodeForm"><div class="au-code">' +
       [0,1,2,3,4,5].map((i) => '<input type="text" inputmode="numeric" maxlength="1" aria-label="Digit ' + (i+1) + '" />').join('') +
-      '</div><p class="au-err" id="auErr">Enter the 6-digit code from the SMS.</p>' +
+      '</div><p class="au-err" id="auErr">Enter the 6-digit code from the WhatsApp message.</p>' +
       '<button type="submit" class="au-btn" id="auVerify">Verify</button></form>' +
       '<p class="au-alt" id="auResendRow">Didn’t get it? <button type="button" id="auResend">Send code again</button></p>' +
       '<p class="au-alt">Wrong number? <button type="button" id="auBack">Go back</button></p>';
@@ -187,7 +245,7 @@
       e.preventDefault();
       const entered = inputs.map((x) => x.value).join('');
       const err = body().querySelector('#auErr');
-      if (entered.length !== 6) { err.textContent = 'Enter the 6-digit code from the SMS.'; err.style.display = 'block'; return; }
+      if (entered.length !== 6) { err.textContent = 'Enter the 6-digit code from the WhatsApp message.'; err.style.display = 'block'; return; }
       const btn = body().querySelector('#auVerify'); btn.disabled = true; btn.textContent = 'Verifying…';
       const { data, error } = await SB.auth.verifyOtp({ phone: pendingE164, token: entered, type: 'sms' });
       if (error || !data || !data.user) { err.textContent = 'That code didn’t match. Try again.'; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Verify'; inputs.forEach((x) => { x.value = ''; }); inputs[0].focus(); return; }
@@ -262,7 +320,7 @@
   const findByPhone = () => null;
   const all = () => ({});
 
-  window.IncensoAuth = { get, set, flush, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, TIERS, sync: syncButtons, findByPhone, all, hydrate };
+  window.IncensoAuth = { get, set, flush, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, orderTotal, payLabel, nextRef, TIERS, sync: syncButtons, findByPhone, all, hydrate };
 
   // ---- Newsletter subscribe (persists to Supabase; members pass straight through) ----
   document.addEventListener('submit', (e) => {

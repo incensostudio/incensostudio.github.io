@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<meta name="description" content="Incenso Studio — Gift cards. Any amount, sent by SMS and WhatsApp. Tripoli, Lebanon." />
+<meta name="description" content="Incenso Studio — Gift cards. Any amount, sent by WhatsApp. Tripoli, Lebanon." />
 <meta name="theme-color" content="#e5dcc9" />
-<link rel="icon" href="favicon.svg" type="image/svg+xml" />
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
-<link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <title>Gift cards — Incenso Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -78,13 +78,6 @@
 .summary .btn{width:100%;margin-top:16px}
 .summary .btn:disabled{opacity:0.6;cursor:wait}
 .s-note{margin:12px 0 0;font-size:12px;color:rgba(0,0,0,0.55);line-height:1.5}
-.done{display:none;max-width:640px;margin-bottom:clamp(48px,7vw,96px)}
-.done .vcard{max-width:520px;margin:0 0 24px}
-.done h2{font-weight:600;font-size:clamp(22px,2.4vw,28px);letter-spacing:-0.015em;margin:0 0 10px}
-.done p{margin:0 0 22px;font-size:15px;line-height:1.6;color:rgba(0,0,0,0.78);text-wrap:pretty}
-.done .acts{display:flex;flex-wrap:wrap;gap:10px}
-body.gv-done .gv-wrap{display:none}
-body.gv-done .done{display:block}
 @media (max-width:1024px){.gv-wrap{grid-template-columns:1fr}.preview{position:static;max-width:520px}}
 @media (max-width:640px){.qr-pane{grid-template-columns:1fr}.amts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
@@ -96,7 +89,7 @@ body.gv-done .done{display:block}
 <main class="page" id="main" data-screen-label="Gift">
 <section class="intro">
 <h1>Give someone the chair.</h1>
-<p>Pick an amount, add a name and a note, and it reaches them by SMS and WhatsApp the moment you pay. The balance lands in their account, ready to use on any booking or anything on the shelf — for a full year.</p>
+<p>Pick an amount, add a name and a note, and it reaches them by WhatsApp the moment you pay. The balance lands in their account, ready to use on any booking or anything on the shelf — for a full year.</p>
 </section>
 <div class="gv-wrap">
 <div class="gv">
@@ -115,9 +108,9 @@ body.gv-done .done{display:block}
 <div class="field" style="margin-top:0"><label for="fromName">From</label><input id="fromName" type="text" autocomplete="name" /></div>
 </div>
 <div class="field" id="toPhoneWrap" style="max-width:420px"><label for="toPhone" id="toPhoneLbl">Their phone</label><div class="phone-combo"><select class="pc-cc" aria-label="Country code"></select><input id="toPhone" type="tel" inputmode="tel" placeholder="Phone number" /></div></div>
-<p class="d-note" id="dNote" style="margin-top:10px">The gift card is texted to them by SMS and WhatsApp the moment it’s paid and confirmed — and you get a receipt.</p>
-<div class="field"><label for="msg">A note <span class="opt">— optional</span></label><textarea id="msg" rows="2" maxlength="140" placeholder="Happy birthday — go sit down for an hour."></textarea></div>
+<p class="d-note" id="dNote" style="margin-top:10px">The gift card is sent to them by WhatsApp the moment it’s paid and confirmed — and you get a receipt.</p>
 </div>
+<div class="field"><label for="msg" id="msgLbl">A note <span class="opt">— optional</span></label><textarea id="msg" rows="2" maxlength="140" placeholder="Happy birthday — treat yourself, you’ve earned it."></textarea></div>
 <p class="sg-h">Card colour</p>
 <div class="acc-row" id="accs" role="group" aria-label="Card colour"></div>
 </section>
@@ -132,10 +125,10 @@ body.gv-done .done{display:block}
 </div>
 <div class="qr-pane" id="qrWhish" hidden><image-slot id="qr-whish" shape="rect" fit="contain" placeholder="Whish Money QR"></image-slot><div class="qr-txt"><p class="qr-h">Whish Money</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan in the Whish app, pay, then confirm below.</p></div></div>
 <div class="qr-pane" id="qrOmt" hidden><image-slot id="qr-omt" shape="rect" fit="contain" placeholder="OMT Pay QR"></image-slot><div class="qr-txt"><p class="qr-h">OMT Pay</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan in OMT Pay, pay, then confirm below.</p></div></div>
-<p class="d-note" id="payNote">Charged securely now — the voucher activates instantly.</p>
+<p class="d-note" id="payNote">Charged securely now — the gift card is sent and active instantly.</p>
 </section>
 </div>
-<aside class="preview" aria-label="Voucher preview">
+<aside class="preview" aria-label="Gift card preview">
 <div class="vcard" id="vcard"></div>
 <div class="summary">
 <h2 class="s-head">Your gift card</h2>
@@ -144,16 +137,11 @@ body.gv-done .done{display:block}
 <div class="s-total"><span>Total</span><span class="v" id="sTotal">$50</span></div>
 <button type="button" class="btn" id="buyBtn">Pay $50 & send</button>
 <p class="err" id="gvErr" role="alert"></p>
-<p class="s-note">The card lands in the recipient’s account the moment they sign in with that number — they apply it at booking, or quote the code at the studio. Balance carries over between visits. Valid 12 months, no cash value.</p>
+<p class="s-note" id="sNote"></p>
 </div>
 </aside>
 </div>
-<section class="done" role="status">
-<div class="vcard" id="doneCard"></div>
-<h2 id="doneH">Sent ✦ It's on its way.</h2>
-<p id="doneP"></p>
-<div class="acts"><a class="btn ghost" id="seeCard" href="Account.html">Open the card</a><button type="button" class="btn ghost" id="againBtn">Send another</button></div>
-</section>
+
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase.js"></script>
@@ -169,7 +157,7 @@ const A = window.IncensoAuth, $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const AMTS = [25, 50, 75, 100, 150, 200], ACCS = ['#F9A8D4', '#7DD3FC', '#86EFAC', '#FDE047', '#D8B4FE', '#FCC67E'];
 const PAYS = { card: 'Paid by card', whish: 'Whish Money', omt: 'OMT Pay', later: 'Pay at studio' };
-const NOTE = { card: 'Charged securely now \u2014 the gift card is sent and active instantly.', whish: 'Transfer from your Whish wallet \u2014 the card is reserved and sent once the studio confirms it.', omt: 'Transfer with OMT Pay \u2014 the card is reserved and sent once the studio confirms it.', later: 'Reserve it now, pay when you pass by \u2014 the card is sent once the studio confirms payment.' };
+const NOTE = { card: 'Charged securely now \u2014 the gift card is sent and active instantly.', whish: 'Transfer from your Whish wallet \u2014 the card is reserved and sent once the studio confirms it \u2014 unpaid after 24 hours, it\u2019s cancelled.', omt: 'Transfer with OMT Pay \u2014 the card is reserved and sent once the studio confirms it \u2014 unpaid after 24 hours, it\u2019s cancelled.', later: 'Reserve it now, pay at the desk within 3 days \u2014 the card is sent once the studio confirms payment; unpaid after that, it\u2019s cancelled.' };
 const st = { amount: 50, to: '', from: '', msg: '', acc: ACCS[0], pay: 'card', who: 'them' };
 const forMe = () => st.who === 'me';
 const amount = () => st.amount;
@@ -179,18 +167,19 @@ $('accs').innerHTML = ACCS.map((c) => '<button type="button" data-acc="' + c + '
 };
 const card = (el, code, valid) => {
 el.style.setProperty('--acc', st.acc);
-el.innerHTML = '<div class="cbar"><span class="wm"><svg class="wordmark" viewBox="8 76 1282 226" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path class="wordmark-o" d="M984 189.676C984 145.506 1007.35 106.459 1045.99 89.6959C1058.86 84.1134 1073.44 81 1089.42 81C1104.88 81 1119.21 83.8833 1132.45 89.1591C1145.74 94.4656 1158.61 102.425 1171.92 112.854C1186.18 122.44 1204.38 132.7 1226.24 143.083C1248.11 153.466 1268.29 164.923 1278.49 178.496C1288.48 191.808 1284.77 206.378 1268.26 221.484C1259.99 229.045 1249.57 236.637 1238.27 243.876C1226.97 251.13 1214.87 257.924 1203.23 264.09C1179.98 276.282 1159.68 284.564 1141.54 289.288C1123.51 293.858 1106.92 296.558 1090.42 296.542C1074.56 296.573 1060.21 293.69 1047.37 288.414C1008.84 272.556 984 235.18 984 189.676ZM1100.66 280.914C1116.94 281.129 1140.85 277.985 1167.52 265.9C1180.95 259.857 1196.3 250.195 1210.71 237.956C1225.11 225.717 1235.17 211.746 1233.01 197.068C1230.81 182.115 1213.73 170.014 1195.25 159.125C1176.76 148.098 1161.34 137.117 1149.18 127.194C1137.32 117.087 1126.04 109.557 1114.71 104.542C1103.42 99.5574 1091.8 96.8888 1080.3 96.8888C1065.42 96.8888 1047.6 101.383 1033.51 113.453C1019.42 125.523 1009.04 145.184 1009.04 175.52C1009.04 205.856 1019.94 232.88 1036.56 251.391C1053.19 269.902 1075.7 280.638 1100.66 280.899V280.914Z"></path><path d="M13.5156 285V89.7H39.0156V285H13.5156ZM192.182 285L82.682 117.6V285H56.582V90H90.782L198.782 255.6V90H224.582V285H192.182ZM340.877 288.6C282.977 288.6 238.877 250.2 238.877 187.5C238.877 124.8 282.977 86.4 340.877 86.4C392.777 86.4 433.577 117.6 438.077 164.7H411.377C407.177 131.1 376.877 109.2 340.577 109.2C299.177 109.2 264.977 138 264.977 187.2C264.977 236.7 299.477 265.5 340.877 265.5C377.477 265.5 407.777 243 411.977 204.9H438.077C434.177 256.8 393.677 288.6 340.877 288.6ZM454.434 285V90H605.334V112.8H479.634V175.2H596.334V198H479.634V262.2H604.134V285H454.434ZM756.44 285L646.94 117.6V285H620.84V90H655.04L763.04 255.6V90H788.84V285H756.44ZM890.378 288.6C845.078 288.6 804.278 268.8 804.878 222.3H831.278C831.578 254.7 857.678 266.7 889.778 266.7C913.178 266.7 939.578 256.8 939.578 232.5C939.578 207 912.878 201.9 883.178 197.4C847.778 192.3 809.378 186.3 809.378 141.9C809.378 108.3 838.478 86.4 879.578 86.4C932.678 86.4 959.078 116.4 959.078 147.9H932.078C931.778 123.3 911.678 108 879.578 108C854.078 108 835.178 121.8 835.178 142.2C835.178 168 861.578 169.8 890.978 174.6C926.078 180.3 965.678 186.9 965.378 231.9C965.078 267 930.878 288.6 890.378 288.6Z"></path></svg></span><span class="tag">Gift card</span></div><div class="mid"><div class="amt">$' + st.amount + '</div><p class="to">For <b>' + esc(forMe() ? 'you' : (st.to || 'someone lovely')) + '</b>' + (st.from && !forMe() ? ' <span class="fr">\u2014 from ' + esc(st.from) + '</span>' : '') + (st.msg && !forMe() ? '<br><span class="msg">\u201c' + esc(st.msg) + '\u201d</span>' : '') + '</p></div><div class="cbar end"><span><span class="code">' + (code || 'IS-G-\u00b7\u00b7\u00b7\u00b7') + '</span><span class="k v">' + (valid || 'Valid 12 months') + '</span></span><span class="qr">' + window.IncensoQR(code || 'IS-G-0000') + '</span></div>';
+el.innerHTML = '<div class="cbar"><span class="wm"><svg class="wordmark" viewBox="8 76 1282 226" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path class="wordmark-o" d="M984 189.676C984 145.506 1007.35 106.459 1045.99 89.6959C1058.86 84.1134 1073.44 81 1089.42 81C1104.88 81 1119.21 83.8833 1132.45 89.1591C1145.74 94.4656 1158.61 102.425 1171.92 112.854C1186.18 122.44 1204.38 132.7 1226.24 143.083C1248.11 153.466 1268.29 164.923 1278.49 178.496C1288.48 191.808 1284.77 206.378 1268.26 221.484C1259.99 229.045 1249.57 236.637 1238.27 243.876C1226.97 251.13 1214.87 257.924 1203.23 264.09C1179.98 276.282 1159.68 284.564 1141.54 289.288C1123.51 293.858 1106.92 296.558 1090.42 296.542C1074.56 296.573 1060.21 293.69 1047.37 288.414C1008.84 272.556 984 235.18 984 189.676ZM1100.66 280.914C1116.94 281.129 1140.85 277.985 1167.52 265.9C1180.95 259.857 1196.3 250.195 1210.71 237.956C1225.11 225.717 1235.17 211.746 1233.01 197.068C1230.81 182.115 1213.73 170.014 1195.25 159.125C1176.76 148.098 1161.34 137.117 1149.18 127.194C1137.32 117.087 1126.04 109.557 1114.71 104.542C1103.42 99.5574 1091.8 96.8888 1080.3 96.8888C1065.42 96.8888 1047.6 101.383 1033.51 113.453C1019.42 125.523 1009.04 145.184 1009.04 175.52C1009.04 205.856 1019.94 232.88 1036.56 251.391C1053.19 269.902 1075.7 280.638 1100.66 280.899V280.914Z"></path><path d="M13.5156 285V89.7H39.0156V285H13.5156ZM192.182 285L82.682 117.6V285H56.582V90H90.782L198.782 255.6V90H224.582V285H192.182ZM340.877 288.6C282.977 288.6 238.877 250.2 238.877 187.5C238.877 124.8 282.977 86.4 340.877 86.4C392.777 86.4 433.577 117.6 438.077 164.7H411.377C407.177 131.1 376.877 109.2 340.577 109.2C299.177 109.2 264.977 138 264.977 187.2C264.977 236.7 299.477 265.5 340.877 265.5C377.477 265.5 407.777 243 411.977 204.9H438.077C434.177 256.8 393.677 288.6 340.877 288.6ZM454.434 285V90H605.334V112.8H479.634V175.2H596.334V198H479.634V262.2H604.134V285H454.434ZM756.44 285L646.94 117.6V285H620.84V90H655.04L763.04 255.6V90H788.84V285H756.44ZM890.378 288.6C845.078 288.6 804.278 268.8 804.878 222.3H831.278C831.578 254.7 857.678 266.7 889.778 266.7C913.178 266.7 939.578 256.8 939.578 232.5C939.578 207 912.878 201.9 883.178 197.4C847.778 192.3 809.378 186.3 809.378 141.9C809.378 108.3 838.478 86.4 879.578 86.4C932.678 86.4 959.078 116.4 959.078 147.9H932.078C931.778 123.3 911.678 108 879.578 108C854.078 108 835.178 121.8 835.178 142.2C835.178 168 861.578 169.8 890.978 174.6C926.078 180.3 965.678 186.9 965.378 231.9C965.078 267 930.878 288.6 890.378 288.6Z"></path></svg></span><span class="tag">Gift card</span></div><div class="mid"><div class="amt">$' + st.amount + '</div><p class="to">For <b>' + esc(forMe() ? 'you' : (st.to || 'someone lovely')) + '</b>' + (st.from && !forMe() ? ' <span class="fr">\u2014 from ' + esc(st.from) + '</span>' : '') + (st.msg && !forMe() ? '<br><span class="msg">\u201c' + esc(st.msg) + '\u201d</span>' : '') + '</p></div><div class="cbar end"><span><span class="code">' + (code || 'IS-G-\u00b7\u00b7\u00b7\u00b7') + '</span><span class="k v">' + (valid || 'Valid 12 months') + '</span></span><span class="qr">' + window.IncensoQR('https://www.incensostudio.com/Account.html') + '</span></div>';
 };
 const render = () => {
 card($('vcard'));
 const a = amount();
 $('sWhat').textContent = '$' + a;
-$('sDeliver').textContent = forMe() ? 'Into your account' : 'Texted to them';
+$('sDeliver').textContent = forMe() ? 'Into your account' : 'Sent to them on WhatsApp';
+$('sNote').textContent = forMe() ? 'The balance goes straight into your account and applies itself at booking or checkout \u2014 no code to type. It carries over between visits and is valid for a year.' : 'The card lands in their account the moment they sign in with that number \u2014 it applies itself at booking or checkout. Balance carries over between visits and is valid for a year.';
 $('sTotal').textContent = '$' + a;
 const qr = st.pay === 'whish' || st.pay === 'omt';
 $('buyBtn').textContent = st.pay === 'card' ? 'Pay $' + a + ' & send' : qr ? 'I\u2019ve sent $' + a + ' \u2014 send' : 'Reserve gift card';
 document.querySelectorAll('.qr-amt').forEach((x) => { x.textContent = '$' + a; });
-$('themFields').hidden = forMe(); $('whoNote').hidden = !forMe();
+$('themFields').hidden = forMe(); $('whoNote').hidden = !forMe(); $('msg').placeholder = forMe() ? 'A note to yourself \u2014 what this one\u2019s for.' : 'Happy birthday \u2014 treat yourself, you\u2019ve earned it.';
 };
 $('amounts').addEventListener('click', (e) => { const b = e.target.closest('[data-amt]'); if (!b) return; st.amount = +b.dataset.amt; $('customAmt').value = ''; renderAmts(); render(); });
 $('customAmt').addEventListener('input', () => { const v = parseInt($('customAmt').value, 10); if (v >= 10) { st.amount = Math.min(1000, v); renderAmts(); render(); } });
@@ -222,32 +211,21 @@ const go = (acc) => {
 acc = acc || A.get();
 $('buyBtn').disabled = true; $('buyBtn').textContent = 'One moment\u2026';
 setTimeout(() => {
-const code = 'IS-G-' + String(Math.floor(1000 + Math.random() * 9000));
+const code = A.nextRef('IS-G');
 const exp = new Date(); exp.setFullYear(exp.getFullYear() + 1);
-const v = { code, amount: amount(), to: forMe() ? acc.name : st.to, from: forMe() ? acc.name : (st.from || acc.name), msg: forMe() ? '' : st.msg, acc: st.acc, deliver: forMe() ? 'me' : 'sms', toPhone: forMe() ? acc.phone : ($('toPhoneWrap').querySelector('.pc-cc').value + ' ' + $('toPhone').value.trim()).trim(), pay: PAYS[st.pay], status: st.pay === 'card' ? 'Active' : 'Reserved', confirmed: st.pay === 'card' ? new Date().toISOString() : '', created: new Date().toISOString(), expires: exp.toISOString().slice(0, 10) };
+const v = { code, amount: amount(), to: forMe() ? acc.name : st.to, from: forMe() ? acc.name : (st.from || acc.name), msg: st.msg, acc: st.acc, deliver: forMe() ? 'me' : 'sms', toPhone: forMe() ? acc.phone : ($('toPhoneWrap').querySelector('.pc-cc').value + ' ' + $('toPhone').value.trim()).trim(), pay: PAYS[st.pay], status: st.pay === 'card' ? 'Active' : 'Reserved', confirmed: st.pay === 'card' ? new Date().toISOString() : '', created: new Date().toISOString(), expires: exp.toISOString().slice(0, 10) };
 v.buyerPhone = acc.phone; v.buyerName = acc.name;
 window.IncensoGift.issue(v);
 acc.vouchers = [v].concat(acc.vouchers || []);
 window.IncensoGift.attach(acc);
 A.set(acc);
 last = v;
-const valid = 'Valid to ' + new Date(v.expires + 'T12:00:00').toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
-card($('doneCard'), code, valid);
-$('doneH').textContent = st.pay === 'card' ? 'Sent \u2726 It\u2019s on its way.' : 'Reserved \u2726 Sent the moment your payment is confirmed.';
-const toMe = window.IncensoGift.same(v.toPhone, acc.phone);
-const who = forMe() ? 'you' : v.to;
-const when = st.pay === 'card' ? 'It\u2019s active now.' : 'It\u2019s reserved: the studio confirms your ' + (st.pay === 'later' ? 'payment at the desk' : (st.pay === 'whish' ? 'Whish' : 'OMT') + ' transfer') + ', then the card is sent and activated \u2014 you\u2019ll both be messaged.';
-const where = toMe ? 'The balance is already in your account.' : 'The moment ' + v.to + ' signs in with ' + v.toPhone + ', the balance is in their account \u2014 no code to type.';
-$('doneP').textContent = '$' + v.amount + ' gift card ' + code + ' for ' + v.to + (st.pay === 'card' ? ' \u2014 sent by SMS and WhatsApp to ' + who + ' at ' + v.toPhone + '. ' : ' \u2014 to be sent by SMS and WhatsApp to ' + who + ' at ' + v.toPhone + '. ') + when + ' ' + where;
-$('seeCard').href = 'GiftCard.html?code=' + code;
-document.body.classList.add('gv-done');
-window.scrollTo({ top: 0, behavior: 'smooth' });
-$('buyBtn').disabled = false;
+Object.assign(st, { to: '', msg: '' });
+location.href = 'GiftCard.html?code=' + code + '&new=1';
 }, 700);
 };
 if (A.signedIn()) go(); else A.open(go);
 });
-$('againBtn').addEventListener('click', () => { document.body.classList.remove('gv-done'); Object.assign(st, { to: '', msg: '' }); $('toName').value = ''; $('msg').value = ''; $('toPhone').value = ''; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
 if (window.IncensoPhone) window.IncensoPhone.fill($('toPhoneWrap'));
 renderAmts(); render();
 })();

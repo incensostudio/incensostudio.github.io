@@ -9,7 +9,7 @@
   const header = document.createElement('header');
   header.className = 'topbar';
   header.innerHTML = '<div class="tb-l"><a class="tb-cart tb-cart-left" href="Cart.html" aria-label="Cart">' + CART_SVG + '</a>' +
-    '<a class="wm-link" href="/" aria-label="Incenso Studio — home">' + WORDMARK + '</a></div>' +
+    '<a class="wm-link" href="Home.html" aria-label="Incenso Studio — home">' + WORDMARK + '</a></div>' +
     '<div class="tb-c"><nav class="nav" aria-label="Primary">' + NAV + '</nav></div>' +
     '<div class="tb-r"><a class="tb-book" href="Book.html">Book</a><a class="tb-cart" href="Cart.html" aria-label="Cart">' + CART_SVG + '</a>' +
     '<a class="tb-cart tb-account" href="Account.html" data-account-btn aria-label="Sign in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"></circle><path d="M5 19.5c1.3-3.2 4-4.8 7-4.8s5.7 1.6 7 4.8"></path></svg></a>' +
@@ -30,7 +30,7 @@
     '<button type="submit" class="news-btn">Subscribe<svg viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="15" r="13.5"></circle><path d="M10 15 H20 M16 11 L20 15 L16 19"></path></svg></button></form></div>' +
     '<div class="foot-cols"><div class="f-col"><span>© Incenso Studio</span>' +
     '<span class="ticker" aria-live="polite"><span class="ticker-dot" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2 L13.5 8 L8 14 L2.5 8 Z"></path></svg></span><span class="ticker-text">Open daily 10 AM – 7 PM</span></span>' +
-    '<a href="https://maps.google.com/?cid=5268585506035239909" target="_blank" rel="noopener">Tripoli · Lebanon</a></div>' +
+    '<a href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x1521f75831aec263:0x491dc69a84008be5?sa=X&ved=1t:8290&ictx=111" target="_blank" rel="noopener">Tripoli · Lebanon</a></div>' +
     '<div class="f-col"><a href="Terms.html">Terms &amp; Conditions</a><a href="Shipping.html">Shipping</a><a href="Privacy.html">Privacy</a></div>' +
     '<div class="f-col"><a href="https://wa.me/96171930290" target="_blank" rel="noopener">WhatsApp</a><a href="https://instagram.com/incensostudio" target="_blank" rel="noopener">Instagram</a><a href="https://tiktok.com/@incensostudio" target="_blank" rel="noopener">TikTok</a></div></div>';
 
@@ -39,7 +39,7 @@
   document.body.appendChild(footer);
 
   // Mark the current page in the nav
-  const here = decodeURIComponent(location.pathname.split('/').pop() || '/');
+  const here = decodeURIComponent(location.pathname.split('/').pop() || 'Home.html');
   document.querySelectorAll('.topbar a[href], .mobile-nav a[href]').forEach((a) => { if (a.getAttribute('href') === here) a.setAttribute('aria-current', 'page'); });
 
   // Cart badge

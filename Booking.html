@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <meta name="description" content="Incenso Studio — your booking." />
 <meta name="theme-color" content="#e5dcc9" />
-<link rel="icon" href="favicon.svg" type="image/svg+xml" />
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
-<link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <title>Your booking — Incenso Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,6 +18,8 @@
 .ref-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin:0 0 16px}
 .ref{font-family:var(--font-mono);font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(0,0,0,0.6)}
 .status{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;padding:5px 11px;border-radius:999px;border:1px solid currentColor;color:var(--sc,#1F9A56)}
+.status[hidden]{display:none}
+.bk-timer{font-family:var(--font-mono);font-weight:600;color:#8C5A10;font-variant-numeric:tabular-nums}
 .status::before{content:"";width:6px;height:6px;border-radius:999px;background:currentColor}
 .banner{display:none;align-items:center;gap:12px;margin:22px 0 0;padding:13px 18px;border:1px solid rgba(0,0,0,0.25);background:rgba(254,254,241,0.6);font-size:14px;font-weight:500}
 .banner.show{display:inline-flex}
@@ -33,24 +35,26 @@
 .when-txt p{margin:6px 0 0;font-size:14px;color:rgba(0,0,0,0.65)}
 .blk{border-top:1px solid var(--card-line);padding:clamp(20px,2.6vw,30px) 0}
 .blk-h{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:rgba(0,0,0,0.82);margin:0 0 16px}
-.tl{border-top:1px solid var(--grid-line)}
-.tl .row{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:14px;align-items:baseline;padding:13px 4px;border-bottom:1px solid var(--grid-line);font-size:15px}
+.tl{display:grid;gap:2px}
+.tl .row{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:14px;align-items:baseline;padding:9px 0;font-size:15px}
 .tl .t{font-family:var(--font-mono);font-size:12px;color:rgba(0,0,0,0.65);white-space:nowrap}
 .tl .n{font-weight:600;letter-spacing:-0.01em}
 .tl .n small{display:block;font-weight:400;font-size:12px;color:rgba(0,0,0,0.55);margin-top:2px}
 .tl .p{font-family:var(--font-mono);font-size:13px;font-weight:500}
-.kv{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:9px 0;font-size:14px;color:rgba(0,0,0,0.7);border-bottom:1px solid var(--grid-line)}
-.kv:last-child{border-bottom:0}
+.kv{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:7px 0;font-size:14px;color:rgba(0,0,0,0.7)}
 .kv .v{font-weight:600;color:var(--fg-warm);text-align:right;text-wrap:pretty}
-.kv .v small{display:block;font-weight:400;font-size:12px;color:rgba(0,0,0,0.55)}
+.kv .v small,.kv > span:first-child small{display:block;font-weight:400;font-size:12px;color:rgba(0,0,0,0.55);margin-top:2px}
+.kv > span:first-child{min-width:0;text-wrap:pretty}
+.kv .v{flex:0 1 auto;max-width:60%;text-wrap:pretty}
+.kv .v small{white-space:normal;line-height:1.4}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chipv{display:inline-flex;align-items:center;height:32px;padding:0 14px;border-radius:999px;border:1px solid rgba(0,0,0,0.3);font-size:13px;font-weight:500;background:rgba(254,254,241,0.5)}
-.note{margin:0;padding:14px 18px;border:1px dashed rgba(0,0,0,0.3);background:rgba(254,254,241,0.4);font-size:14px;line-height:1.55;text-wrap:pretty}
+.chipv{display:inline-flex;align-items:center;height:32px;padding:0 14px;border-radius:999px;border:1px solid rgba(0,0,0,0.25);font-size:13px;font-weight:500;background:rgba(254,254,241,0.6)}
+.note{margin:0;padding:14px 18px;border:1px solid rgba(0,0,0,0.25);background:rgba(254,254,241,0.6);font-size:14px;line-height:1.55;text-wrap:pretty}
 .side{position:sticky;top:calc(clamp(24px,3.2vw,40px) + 110px);border:1px solid rgba(0,0,0,0.25);background:rgba(254,254,241,0.6);padding:clamp(24px,3vw,34px)}
 .side .blk-h{margin-bottom:14px}
 .total{display:flex;align-items:baseline;justify-content:space-between;gap:16px;font-weight:600;font-size:16px;padding-bottom:12px}
 .total .v{font-family:var(--font-mono);font-size:22px}
-.pay-rows{border-top:1px solid var(--card-line);padding-top:4px}
+.pay-rows{padding-top:2px}
 .pay-rows .kv .v{font-family:var(--font-mono);font-weight:500}
 .pay-rows .kv.due .v{color:#C9821B}
 .pay-rows .kv.ok .v{color:#1F9A56}
@@ -67,14 +71,14 @@
 .cancel-box .btn{width:auto;flex:1}
 .side .loc{margin:18px 0 0;font-size:13px;line-height:1.6;color:rgba(0,0,0,0.62)}
 .side .loc a{color:var(--fg-warm)}
-.missing{display:none;max-width:560px;padding:clamp(24px,3vw,40px) 0 clamp(64px,9vw,128px)}
-.missing p{margin:0 0 24px;font-size:clamp(15px,1.3vw,18px);line-height:1.55;color:rgba(0,0,0,0.78)}
+section.missing{display:none;max-width:560px;padding:clamp(24px,3vw,40px) 0 clamp(64px,9vw,128px)}
+section.missing p{margin:0 0 24px;font-size:clamp(15px,1.3vw,18px);line-height:1.55;color:rgba(0,0,0,0.78)}
 body.missing .wrap,body.missing .banner{display:none}
-body.missing .missing{display:block}
+body.missing section.missing{display:block}
 body.cancelled .date-block{opacity:0.5}
 body.cancelled .tl .row,body.cancelled .when-txt{opacity:0.7}
 @media (max-width:1024px){.wrap{grid-template-columns:1fr}.side{position:static;max-width:640px}}
-@media (max-width:560px){.tl .row{grid-template-columns:1fr auto}.tl .t{grid-column:1 / -1;order:-1}.when{grid-template-columns:1fr}.date-block{justify-self:start}}
+@media (max-width:560px){.tl .row{grid-template-columns:1fr auto}.tl .t{grid-column:1 / -1;order:-1}.when{grid-template-columns:1fr;gap:12px}.date-block{justify-self:start}}
 </style>
 <template id="__bundler_thumbnail" data-bg-color="#e5dcc9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#e5dcc9"/><text x="200" y="262" text-anchor="middle" font-family="Georgia,serif" font-size="180" fill="#000">i</text></svg></template>
 </head>
@@ -107,7 +111,7 @@ body.cancelled .tl .row,body.cancelled .when-txt{opacity:0.7}
 <div class="field"><label for="cReason">Why? <span class="opt">— optional, it helps us</span></label><input id="cReason" type="text" placeholder="Plans changed, found a better time…" /></div>
 <div class="btns"><button type="button" class="btn ghost" id="keepBtn">Keep it</button><button type="button" class="btn danger" id="cancelYes">Yes, cancel</button></div>
 </div>
-<p class="loc">32, Dam &amp; Farz, Tripoli, Lebanon · <a href="https://maps.google.com/?cid=5268585506035239909" target="_blank" rel="noopener">Directions</a><br>Come five minutes early — your drink will be ready.</p>
+<p class="loc" id="loc">32, Dam &amp; Farz, Tripoli, Lebanon · <a href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x1521f75831aec263:0x491dc69a84008be5?sa=X&amp;ved=1t:8290&amp;ictx=111" target="_blank" rel="noopener">Directions</a><br>Come five minutes early — the incense will already be lit.</p>
 </aside>
 </div>
 <section class="missing" role="status">
@@ -145,14 +149,20 @@ const services = b.services && b.services.length ? b.services : [b.service];
 const mins = b.mins || 60;
 const d = fromISO(b.date), now = beirut();
 const endTs = new Date(b.date + 'T00:00:00').getTime() + (start + mins) * 60000;
+const awaiting = /await/i.test(b.status || '') && b.payStatus !== 'paid';
 const cancelled = /cancel/i.test(b.status || '');
-const done = !cancelled && endTs < now.getTime();
+const finalised = !cancelled && b.final && typeof b.final.total === 'number';
+const done = !cancelled && (finalised || /complet/i.test(b.status || ''));
 const upcoming = !cancelled && !done;
 document.body.classList.toggle('cancelled', cancelled);
 $('ref').textContent = 'Booking ' + b.ref;
 const stEl = $('status');
-stEl.textContent = cancelled ? 'Cancelled' : done ? 'Completed' : 'Upcoming';
-stEl.style.setProperty('--sc', cancelled ? '#C81E2D' : done ? '#8B5CC4' : '#1F9A56');
+$('loc').hidden = !!(finalised || done || cancelled);
+stEl.textContent = cancelled ? 'Cancelled' : awaiting ? 'Awaiting payment' : done ? 'Settled' : 'Upcoming';
+stEl.style.setProperty('--sc', cancelled ? '#C81E2D' : awaiting ? '#C9821B' : done ? '#8B5CC4' : '#1F9A56');
+if (awaiting) { const deadline = b.payDeadline || ((b.placedAt || Date.now()) + 86400000); $('h1').textContent = 'Held for you \u2014 send your payment.'; banner('Awaiting ' + esc(b.pay), 'Transfer $' + (b.paid || b.price) + ' to +961 71 930 290 with booking ' + b.ref + '. We confirm on WhatsApp the moment it lands \u2014 the slot is released if unpaid by ' + new Date(deadline).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) + ' (<b class="bk-timer" data-deadline="' + deadline + '"></b> left).');
+const tEl = document.querySelector('.bk-timer'); if (window._bkTimer) clearInterval(window._bkTimer); if (tEl) { const tick = () => { const ms = Number(tEl.dataset.deadline) - Date.now(); if (ms <= 0) { clearInterval(window._bkTimer); const a2 = A.get(); const x = (a2.bookings || []).find((y) => y.ref === b.ref); if (x && x.payStatus === 'pending') { x.status = 'Cancelled'; x.cancelled = new Date().toISOString(); x.cancelReason = 'Payment not received within 24 hours.'; A.set(a2); } render(); return; } const hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000), ss = Math.floor((ms % 60000) / 1000); tEl.textContent = hh > 0 ? hh + 'h ' + String(mm).padStart(2, '0') + 'm' : mm + 'm ' + String(ss).padStart(2, '0') + 's'; }; tick(); window._bkTimer = setInterval(tick, 1000); } }
+else if (cancelled && /not received/i.test(b.cancelReason || '')) banner('Released', 'We didn\u2019t receive your ' + esc(b.pay) + ' transfer by the deadline, so this slot was released. Nothing was charged \u2014 book again any time.');
 $('h1').textContent = cancelled ? 'This booking was cancelled.' : done ? 'Thanks for coming in.' : 'Your chair is booked.';
 $('dDow').textContent = d.toLocaleDateString('en-GB', { weekday: 'long' });
 $('dDay').textContent = d.getDate();
@@ -166,20 +176,23 @@ $('tl').innerHTML = services.map((n, i) => { const m = b.services && b.serviceMi
 $('kv').innerHTML = '<div class="kv"><span>With</span><span class="v">' + esc(b.staff) + '</span></div>' +
 '<div class="kv"><span>Booked</span><span class="v">' + (b.created ? new Date(b.created).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '\u2014') + (b.updated ? '<small>Changed ' + new Date(b.updated).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + '</small>' : '') + '</span></div>' +
 (cancelled && b.cancelReason ? '<div class="kv"><span>Reason</span><span class="v">' + esc(b.cancelReason) + '</span></div>' : '');
-const chips = [].concat(b.mood ? [b.mood] : [], b.flags || [], [].concat(b.drink || []).map((x) => 'On arrival: ' + x), b.smoke ? [b.smoke] : []);
+const chips = [].concat(b.mood ? [b.mood] : [], b.flags || [], b.smoke ? [b.smoke] : []);
 $('prefBlk').hidden = !chips.length;
 $('chips').innerHTML = chips.map((c) => '<span class="chipv">' + esc(c) + '</span>').join('');
 $('noteBlk').hidden = !b.notes;
 $('note').textContent = b.notes || '';
 $('total').textContent = b.quote && !b.price ? 'Custom quote' : (b.priceFrom ? 'from ' : '') + '$' + b.price + (b.quote ? ' + quote' : '');
-const paid = typeof b.paid === 'number' ? b.paid : (b.pay === 'Pay at studio' ? 0 : b.price);
+const paid = typeof b.paid === 'number' ? b.paid : (b.pay === 'Pay at studio' || b.payStatus === 'gift' ? 0 : b.price);
 const due = typeof b.due === 'number' ? b.due : (paid ? 0 : b.price - (b.gift ? b.gift.amount : 0));
 const pr = (k, v, cls) => '<div class="kv' + (cls ? ' ' + cls : '') + '"><span>' + k + '</span><span class="v">' + v + '</span></div>';
-$('payRows').innerHTML = (b.quote && !cancelled ? pr('Custom quote', (b.quoteItems || []).map(esc).join(', ') + '<small>Priced by length and thickness \u2014 quoted in the chair, paid at the studio</small>', 'due') : '') + (cancelled ? (b.gift ? pr('Gift balance restored', '$' + b.gift.amount + '<small>back on ' + esc((b.gift.codes || (b.gift.code ? [b.gift.code] : [])).join(', ')) + '</small>', 'ok') : '') + (paid ? pr('Refund on its way', '$' + paid + '<small>' + esc(b.pay) + '</small>', 'ok') : (!b.gift ? pr('Nothing owed', '$0') : '')) :
+if (finalised) { const f = b.final; const added = (f.items || []).filter((x) => x.added); $('payRows').innerHTML = (f.items || []).map((x) => pr(esc(x.name) + (x.added ? '<small>Added at the studio</small>' : ''), '$' + x.price)).join('') + (f.discount ? pr((f.tier || 'Member') + ' discount', '\u2212$' + f.discount, 'ok') : '') + (b.gift && b.gift.amount ? pr('Gift balance', '\u2212$' + b.gift.amount, 'ok') : '') + (function () { const pre = (typeof b.paid === 'number' ? b.paid : 0) + (b.extra && b.extra.status === 'paid' ? b.extra.amount : 0); const gift = b.gift && b.gift.amount ? b.gift.amount : 0; const delta = f.total - pre - gift; const when = f.settledAt ? ' \u00b7 ' + new Date(f.settledAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''; return (pre > 0 ? pr('Paid ahead', '$' + pre + '<small>' + esc(b.pay) + '</small>', 'ok') : '') + (delta > 0 ? pr('Settled at the studio', '$' + delta + '<small>' + esc(f.pay || 'at the desk') + when + '</small>', 'ok') : delta < 0 ? pr('Refunded', '$' + (-delta) + '<small>the same way you paid' + when + '</small>', 'ok') : pr('Settled', '$' + f.total + '<small>' + esc(f.pay || b.pay) + when + '</small>', 'ok')); })(); $('total').textContent = '$' + f.total; if (added.length) { $('noteBlk').hidden = false; $('note').textContent = (b.notes ? b.notes + ' \u2014 ' : '') + 'Final bill closed by the studio, including ' + added.map((x) => x.name).join(', ') + ' added on the day.'; } } else $('payRows').innerHTML = (b.quote && !cancelled ? pr('Custom quote', (b.quoteItems || []).map(esc).join(', ') + '<small>Priced by length and thickness \u2014 quoted in the chair, paid at the studio</small>', 'due') : '') + (cancelled ? (b.gift ? pr('Gift balance restored', '$' + b.gift.amount + '<small>back on ' + esc((b.gift.codes || (b.gift.code ? [b.gift.code] : [])).join(', ')) + '</small>', 'ok') : '') + (paid ? pr('Refund on its way', '$' + paid + '<small>' + esc(b.pay) + '</small>', 'ok') : (!b.gift ? pr('Nothing owed', '$0') : '')) :
 (b.gift ? pr('Gift balance', '\u2212$' + b.gift.amount + '<small>' + esc((b.gift.codes || (b.gift.code ? [b.gift.code] : [])).join(', ')) + '</small>', 'ok') : '') +
-(paid ? pr('Paid ahead', '$' + paid + '<small>' + esc(b.pay) + '</small>', 'ok') : '') +
+(paid ? pr(awaiting ? 'To transfer' : 'Paid ahead', '$' + paid + '<small>' + esc(b.pay) + (awaiting ? ' \u00b7 not yet received' : '') + '</small>', awaiting ? 'due' : 'ok') : '') +
+(b.extra && b.extra.status !== 'paid' ? pr('Top-up to transfer', '$' + b.extra.amount + '<small>' + esc(b.extra.pay) + ' \u00b7 not yet received \u2014 send it with booking ' + b.ref + '.</small>', 'due') : '') +
+(b.extra && b.extra.status === 'paid' ? pr('Top-up paid', '$' + b.extra.amount + '<small>' + esc(b.extra.pay) + '</small>', 'ok') : '') +
 (due ? pr(paid ? 'Balance at the studio' : 'To pay at the studio', '$' + due, 'due') : (b.quote && !paid ? pr('To pay at the studio', 'After quote', 'due') : '')) +
-(b.refund ? pr('Refund on its way', '$' + b.refund + '<small>same way, within a few days</small>', 'ok') : ''));
+(b.refund ? pr('Refund on its way', '$' + b.refund + '<small>same way, within a few days</small>', 'ok') : '') +
+(!cancelled && !due && !paid && !(b.extra && b.extra.status !== 'paid') && b.gift && b.gift.amount >= (b.price || 0) && !b.quote ? pr('Covered', 'Nothing more to pay<small>your gift balance covers it in full</small>', 'ok') : ''));
 const wa = 'https://wa.me/96171930290?text=' + encodeURIComponent('Hi, this is ' + acc.name + ' \u2014 about my booking ' + b.ref + ' (' + b.service + ', ' + d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) + ' at ' + b.time + ').');
 $('acts').innerHTML = (upcoming ? '<button type="button" class="btn" id="icsBtn">Add to calendar</button><a class="btn ghost" href="Book.html?edit=' + b.ref + '">Change booking</a>' : '<a class="btn" href="Book.html?rebook=' + b.ref + '">Book this again</a>') +
 '<a class="btn ghost" href="' + wa + '" target="_blank" rel="noopener">Message the studio</a>' +
@@ -199,17 +212,18 @@ $('keepBtn').addEventListener('click', () => { $('cancelBox').classList.remove('
 $('cancelYes').addEventListener('click', () => {
 const acc = A.get(); if (!acc) return;
 const b = (acc.bookings || []).find((x) => x.ref === ref); if (!b) return;
-b.status = 'Cancelled'; b.cancelled = new Date().toISOString(); b.cancelReason = $('cReason').value.trim();
+b.status = 'Cancelled'; b.cancelled = new Date().toISOString(); b.cancelReason = $('cReason').value.trim(); if (b.extra && b.extra.status !== 'paid') b.extra = null;
 if (b.gift && b.gift.amount && !b.giftRefunded) { const G = window.IncensoGift; if (b.gift.parts && b.gift.parts.length) G.refundParts(b.gift.parts, b.ref); else if (b.gift.code) G.refund(b.gift.code, b.gift.amount, b.ref); b.giftRefunded = true; }
 A.set(acc);
 $('cancelBox').classList.remove('show');
 render();
-banner('Cancelled \u2726', 'Confirmation sent by SMS and WhatsApp. We hope to see you again soon.');
+banner('Cancelled \u2726', 'Confirmation sent by WhatsApp. We hope to see you again soon.');
 window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 const banner = (t, sub) => { const el = $('banner'); el.innerHTML = '<span>' + t + '</span><span class="x">' + sub + '</span>'; el.classList.add('show'); };
-if (params.get('new')) banner('All set \u2726', 'Confirmation is on its way by SMS and WhatsApp \u2014 and a reminder the day before.');
-if (params.get('updated')) banner('Updated \u2726', 'Your new time is set \u2014 confirmation sent by SMS and WhatsApp.');
+if (params.get('new')) banner('All set \u2726', 'Confirmation is on its way by WhatsApp \u2014 and a reminder the day before.');
+if (params.get('updated')) banner('Updated \u2726', 'Your new booking is set \u2014 confirmation sent by WhatsApp.');
+if (A.signedIn()) { const acc0 = A.get(); let dirty = false; (acc0.bookings || []).forEach((x) => { if (x.payStatus === 'pending' && !/cancel/i.test(x.status || '') && Date.now() > (x.payDeadline || ((x.placedAt || 0) + 86400000)) && (x.payDeadline || x.placedAt)) { x.status = 'Cancelled'; x.cancelled = new Date().toISOString(); x.cancelReason = 'Payment not received within 24 hours.'; dirty = true; } }); if (dirty) A.set(acc0); }
 if (A.signedIn()) render(); else A.open(render);
 if (!A.signedIn()) { document.body.classList.add('missing'); $('ref').textContent = 'Booking'; $('status').hidden = true; $('h1').textContent = 'Sign in to see it.'; $('missingMsg').textContent = 'This booking lives in your account \u2014 sign in with your phone to open it.'; }
 })();
