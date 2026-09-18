@@ -90,7 +90,7 @@ const WORK = [
 const catOf = (n) => (C.SERVICES.find((s) => s.name === n) || {}).cat || '';
 const accOf = (n) => (C.STAFF.find((s) => s.name === n) || {}).accent || '#F9A8D4';
 const pad = (n) => String(n).padStart(2, '0');
-const link = (w) => 'Book.html?svc=' + encodeURIComponent(w.svc) + (C.STAFF.some((s) => s.name === w.staff) ? '&staff=' + encodeURIComponent(w.staff) : '');
+const link = (w) => '/Book?svc=' + encodeURIComponent(w.svc) + (C.STAFF.some((s) => s.name === w.staff) ? '&staff=' + encodeURIComponent(w.staff) : '');
 const SHAPE = ['tall', '', 'wide', '', 'tall', '', '', 'wide', '', 'tall', ''];
 const wall = document.getElementById('wall'), fl = document.getElementById('filters');
 wall.innerHTML = WORK.map((w, i) => '<a class="work ' + SHAPE[i % SHAPE.length] + '" data-cat="' + catOf(w.svc) + '" style="--acc:' + accOf(w.staff) + '" href="' + link(w) + '"><div class="ph"><image-slot id="work-' + (i + 1) + '" shape="rect" placeholder="' + w.svc + '"></image-slot></div><div class="c"><span class="ix">' + pad(i + 1) + '</span><p class="nm">' + w.svc + '<small>' + w.note + '</small></p><span class="by">' + w.staff + '</span></div></a>').join('');

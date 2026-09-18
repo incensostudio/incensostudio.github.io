@@ -80,7 +80,7 @@
 <a class="skip-link" href="#main">Skip to content</a>
 <main class="page" id="main" data-screen-label="Nails" data-cat="Nails">
 <header class="sv-hero">
-<div><h1 id="h1"></h1><p class="lead" id="introP"></p><div class="cta"><a class="btn" href="Book.html?cat=Nails">Book nails</a><span class="mono-tag" id="svcCount"></span></div></div>
+<div><h1 id="h1"></h1><p class="lead" id="introP"></p><div class="cta"><a class="btn" href="/Book?cat=Nails">Book nails</a><span class="mono-tag" id="svcCount"></span></div></div>
 <div class="sv-photo" id="svPhoto"><image-slot id="banner-nails" shape="rect" placeholder="Nails — hero photo"></image-slot></div>
 </header>
 <section class="menu" id="services" aria-label="Menu">
@@ -130,12 +130,12 @@ const onScroll = () => { const y = window.scrollY + 140; let cur = null; heads()
 window.addEventListener('scroll', onScroll, { passive: true });
 setTimeout(onScroll, 0);
 let lg = '';
-menu.innerHTML = list.map((s, i) => { const gh = s.group !== lg ? '<li class="mg" id="g-' + s.group.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '"><h3>' + s.group + '</h3><span>' + list.filter((x) => x.group === s.group).length + ' services</span></li>' : ''; lg = s.group; return gh + '<li class="mi" data-accent="' + ACC[i % ACC.length] + '"><div><h3 class="nm">' + s.name + '</h3>' + (s.desc ? '<p class="ds">' + s.desc + '</p>' : '') + (s.brands ? '<p class="br">Featuring ' + s.brands + '</p>' : '') + '</div><span class="du">' + dur(s.mins) + '</span><span class="pr">' + (s.price == null ? '<span class="q">Custom quote</span>' : (s.from ? '<small>from</small>' : '') + '$' + s.price + (s.unit ? '<small class="u">/ ' + s.unit + '</small>' : '')) + '</span><a class="go" href="Book.html?svc=' + encodeURIComponent(s.name) + '" aria-label="Book ' + s.name + '"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8 H13 M9.5 3.5 L14 8 L9.5 12.5"></path></svg></a></li>'; }).join('');
+menu.innerHTML = list.map((s, i) => { const gh = s.group !== lg ? '<li class="mg" id="g-' + s.group.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '"><h3>' + s.group + '</h3><span>' + list.filter((x) => x.group === s.group).length + ' services</span></li>' : ''; lg = s.group; return gh + '<li class="mi" data-accent="' + ACC[i % ACC.length] + '"><div><h3 class="nm">' + s.name + '</h3>' + (s.desc ? '<p class="ds">' + s.desc + '</p>' : '') + (s.brands ? '<p class="br">Featuring ' + s.brands + '</p>' : '') + '</div><span class="du">' + dur(s.mins) + '</span><span class="pr">' + (s.price == null ? '<span class="q">Custom quote</span>' : (s.from ? '<small>from</small>' : '') + '$' + s.price + (s.unit ? '<small class="u">/ ' + s.unit + '</small>' : '')) + '</span><a class="go" href="/Book?svc=' + encodeURIComponent(s.name) + '" aria-label="Book ' + s.name + '"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8 H13 M9.5 3.5 L14 8 L9.5 12.5"></path></svg></a></li>'; }).join('');
 menu.querySelectorAll('.mi').forEach((row) => {
 row.addEventListener('pointerenter', () => { row.classList.add('lit'); row.style.backgroundColor = row.dataset.accent + '30'; });
 row.addEventListener('pointerleave', () => { row.classList.remove('lit'); row.style.backgroundColor = 'transparent'; });
 });
-document.getElementById('chairs').innerHTML = staff.map((s) => '<a class="chair" href="Book.html?cat=' + encodeURIComponent(catName) + '&staff=' + encodeURIComponent(s.name) + '" style="--acc:' + s.accent + '"><div class="por"><image-slot id="staff-' + s.name.toLowerCase() + '" shape="rect"' + (s.photo ? ' src="' + s.photo + '"' : '') + ' placeholder="' + s.name + ' — portrait"></image-slot></div><p class="nm">' + s.name + '<small>' + s.role + '</small></p><p class="bio">' + s.bio + '</p><span class="bk">Book with ' + s.name + '</span></a>').join('');
+document.getElementById('chairs').innerHTML = staff.map((s) => '<a class="chair" href="/Book?cat=' + encodeURIComponent(catName) + '&staff=' + encodeURIComponent(s.name) + '" style="--acc:' + s.accent + '"><div class="por"><image-slot id="staff-' + s.name.toLowerCase() + '" shape="rect"' + (s.photo ? ' src="' + s.photo + '"' : '') + ' placeholder="' + s.name + ' — portrait"></image-slot></div><p class="nm">' + s.name + '<small>' + s.role + '</small></p><p class="bio">' + s.bio + '</p><span class="bk">Book with ' + s.name + '</span></a>').join('');
 document.getElementById('next').innerHTML = C.CATS.filter((x) => x.name !== catName).map((x) => '<a href="' + x.file + '">' + x.name + '<span>' + C.SERVICES.filter((s) => s.cat === x.name).length + ' services →</span></a>').join('');
 })();
 </script>

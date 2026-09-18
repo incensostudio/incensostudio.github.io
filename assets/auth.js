@@ -35,7 +35,12 @@
 
   // Sequential references — IS-0001 (bookings), INC-0001 (orders), IS-G-0001 (gift cards).
   // Prototype counter; the backend issues the real sequence in production.
-  const nextRef = (prefix) => { const k = 'incenso-seq'; let m = {}; try { m = JSON.parse(localStorage.getItem(k) || '{}') || {}; } catch (e) {} m[prefix] = (m[prefix] || 0) + 1; try { localStorage.setItem(k, JSON.stringify(m)); } catch (e) {} return prefix + '-' + String(m[prefix]).padStart(4, '0'); };
+  // Global, unique, in-order references from the server counter (next_ref RPC).
+  // Falls back to a local counter only when offline / signed out.
+  const nextRef = async (prefix) => {
+    if (SB) { try { const { data, error } = await SB.rpc('next_ref', { p_prefix: prefix }); if (!error && data) return data; } catch (e) {} }
+    const k = 'incenso-seq'; let m = {}; try { m = JSON.parse(localStorage.getItem(k) || '{}') || {}; } catch (e) {} m[prefix] = (m[prefix] || 0) + 1; try { localStorage.setItem(k, JSON.stringify(m)); } catch (e) {} return prefix + '-' + String(m[prefix]).padStart(4, '0');
+  };
 
   // One-line payment label for a booking, derived from the money actually held
   const payLabel = (b) => {
@@ -91,10 +96,10 @@
   const seed = (name, phone, email) => ({ name, phone, email: email || '', created: new Date().toISOString(), visits: [], orders: [], bookings: [], prefs: {} });
 
   // ---- Supabase <-> account-object mapping ----
-  const bkFromRow = (r) => ({ ref: r.ref, services: r.services || [], serviceMins: r.service_mins || [], staff: r.staff || {}, date: r.date, time: r.time, start: r.start_min, mins: r.mins, price: r.price, priceFrom: r.price_from, quote: r.quote, quoteItems: r.quote_items || [], pay: r.pay, paid: r.paid, due: r.due, refund: r.refund, gift: r.gift && Object.keys(r.gift).length ? r.gift : null, status: r.status, notes: r.notes, mood: r.mood, flags: r.flags || [], drink: r.drink || [], smoke: r.smoke, created: r.created_at, updated: r.updated_at, cancelled: r.cancelled_at, cancelReason: r.cancel_reason, service: (r.services || []).join(' + ') });
-  const bkToRow = (b, uid) => ({ ref: b.ref, user_id: uid, services: b.services || [], service_mins: b.serviceMins || [], staff: b.staff || {}, date: b.date || null, time: b.time || null, start_min: (b.start != null ? b.start : null), mins: b.mins || null, price: b.price || 0, price_from: !!b.priceFrom, quote: !!b.quote, quote_items: b.quoteItems || [], pay: b.pay || null, paid: b.paid || 0, due: b.due || 0, refund: b.refund || 0, gift: b.gift || {}, status: b.status || 'Upcoming', notes: b.notes || null, mood: b.mood || null, flags: b.flags || [], drink: b.drink || [], smoke: b.smoke || null, cancelled_at: b.cancelled || null, cancel_reason: b.cancelReason || null });
-  const orFromRow = (r) => ({ ref: r.ref, date: (r.created_at || '').slice(0, 10), items: r.items || [], total: r.total, status: r.status, method: r.method, pay: r.pay, name: r.name, phone: r.phone, email: r.email, address: (r.address && r.address.text) || '', discount: r.discount, tier: r.tier });
-  const orToRow = (o, uid) => ({ ref: o.ref, user_id: uid, items: o.items || [], total: o.total || 0, status: o.status || 'Placed', method: o.method || null, pay: o.pay || null, name: o.name || null, phone: o.phone || null, email: o.email || null, address: (typeof o.address === 'string' ? { text: o.address } : (o.address || {})), discount: o.discount || 0, tier: o.tier || null });
+  const bkFromRow = (r) => ({ ref: r.ref, services: r.services || [], serviceMins: r.service_mins || [], staff: r.staff || {}, date: r.date, time: r.time, start: r.start_min, mins: r.mins, price: r.price, priceFrom: r.price_from, quote: r.quote, quoteItems: r.quote_items || [], pay: r.pay, paid: r.paid, due: r.due, refund: r.refund, gift: r.gift && Object.keys(r.gift).length ? r.gift : null, status: r.status, payStatus: r.pay_status, completed: !!r.completed, extra: r.extra || null, final: r.final || null, placedAt: r.placed_at ? new Date(r.placed_at).getTime() : undefined, payDeadline: r.pay_deadline ? new Date(r.pay_deadline).getTime() : undefined, notes: r.notes, mood: r.mood, flags: r.flags || [], drink: r.drink || [], smoke: r.smoke, created: r.created_at, updated: r.updated_at, cancelled: r.cancelled_at, cancelReason: r.cancel_reason, service: (r.services || []).join(' + ') });
+  const bkToRow = (b, uid) => ({ ref: b.ref, user_id: uid, services: b.services || [], service_mins: b.serviceMins || [], staff: b.staff || {}, date: b.date || null, time: b.time || null, start_min: (b.start != null ? b.start : null), mins: b.mins || null, price: b.price || 0, price_from: !!b.priceFrom, quote: !!b.quote, quote_items: b.quoteItems || [], pay: b.pay || null, paid: b.paid || 0, due: b.due || 0, refund: b.refund || 0, gift: b.gift || {}, status: b.status || 'Upcoming', pay_status: b.payStatus || null, completed: !!b.completed, extra: b.extra || null, final: b.final || null, placed_at: b.placedAt ? new Date(b.placedAt).toISOString() : null, pay_deadline: b.payDeadline ? new Date(b.payDeadline).toISOString() : null, notes: b.notes || null, mood: b.mood || null, flags: b.flags || [], drink: b.drink || [], smoke: b.smoke || null, cancelled_at: b.cancelled || null, cancel_reason: b.cancelReason || null });
+  const orFromRow = (r) => ({ ref: r.ref, date: (r.created_at || '').slice(0, 10), items: r.items || [], total: r.total, status: r.status, method: r.method, pay: r.pay, name: r.name, phone: r.phone, email: r.email, address: (r.address && r.address.text) || '', discount: r.discount, tier: r.tier, payStatus: r.pay_status, gift: r.gift || null, courier: r.courier || null, toPay: (r.to_pay != null ? r.to_pay : undefined), placedAt: r.placed_at ? new Date(r.placed_at).getTime() : undefined, payDeadline: r.pay_deadline ? new Date(r.pay_deadline).getTime() : undefined, cancelReason: r.cancel_reason });
+  const orToRow = (o, uid) => ({ ref: o.ref, user_id: uid, items: o.items || [], total: o.total || 0, status: o.status || 'Placed', method: o.method || null, pay: o.pay || null, name: o.name || null, phone: o.phone || null, email: o.email || null, address: (typeof o.address === 'string' ? { text: o.address } : (o.address || {})), discount: o.discount || 0, tier: o.tier || null, pay_status: o.payStatus || null, gift: o.gift || null, courier: o.courier || null, to_pay: (o.toPay != null ? o.toPay : null), placed_at: o.placedAt ? new Date(o.placedAt).toISOString() : null, pay_deadline: o.payDeadline ? new Date(o.payDeadline).toISOString() : null, cancel_reason: o.cancelReason || null });
 
   let currentUid = null;
   let lastPersist = Promise.resolve();
@@ -310,8 +315,8 @@
     const b = e.target.closest('[data-account-btn]');
     if (!b) return;
     e.preventDefault();
-    if (signedIn()) location.href = 'Account.html';
-    else open(() => { location.href = 'Account.html'; });
+    if (signedIn()) location.href = '/Account';
+    else open(() => { location.href = '/Account'; });
   });
 
   const signOut = async () => { try { if (SB) await SB.auth.signOut(); } catch (e) {} try { localStorage.setItem(SKEY, '0'); } catch (e) {} acc = null; writeLocal(null); syncButtons(); };

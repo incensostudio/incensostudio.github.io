@@ -129,12 +129,12 @@
       <div id="pGiftIn"></div>
       <h2 class="p-title" style="margin-top:28px" id="gcSentTitle" hidden>Sent to others</h2>
       <div id="pGiftOut"></div>
-      <a class="btn ghost" href="Vouchers.html">Buy a gift card</a>
+      <a class="btn ghost" href="/Vouchers">Buy a gift card</a>
     </section>
     <section class="panel" aria-label="Bookings">
       <h2 class="p-title">Appointments</h2>
       <div id="pBookings"></div>
-      <a class="btn" href="Book.html">Book an appointment</a>
+      <a class="btn" href="/Book">Book an appointment</a>
     </section>
     <section class="panel" aria-label="Visit history">
       <h2 class="p-title">Visit history<span class="mono-tag" id="visitCount"></span></h2>
@@ -197,17 +197,17 @@
     const isPast = (b) => !/cancel/i.test(b.status || '') && ((b.final && typeof b.final.total === 'number') || /complet/i.test(b.status || ''));
     const upcoming = bk.filter((b) => !isPast(b) && !/cancel/i.test(b.status || ''));
     const cancelled = bk.filter((b) => /cancel/i.test(b.status || '')).reverse();
-    const bkRow = (b, muted) => '<a class="r r-link' + (muted ? ' muted' : '') + '" href="Booking.html?ref=' + b.ref + '"><span class="a"><b>' + b.service + '</b><small>' + b.staff + ' · ' + nice(b.date) + ' · ' + b.time + '</small></span><span class="v">' + money(b.price) + '<small style="color:' + (muted ? '#B3261E' : (b.payStatus === 'pending' || /await/i.test(b.status || '')) ? '#C9821B' : '#1F9A56') + ';font-weight:600">' + (muted ? 'Cancelled' : ((b.payStatus === 'pending' || /await/i.test(b.status || '')) ? A.payLabel(b) : 'Upcoming · ' + A.payLabel(b))) + '</small></span></a>';
+    const bkRow = (b, muted) => '<a class="r r-link' + (muted ? ' muted' : '') + '" href="/Booking?ref=' + b.ref + '"><span class="a"><b>' + b.service + '</b><small>' + b.staff + ' · ' + nice(b.date) + ' · ' + b.time + '</small></span><span class="v">' + money(b.price) + '<small style="color:' + (muted ? '#B3261E' : (b.payStatus === 'pending' || /await/i.test(b.status || '')) ? '#C9821B' : '#1F9A56') + ';font-weight:600">' + (muted ? 'Cancelled' : ((b.payStatus === 'pending' || /await/i.test(b.status || '')) ? A.payLabel(b) : 'Upcoming · ' + A.payLabel(b))) + '</small></span></a>';
     $('pBookings').innerHTML = upcoming.length ? upcoming.map((b) => bkRow(b, false)).join('') : '<p class="none">Nothing coming up.</p>';
     const visits = bk.filter((b) => isPast(b) || /cancel/i.test(b.status || '')).map((b) => ({ service: b.final && b.final.items ? b.final.items.map((x) => x.name).join(' + ') : b.service, staff: b.staff, date: b.date, price: b.final && typeof b.final.total === 'number' ? b.final.total : b.price, ref: b.ref, cancelled: /cancel/i.test(b.status || '') })).concat(a.visits || []).sort((x, y) => x.date < y.date ? 1 : -1);
     $('pVisits').innerHTML = rows(visits, (v) =>
-      (v.ref ? '<a class="r r-link' + (v.cancelled ? ' muted' : '') + '" href="Booking.html?ref=' + v.ref + '">' : '<div class="r">') + '<span class="a"><b>' + v.service + '</b><small>' + v.staff + ' · ' + nice(v.date) + '</small></span><span class="v">' + money(v.price) + (v.cancelled ? '<small style="color:#B3261E;font-weight:600">Cancelled</small>' : '') + '</span>' + (v.ref ? '</a>' : '</div>'),
+      (v.ref ? '<a class="r r-link' + (v.cancelled ? ' muted' : '') + '" href="/Booking?ref=' + v.ref + '">' : '<div class="r">') + '<span class="a"><b>' + v.service + '</b><small>' + v.staff + ' · ' + nice(v.date) + '</small></span><span class="v">' + money(v.price) + (v.cancelled ? '<small style="color:#B3261E;font-weight:600">Cancelled</small>' : '') + '</span>' + (v.ref ? '</a>' : '</div>'),
       'Your first visit will show up here.');
     $('visitCount').textContent = visits.filter((v) => !v.cancelled).length + ' visits';
     const stColor = (s) => /cancel/i.test(s) ? '#B3261E' : /await|prepar/i.test(s) ? '#C9821B' : /deliver|collect/i.test(s) ? '#1F9A56' : /courier|ready/i.test(s) ? '#8B5CC4' : 'rgba(0,0,0,0.55)';
     $('pOrders').innerHTML = rows(a.orders, (o) =>
-      '<a class="r r-link' + (/cancel/i.test(o.status) ? ' muted' : '') + '" href="Checkout.html?order=' + o.ref + '"><span class="a"><b>' + o.ref + '</b><small>' + o.items.map((it) => it.removed ? '<s>' + it.q + '× ' + it.name + '</s>' : it.q + '× ' + it.name).join(', ') + '</small><small>' + nice(o.date) + ' · ' + o.method + ' · ' + o.pay + '</small></span><span class="v">' + money(A.orderTotal(o)) + '<small style="color:' + stColor(o.status) + ';font-weight:600">' + o.status + '</small></span></a>',
-      'Nothing ordered yet — <a href="Shop.html">browse the shelf</a>.');
+      '<a class="r r-link' + (/cancel/i.test(o.status) ? ' muted' : '') + '" href="/Checkout?order=' + o.ref + '"><span class="a"><b>' + o.ref + '</b><small>' + o.items.map((it) => it.removed ? '<s>' + it.q + '× ' + it.name + '</s>' : it.q + '× ' + it.name).join(', ') + '</small><small>' + nice(o.date) + ' · ' + o.method + ' · ' + o.pay + '</small></span><span class="v">' + money(A.orderTotal(o)) + '<small style="color:' + stColor(o.status) + ';font-weight:600">' + o.status + '</small></span></a>',
+      'Nothing ordered yet — <a href="/Shop">browse the shelf</a>.');
     $('orderCount').textContent = (a.orders || []).length + ' orders';
     const G = window.IncensoGift; G.attach(a);
     const todayISO = new Date().toISOString().slice(0, 10);
@@ -217,11 +217,11 @@
     const bal = G.balanceFor(a);
     const stOf = (x) => G.cancelled(x) ? ['Cancelled \u2014 unpaid', 'bad'] : G.active(x) ? ['Active', 'ok'] : x.status === 'Used' ? ['Used up', 'dim'] : !G.confirmed(x) ? ['Awaiting payment', 'warn'] : (x.expires && x.expires < todayISO) ? ['Expired', 'bad'] : [x.status, 'warn'];
     const pill = (x) => { const s = stOf(x); return '<span class="gc-st ' + s[1] + '">' + s[0] + '</span>'; };
-    $('gcHero').innerHTML = '<span class="gc-amt">$' + bal + '</span><span class="gc-sub">' + (bal ? 'to spend on any booking or shelf purchase' + (G.spendable(a).length > 1 ? ' \u00b7 pooled across ' + G.spendable(a).length + ' cards' : '') : 'no balance yet \u2014 gift cards sent to ' + a.phone + ' land here') + '</span>' + (bal ? '<a class="btn" href="Book.html" style="margin:0">Use it on a booking</a>' : '');
+    $('gcHero').innerHTML = '<span class="gc-amt">$' + bal + '</span><span class="gc-sub">' + (bal ? 'to spend on any booking or shelf purchase' + (G.spendable(a).length > 1 ? ' \u00b7 pooled across ' + G.spendable(a).length + ' cards' : '') : 'no balance yet \u2014 gift cards sent to ' + a.phone + ' land here') + '</span>' + (bal ? '<a class="btn" href="/Book" style="margin:0">Use it on a booking</a>' : '');
     $('gcMineTitle').hidden = !mine.length;
-    $('pGiftIn').innerHTML = mine.map((x) => '<a class="r r-link gc-row" href="GiftCard.html?code=' + x.code + '"><span class="a"><b>' + money(x.balance) + (x.balance !== x.amount ? ' <span class="of">of ' + money(x.amount) + '</span>' : '') + '</b><small>' + (G.same(x.buyerPhone, a.phone) ? 'Bought for yourself' : 'From ' + x.from) + ' \u00b7 valid to ' + nice(x.expires) + '</small></span>' + pill(x) + '</a>').join('');
+    $('pGiftIn').innerHTML = mine.map((x) => '<a class="r r-link gc-row" href="/GiftCard?code=' + x.code + '"><span class="a"><b>' + money(x.balance) + (x.balance !== x.amount ? ' <span class="of">of ' + money(x.amount) + '</span>' : '') + '</b><small>' + (G.same(x.buyerPhone, a.phone) ? 'Bought for yourself' : 'From ' + x.from) + ' \u00b7 valid to ' + nice(x.expires) + '</small></span>' + pill(x) + '</a>').join('');
     $('gcSentTitle').hidden = !others.length;
-    $('pGiftOut').innerHTML = others.map((x) => '<a class="r r-link gc-row" href="GiftCard.html?code=' + x.code + '"><span class="a"><b>' + money(x.amount) + ' for ' + x.to + '</b><small>' + x.toPhone + ' \u00b7 ' + (G.confirmed(x) ? 'sent ' + nice((x.confirmed || x.created).slice(0, 10)) : 'reserved ' + nice(x.created.slice(0, 10)) + ' \u00b7 ' + x.pay) + '</small></span>' + (G.cancelled(x) ? pill(x) : G.confirmed(x) ? '<span class="gc-st ok">Sent</span>' : '<span class="gc-st warn">Awaiting payment</span>') + '</a>').join('');
+    $('pGiftOut').innerHTML = others.map((x) => '<a class="r r-link gc-row" href="/GiftCard?code=' + x.code + '"><span class="a"><b>' + money(x.amount) + ' for ' + x.to + '</b><small>' + x.toPhone + ' \u00b7 ' + (G.confirmed(x) ? 'sent ' + nice((x.confirmed || x.created).slice(0, 10)) : 'reserved ' + nice(x.created.slice(0, 10)) + ' \u00b7 ' + x.pay) + '</small></span>' + (G.cancelled(x) ? pill(x) : G.confirmed(x) ? '<span class="gc-st ok">Sent</span>' : '<span class="gc-st warn">Awaiting payment</span>') + '</a>').join('');
     const rs = a.restocks || [];
     $('rsTitle').hidden = rs.length === 0;
     $('pRestocks').innerHTML = rs.length ? rs.map((r) =>
@@ -230,7 +230,7 @@
     $('dName').value = a.name; $('dPhone').value = a.phone; $('dEmail').value = a.email || '';
   };
 
-  $('signOut').addEventListener('click', () => { A.signOut(); location.href = 'Home.html'; });
+  $('signOut').addEventListener('click', () => { A.signOut(); location.href = '/'; });
   $('pfp').addEventListener('click', () => $('pfpFile').click());
   $('pfpFile').addEventListener('change', () => {
     const f = $('pfpFile').files && $('pfpFile').files[0];
@@ -265,7 +265,7 @@
     setTimeout(() => { $('savedTag').hidden = true; }, 1800);
   });
   // Prototype-only: wipe everything this site stored on the device (accounts, bookings, orders, gift cards, cart, drafts, counters)
-  $('resetAll').addEventListener('click', () => { if (!confirm('Clear all demo data on this device? Every account, booking, order and gift card goes.')) return; Object.keys(localStorage).filter((k) => /^incenso/i.test(k)).forEach((k) => localStorage.removeItem(k)); location.href = 'Home.html'; });
+  $('resetAll').addEventListener('click', () => { if (!confirm('Clear all demo data on this device? Every account, booking, order and gift card goes.')) return; Object.keys(localStorage).filter((k) => /^incenso/i.test(k)).forEach((k) => localStorage.removeItem(k)); location.href = '/'; });
   $('pRestocks').addEventListener('click', (e) => {
     const b = e.target.closest('.rm-rs');
     if (!b) return;

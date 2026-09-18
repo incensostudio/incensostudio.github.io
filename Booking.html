@@ -116,7 +116,7 @@ body.cancelled .tl .row,body.cancelled .when-txt{opacity:0.7}
 </div>
 <section class="missing" role="status">
 <p id="missingMsg">We couldn't find that booking. It may be under a different phone number.</p>
-<div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="Account.html">Your account</a><a class="btn ghost" href="Book.html">Book a new one</a></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="/Account">Your account</a><a class="btn ghost" href="/Book">Book a new one</a></div>
 </section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -194,10 +194,10 @@ if (finalised) { const f = b.final; const added = (f.items || []).filter((x) => 
 (b.refund ? pr('Refund on its way', '$' + b.refund + '<small>same way, within a few days</small>', 'ok') : '') +
 (!cancelled && !due && !paid && !(b.extra && b.extra.status !== 'paid') && b.gift && b.gift.amount >= (b.price || 0) && !b.quote ? pr('Covered', 'Nothing more to pay<small>your gift balance covers it in full</small>', 'ok') : ''));
 const wa = 'https://wa.me/96171930290?text=' + encodeURIComponent('Hi, this is ' + acc.name + ' \u2014 about my booking ' + b.ref + ' (' + b.service + ', ' + d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) + ' at ' + b.time + ').');
-$('acts').innerHTML = (upcoming ? '<button type="button" class="btn" id="icsBtn">Add to calendar</button><a class="btn ghost" href="Book.html?edit=' + b.ref + '">Change booking</a>' : '<a class="btn" href="Book.html?rebook=' + b.ref + '">Book this again</a>') +
+$('acts').innerHTML = (upcoming ? '<button type="button" class="btn" id="icsBtn">Add to calendar</button><a class="btn ghost" href="/Book?edit=' + b.ref + '">Change booking</a>' : '<a class="btn" href="/Book?rebook=' + b.ref + '">Book this again</a>') +
 '<a class="btn ghost" href="' + wa + '" target="_blank" rel="noopener">Message the studio</a>' +
 (upcoming ? '<button type="button" class="btn danger" id="cancelBtn">Cancel booking</button>' : '') +
-'<a class="btn ghost" href="Account.html">Back to your account</a>';
+'<a class="btn ghost" href="/Account">Back to your account</a>';
 const ics = $('icsBtn');
 if (ics) ics.addEventListener('click', () => {
 const dd = b.date.replace(/-/g, ''), hm = (m) => pad(Math.floor(m / 60)) + pad(m % 60) + '00';
