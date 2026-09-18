@@ -187,6 +187,7 @@ body.m-steps .step.m-active .m-next{display:block;margin-top:22px}
 #payOpts{flex-direction:column;gap:8px;align-items:stretch}#payOpts .pill{width:100%;height:46px;min-height:46px;justify-content:flex-start;text-align:left;padding:0 16px 0 44px;position:relative;font-size:14px}#payOpts .pill::before{content:"";position:absolute;left:16px;top:50%;width:14px;height:14px;margin-top:-8px;border-radius:999px;border:1.5px solid rgba(0,0,0,0.45);background:transparent}#payOpts .pill[aria-pressed="true"]::before{border-color:#FEFEF1;background:#FEFEF1;box-shadow:inset 0 0 0 3.5px var(--fg-warm)}
 .m-next .skip{display:block;width:100%;margin-top:10px;appearance:none;border:0;background:none;font:inherit;font-size:13px;color:rgba(0,0,0,0.55);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:8px}
 }
+@media (max-width:880px){body footer{display:none}}
 </style>
 <template id="__bundler_thumbnail" data-bg-color="#e5dcc9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#e5dcc9"/><text x="200" y="262" text-anchor="middle" font-family="Georgia,serif" font-size="180" fill="#000">i</text></svg></template>
 </head>
@@ -629,7 +630,7 @@ if (giftAmt() > 0) { const parts = G.redeemFrom(acc, giftAmt(), ref, b.service);
 G.attach(acc);
 A.set(acc);
 try { localStorage.removeItem(DRAFT); } catch (e) {}
-const dest = '/Booking?ref=' + encodeURIComponent(ref) + (editing ? '&updated=1' : '&new=1');
+const dest = '/booking?ref=' + encodeURIComponent(ref) + (editing ? '&updated=1' : '&new=1');
 // Wait for the booking to finish saving to Supabase before navigating, so the
 // in-flight request isn't cancelled by the page change (max 3s, then go anyway).
 Promise.race([ (A.flush ? A.flush() : Promise.resolve()), new Promise((r) => setTimeout(r, 3000)) ]).then(() => { location.href = dest; });

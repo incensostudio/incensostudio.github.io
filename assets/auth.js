@@ -317,8 +317,8 @@
     const b = e.target.closest('[data-account-btn]');
     if (!b) return;
     e.preventDefault();
-    if (signedIn()) location.href = '/Account';
-    else open(() => { location.href = '/Account'; });
+    if (signedIn()) location.href = '/account';
+    else open(() => { location.href = '/account'; });
   });
 
   const signOut = async () => { try { if (SB) await SB.auth.signOut(); } catch (e) {} try { localStorage.setItem(SKEY, '0'); } catch (e) {} acc = null; writeLocal(null); syncButtons(); };

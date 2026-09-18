@@ -153,6 +153,7 @@
   body.cart-empty .empty{display:flex;flex-direction:column;align-items:center}
   /* ---- Footer ---- */
   footer{border-top:1px solid var(--card-line);padding:0 var(--gutter) max(0px,env(safe-area-inset-bottom))}
+@media (max-width:880px){body footer{display:none}}
   .news-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px 32px;padding:22px 0}
   .news-line{margin:0;font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--fg-warm)}
   .news-form{display:flex;align-items:center;gap:10px;flex-wrap:nowrap}
@@ -231,7 +232,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
 
 <header class="topbar">
   <div class="tb-l">
-    <a class="tb-cart tb-cart-left" href="/Cart" aria-label="Cart">
+    <a class="tb-cart tb-cart-left" href="/cart" aria-label="Cart">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l1.4 10.3a1.4 1.4 0 0 0 1.4 1.2h8a1.4 1.4 0 0 0 1.4-1.1l1.3-6.4H6"></path><circle cx="9" cy="20" r="1.4"></circle><circle cx="17" cy="20" r="1.4"></circle></svg>
       <span class="cart-badge" data-count="0">0</span>
     </a>
@@ -239,28 +240,28 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
   </div>
   <div class="tb-c">
     <nav class="nav" aria-label="Primary">
-      <a href="/Shop">Shop</a>
+      <a href="/shop">Shop</a>
       <div class="has-menu" aria-expanded="false">
         <button type="button" class="nav-item" data-toggle="services" aria-haspopup="true" aria-expanded="false" aria-controls="services-menu"><span>Services</span><svg class="caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4 L5 7 L8 4"></path></svg></button>
         <div class="nav-menu" id="services-menu" role="menu">
-          <a href="/Hair" role="menuitem">Hair</a>
-          <a href="/Nails" role="menuitem">Nails</a>
-          <a href="/Makeup" role="menuitem">Make-up</a>
-          <a href="/Brows-Lashes" role="menuitem">Brows &amp; Lashes</a>
+          <a href="/hair" role="menuitem">Hair</a>
+          <a href="/nails" role="menuitem">Nails</a>
+          <a href="/makeup" role="menuitem">Make-up</a>
+          <a href="/brows-lashes" role="menuitem">Brows &amp; Lashes</a>
         </div>
       </div>
-      <a href="/Our-Work">Our Work</a>
-      <a href="/The-Space">The Space</a>
-      <a href="/Vouchers">Gift</a>
+      <a href="/work">Our Work</a>
+      <a href="/space">The Space</a>
+      <a href="/gift">Gift</a>
     </nav>
   </div>
   <div class="tb-r">
-    <a class="tb-book" href="/Book">Book</a>
-    <a class="tb-cart" href="/Cart" aria-label="Cart">
+    <a class="tb-book" href="/book">Book</a>
+    <a class="tb-cart" href="/cart" aria-label="Cart">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l1.4 10.3a1.4 1.4 0 0 0 1.4 1.2h8a1.4 1.4 0 0 0 1.4-1.1l1.3-6.4H6"></path><circle cx="9" cy="20" r="1.4"></circle><circle cx="17" cy="20" r="1.4"></circle></svg>
       <span class="cart-badge" data-count="0">0</span>
     </a>
-    <a class="tb-cart tb-account" href="/Account" data-account-btn aria-label="Sign in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"></circle><path d="M5 19.5c1.3-3.2 4-4.8 7-4.8s5.7 1.6 7 4.8"></path></svg></a>
+    <a class="tb-cart tb-account" href="/account" data-account-btn aria-label="Sign in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"></circle><path d="M5 19.5c1.3-3.2 4-4.8 7-4.8s5.7 1.6 7 4.8"></path></svg></a>
     <button type="button" class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav">
       <svg class="icon-open" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M2 5 H14 M2 11 H14"></path></svg>
       <svg class="icon-close" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"></path></svg>
@@ -269,20 +270,20 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
 </header>
 
 <nav class="mobile-nav" id="mobileNav" aria-label="Mobile primary" aria-hidden="true">
-  <a href="/Shop">Shop</a>
+  <a href="/shop">Shop</a>
   <details class="m-services">
     <summary><span>Services</span><svg class="m-caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4 L5 7 L8 4"></path></svg></summary>
     <div class="m-sub">
-      <a href="/Hair">Hair</a>
-      <a href="/Nails">Nails</a>
-      <a href="/Makeup">Make-up</a>
-      <a href="/Brows-Lashes">Brows &amp; Lashes</a>
+      <a href="/hair">Hair</a>
+      <a href="/nails">Nails</a>
+      <a href="/makeup">Make-up</a>
+      <a href="/brows-lashes">Brows &amp; Lashes</a>
     </div>
   </details>
-  <a href="/Our-Work">Our Work</a>
-  <a href="/The-Space">The Space</a>
-  <a href="/Vouchers">Gift</a>
-  <div class="m-actions"><a class="m-acc" href="/Account" data-account-btn>Account</a><a class="m-book" href="/Book">Book Now</a></div>
+  <a href="/work">Our Work</a>
+  <a href="/space">The Space</a>
+  <a href="/gift">Gift</a>
+  <div class="m-actions"><a class="m-acc" href="/account" data-account-btn>Account</a><a class="m-book" href="/book">Book Now</a></div>
 </nav>
 
 <main class="page" id="main" data-screen-label="Cart">
@@ -294,7 +295,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
   <div class="cart-wrap">
     <div>
       <section class="lines" id="lines" aria-label="Cart items"></section>
-      <a class="s-continue" href="/Shop">← Continue shopping</a>
+      <a class="s-continue" href="/shop">← Continue shopping</a>
     </div>
     <aside class="summary" aria-label="Order summary">
       <h2 class="s-head">Summary</h2>
@@ -302,7 +303,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
       <div class="s-row" id="discRow" hidden><span id="discLabel">Member discount</span><span class="v" id="sumDiscount"></span></div>
       <div class="s-total"><span>Total</span><span class="v" id="sumTotal">$0</span></div>
       <p class="s-note">Shipping or studio pickup — you'll choose at checkout.</p>
-      <a class="checkout" id="checkout" href="/Checkout">Check out<svg viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="15" r="13.5"></circle><path d="M10 15 H20 M16 11 L20 15 L16 19"></path></svg></a>
+      <a class="checkout" id="checkout" href="/checkout">Check out<svg viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="15" r="13.5"></circle><path d="M10 15 H20 M16 11 L20 15 L16 19"></path></svg></a>
     </aside>
   </div>
 
@@ -316,8 +317,8 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     <h2>Nothing on hold yet.</h2>
     <p>The shelf is small on purpose — everything on it earns its place. Whatever you pick lands here.</p>
     <div class="e-actions">
-      <a class="go" href="/Shop">Browse the shelf<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8 H13 M9.5 3.5 L14 8 L9.5 12.5"></path></svg></a>
-      <a class="go ghost" href="/Book">Book an appointment</a>
+      <a class="go" href="/shop">Browse the shelf<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8 H13 M9.5 3.5 L14 8 L9.5 12.5"></path></svg></a>
+      <a class="go ghost" href="/book">Book an appointment</a>
     </div>
   </section>
 </main>
@@ -337,9 +338,9 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
       <a href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x1521f75831aec263:0x491dc69a84008be5?sa=X&amp;ved=1t:8290&amp;ictx=111" target="_blank" rel="noopener">Tripoli · Lebanon</a>
     </div>
     <div class="f-col">
-      <a href="/Terms">Terms &amp; Conditions</a>
-      <a href="/Shipping">Shipping</a>
-      <a href="/Privacy">Privacy</a>
+      <a href="/terms">Terms &amp; Conditions</a>
+      <a href="/shipping">Shipping</a>
+      <a href="/privacy">Privacy</a>
     </div>
     <div class="f-col">
       <a href="https://wa.me/96171930290" target="_blank" rel="noopener">WhatsApp</a>
@@ -497,7 +498,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     const A = window.IncensoAuth;
     if (A && A.signedIn()) return;
     e.preventDefault();
-    if (A) A.open(() => { location.href = '/Checkout'; });
+    if (A) A.open(() => { location.href = '/checkout'; });
   });
 
   const newsForm = document.getElementById('newsForm');
