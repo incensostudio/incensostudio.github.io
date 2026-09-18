@@ -52,6 +52,21 @@ async function profileEmail(admin: any, uid: string | null | undefined) {
     return data && data.email ? data.email : null
   } catch (_e) { return null }
 }
+// Gift rows carry buyer_phone but not always a buyer_id — fall back to matching the
+// profile by phone so the buyer's e-mail is prefilled on Stripe just like orders/bookings.
+async function profileEmailByPhone(admin: any, phone: string | null | undefined) {
+  if (!phone) return null
+  try {
+    const d = String(phone).replace(/\D/g, '')
+    if (d.length < 6) return null
+    const { data } = await admin.from('profiles').select('email, phone').not('email', 'is', null).limit(500)
+    const hit = (data ?? []).find((p: any) => {
+      const pd = String(p.phone || '').replace(/\D/g, '')
+      return pd.length >= 6 && (pd === d || pd.endsWith(d) || d.endsWith(pd))
+    })
+    return hit && hit.email ? hit.email : null
+  } catch (_e) { return null }
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
@@ -84,9 +99,9 @@ Deno.serve(async (req) => {
       amount = Math.round(Number(g.amount ?? 0))
       if (amount < 10 || amount > 1000) return json({ error: 'amount out of range' }, 400)
       label = 'Incenso Studio — gift card ' + ref
-      email = await profileEmail(admin, g.buyer_id)
+      email = await profileEmail(admin, g.buyer_id) || await profileEmailByPhone(admin, g.buyer_phone)
       success = `${base}/gift-card?code=${ref}&paid=1`
-      cancel = `${base}/gift?ref=${ref}`
+      cancel = `${base}/gift-card?code=${ref}`
     } else {
       const b = await readRow(admin, 'bookings', 'ref', ref)
       if (!b) return json({ error: 'not found' }, 404)

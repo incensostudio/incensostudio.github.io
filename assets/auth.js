@@ -120,6 +120,19 @@
     } catch (e) { console.warn('[Incenso] persist failed', e); }
   };
   const set = (a) => { acc = a; writeLocal(a); lastPersist = persist(a).catch(() => {}); return a; };
+  // Remove a wait-list (restock) request everywhere. persist() only upserts restocks,
+  // so a removal needs its own DELETE or the row comes back on the next hydrate.
+  const removeRestock = async (name) => {
+    if (!acc) return;
+    acc.restocks = (acc.restocks || []).filter((r) => r.name !== name);
+    writeLocal(acc);
+    if (!SB) return;
+    try {
+      let uid = currentUid;
+      if (!uid) { const u = await SB.auth.getUser(); uid = u && u.data && u.data.user ? u.data.user.id : null; }
+      if (uid) await SB.from('restock_requests').delete().eq('user_id', uid).eq('product', name);
+    } catch (e) { console.warn('[Incenso] removeRestock failed', e); }
+  };
   // Resolves once the most recent save() has finished writing to Supabase.
   // Callers that navigate right after set() should await this first.
   const flush = () => lastPersist;
@@ -374,7 +387,7 @@
     }
   };
 
-  window.IncensoAuth = { get, set, flush, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, orderTotal, payLabel, nextRef, TIERS, sync: syncButtons, findByPhone, all, hydrate, sendDetailOtp, verifyDetailOtp, stripeCheckout };
+  window.IncensoAuth = { get, set, flush, removeRestock, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, orderTotal, payLabel, nextRef, TIERS, sync: syncButtons, findByPhone, all, hydrate, sendDetailOtp, verifyDetailOtp, stripeCheckout };
 
   // ---- Newsletter subscribe (persists to Supabase; members pass straight through) ----
   document.addEventListener('submit', (e) => {

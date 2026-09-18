@@ -216,7 +216,11 @@
     }).join('');
     const rows = (list, fn, empty) => list && list.length ? list.map(fn).join('') : '<p class="none">' + empty + '</p>';
     const today = new Date(); today.setHours(0, 0, 0, 0);
-    let dirtyB = false; (a.bookings || []).forEach((x) => { if (x.payStatus === 'pending' && !/cancel/i.test(x.status || '') && (x.payDeadline || x.placedAt) && Date.now() > (x.payDeadline || (x.placedAt + 86400000))) { x.status = 'Cancelled'; x.cancelReason = 'Payment not received within 24 hours.'; dirtyB = true; } });
+    const G = window.IncensoGift;
+    // Card bookings are settled through Stripe — their paid/cancelled truth comes from the
+    // webhook (refreshed on hydrate), so never auto-cancel a card booking from local cache
+    // (that could overwrite a genuinely-paid row). Only manual-transfer holds expire here.
+    let dirtyB = false; (a.bookings || []).forEach((x) => { if (x.payStatus === 'pending' && !/card/i.test(x.pay || '') && !/cancel/i.test(x.status || '') && (x.payDeadline || x.placedAt) && Date.now() > (x.payDeadline || (x.placedAt + 86400000))) { x.status = 'Cancelled'; x.cancelReason = 'Payment not received within 24 hours.'; dirtyB = true; if (x.gift && x.gift.parts && !x.giftRestored) { G.refundParts(x.gift.parts, x.ref); x.giftRestored = true; } } });
     (a.orders || []).forEach((o) => { if (!o.payStatus) o.payStatus = /^Paid/.test(o.pay || '') ? 'paid' : /whish|omt/i.test(o.pay || '') ? 'pending' : 'due'; if (!o.placedAt) o.placedAt = new Date(o.date + 'T12:00:00').getTime(); if (o.method !== 'Shipped' && (o.payStatus === 'paid' || o.payStatus === 'due') && /^(placed|paid · preparing|preparing)$/i.test(o.status || '')) { o.status = 'Ready for pickup'; dirtyB = true; } if (/whish|omt/i.test(o.pay || '') && o.payStatus === 'pending' && !/cancel/i.test(o.status) && o.placedAt && Date.now() - o.placedAt > 86400000) { o.status = 'Cancelled'; o.cancelReason = 'Payment not received within 24 hours.'; dirtyB = true; if (o.gift && o.gift.parts && !o.giftRestored) { G.refundParts(o.gift.parts, o.ref); o.giftRestored = true; } } });
     (a.orders || []).forEach((o) => { if (o.method !== 'Shipped' && o.payStatus === 'due' && !/cancel|collect/i.test(o.status) && o.placedAt && Date.now() - o.placedAt > 3 * 86400000) { o.status = 'Cancelled'; o.cancelReason = 'Not collected within the 3-day hold.'; dirtyB = true; if (o.gift && o.gift.parts && !o.giftRestored) { G.refundParts(o.gift.parts, o.ref); o.giftRestored = true; } } });
     if (dirtyB) A.set(a);
@@ -236,7 +240,7 @@
       '<a class="r r-link' + (/cancel/i.test(o.status) ? ' muted' : '') + '" href="/checkout?order=' + o.ref + '"><span class="a"><b>' + o.ref + '</b><small>' + o.items.map((it) => it.removed ? '<s>' + it.q + '× ' + it.name + '</s>' : it.q + '× ' + it.name).join(', ') + '</small><small>' + nice(o.date) + ' · ' + o.method + ' · ' + o.pay + '</small></span><span class="v">' + money(A.orderTotal(o)) + '<small style="color:' + stColor(o.status) + ';font-weight:600">' + o.status + '</small></span></a>',
       'Nothing ordered yet — <a href="/shop">browse the shelf</a>.');
     $('orderCount').textContent = (a.orders || []).length + ' orders';
-    const G = window.IncensoGift; G.attach(a);
+    G.attach(a);
     const todayISO = new Date().toISOString().slice(0, 10);
     const mineAll = G.load().filter((x) => G.same(x.toPhone, a.phone));
     const mine = mineAll.filter((x) => G.confirmed(x) || G.same(x.buyerPhone, a.phone));
@@ -290,7 +294,8 @@
     const btn = e.submitter || document.activeElement;
     const label = btn && btn.tagName === 'BUTTON' ? btn.textContent : '';
     if (btn && btn.tagName === 'BUTTON') { btn.disabled = true; btn.textContent = 'Sending code…'; }
-    if ($('dPhone').value.replace(/\D/g, '').length < 6) { $('detOtp').hidden = true; $('dPhone').focus(); return; }
+    if ($('dPhone').value.replace(/\D/g, '').length < 6) { if (btn && btn.tagName === 'BUTTON') { btn.disabled = false; btn.textContent = label || 'Save changes'; } $('detOtp').hidden = true; $('dPhone').setCustomValidity('Enter a valid phone number'); $('dPhone').reportValidity(); $('dPhone').focus(); return; }
+    $('dPhone').setCustomValidity('');
     const r = await A.sendDetailOtp(fullPhone());
     if (btn && btn.tagName === 'BUTTON') { btn.disabled = false; btn.textContent = label || 'Save changes'; }
     if (r && r.offline) { saveDetails(); return; }
@@ -325,11 +330,13 @@
   $('pRestocks').addEventListener('click', (e) => {
     const b = e.target.closest('.rm-rs');
     if (!b) return;
-    const a = A.get();
-    a.restocks = (a.restocks || []).filter((r) => r.name !== b.dataset.name);
-    A.set(a);
+    if (A.removeRestock) A.removeRestock(b.dataset.name);
+    else { const a = A.get(); a.restocks = (a.restocks || []).filter((r) => r.name !== b.dataset.name); A.set(a); }
     render();
   });
+  // Re-render when the background hydrate refreshes the account from Supabase,
+  // so a card payment / studio change shows the up-to-date state without a manual reload.
+  document.addEventListener('account:updated', render);
   render();
 })();
 </script>

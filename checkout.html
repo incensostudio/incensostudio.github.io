@@ -660,8 +660,11 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     normOrder(o);
     const ship = o.method === 'Shipped';
     const transfer = /whish|omt/i.test(o.pay || '');
-    const awaiting = transfer && o.payStatus !== 'paid' && !/cancel/i.test(o.status);
-    const card = o.payStatus === 'paid' || (/^Paid (by|via)/.test(o.pay || '') && !transfer);
+    // A card order is saved as pending and only becomes 'paid' when Stripe's webhook confirms it.
+    // Until then it is genuinely unpaid — never let the "Paid by card" label alone mark it settled.
+    const cardPending = /card/i.test(o.pay || '') && o.payStatus === 'pending' && !/cancel/i.test(o.status);
+    const awaiting = ((transfer && o.payStatus !== 'paid') || cardPending) && !/cancel/i.test(o.status);
+    const card = o.payStatus === 'paid';
     const cancelled = /cancel/i.test(o.status);
     const deadline = (o.placedAt || new Date(o.date + 'T12:00:00').getTime()) + 24 * 3600 * 1000;
     const hoursLeft = Math.max(0, Math.ceil((deadline - Date.now()) / 3600000));
@@ -690,6 +693,8 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     const kicker = cancelled ? 'Order cancelled' : awaiting ? 'Awaiting your payment' : (stepIdx === last ? doneWord : (stepIdx === readyIdx ? (ship ? 'With the courier' : 'Ready for pickup') : 'Order confirmed'));
     const sub = cancelled
       ? (unpaidExpired ? 'We didn\u2019t receive your ' + o.pay + ' transfer by the deadline, so this order was cancelled and the items released. Nothing was charged \u2014 you\u2019re welcome to order again.' : notCollected ? 'This order wasn\u2019t collected within the 3-day hold, so it was cancelled and the items went back on the shelf. Nothing was charged \u2014 order again any time.' : 'We had to cancel this order on our side — sorry about that. ' + (card ? 'You\u2019ve been refunded in full, the same way you paid.' : 'Nothing was charged.'))
+      : cardPending
+      ? 'Your card payment hasn\u2019t gone through yet \u2014 nothing has been charged. Finish it securely on the next step and we\u2019ll start preparing right away.<br><button type="button" class="op-pay-again" style="margin-top:14px;appearance:none;border:0;border-radius:999px;background:#000;color:#FEFEF1;height:44px;padding:0 24px;font:inherit;font-size:14px;font-weight:500;cursor:pointer">Pay now by card</button>'
       : awaiting
       ? 'Send $' + o.total + ' via ' + o.pay + ' to +961 71 930 290 with your order number. We confirm on WhatsApp the moment it lands and start preparing. ' + (hoursLeft > 0 ? 'Unpaid orders are cancelled after 24 hours \u2014 <b class="op-timer" data-deadline="' + deadline + '"></b> left.' : 'The 24-hour window has passed \u2014 this order will be cancelled unless payment arrives.')
       : stepIdx === last
@@ -717,6 +722,8 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
       ? '<strong>' + (card && !unpaidExpired && !notCollected ? 'Refunded in full' : 'No payment taken') + '</strong><br>$' + o.total + (giftAmtO ? ' — $' + giftAmtO + ' back on your gift balance' + (cashPart && card ? ', $' + cashPart + ' on its way back to you' : '') : (card && !unpaidExpired && !notCollected ? ' — on its way back to you' : ' — nothing owed'))
       : giftAmtO && !cashPart
       ? '<strong>Gift balance</strong><br>$' + giftAmtO + ' — covered in full, nothing more to pay'
+      : cardPending
+      ? '<strong>Card · not completed</strong><br>$' + o.total + ' — pay to confirm your order'
       : awaiting
       ? '<strong>' + o.pay + ' · not yet received</strong><br>$' + o.total + ' — send within 24h of ordering'
       : '<strong>' + o.pay + (transfer ? ' · confirmed' : '') + '</strong><br>$' + effTotal + (refundDiff && card ? ' (of $' + o.total + ' — $' + refundDiff + ' refunded)' : '') + (card || stepIdx === last ? ' — ' + (card ? 'charged' : 'paid in cash') : ' — due ' + (ship ? 'on delivery' : 'at pickup' + (cashHold ? ' · held until ' + holdDate : '')));
@@ -745,6 +752,12 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     document.body.classList.add('placed');
     document.body.classList.remove('locked');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    const payAgain = op.querySelector('.op-pay-again');
+    if (payAgain) payAgain.addEventListener('click', async () => {
+      payAgain.disabled = true; payAgain.textContent = 'Starting…';
+      const A2 = window.IncensoAuth;
+      if (!(A2 && await A2.stripeCheckout('order', o.ref))) { payAgain.disabled = false; payAgain.textContent = 'Pay now by card'; }
+    });
     const tEl = op.querySelector('.op-timer');
     if (tEl) {
       const tick = () => {
