@@ -668,7 +668,11 @@ $('bkNotes').value = st.notes;
 if (keepTime) {
 // Only money the studio actually holds is locked: card, or a Whish/OMT transfer the studio has confirmed. A transfer still awaited is treated as unpaid \u2014 the guest may switch method freely.
 const pendingTransfer = /whish|omt/i.test(b.pay || '') && b.payStatus !== 'paid';
-const cash = pendingTransfer ? 0 : (typeof b.paid === 'number' ? b.paid : (b.pay === 'Pay at studio' ? 0 : b.price));
+// A confirmed top-up (a previous edit's card/transfer difference that was actually paid)
+// is money already held — fold it into the baseline so re-editing doesn't lose it or
+// take the new difference from the wrong number.
+const extraPaid = (b.extra && b.extra.status === 'paid') ? (b.extra.amount || 0) : 0;
+const cash = (pendingTransfer ? 0 : (typeof b.paid === 'number' ? b.paid : (b.pay === 'Pay at studio' ? 0 : b.price))) + extraPaid;
 orig = { pay: b.pay, cash, gift: b.gift ? b.gift.amount : 0, paid: cash + (b.gift ? b.gift.amount : 0), pendingTransfer, placedAt: b.placedAt };
 setPay(pendingTransfer ? (/whish/i.test(b.pay) ? 'whish' : 'omt') : 'later'); }
 if (st.svcs.length) cat = SERVICES.find((s) => s.name === st.svcs[0]).cat;
