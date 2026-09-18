@@ -762,7 +762,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     if (tEl) {
       const tick = () => {
         const ms = Number(tEl.dataset.deadline) - Date.now();
-        if (ms <= 0) { clearInterval(op._timer); op._timer = null; const A2 = window.IncensoAuth; if (A2 && A2.signedIn()) { const acc = A2.get(); const x = (acc.orders || []).find((y) => y.ref === o.ref); if (x && x.payStatus === 'pending') { x.status = 'Cancelled'; x.cancelReason = 'Payment not received within 24 hours.'; restoreGift(x); A2.set(acc); renderOrder(x); return; } } o.status = 'Cancelled'; o.cancelReason = 'Payment not received within 24 hours.'; renderOrder(o); return; }
+        if (ms <= 0) { clearInterval(op._timer); op._timer = null; const A2 = window.IncensoAuth; if (A2 && A2.resync) A2.resync(); renderOrder(o); return; }
         const hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000), ss = Math.floor((ms % 60000) / 1000);
         tEl.textContent = hh > 0 ? hh + 'h ' + String(mm).padStart(2, '0') + 'm' : mm + 'm ' + String(ss).padStart(2, '0') + 's';
       };
@@ -819,16 +819,8 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
   // Sign-in gate — auth.js loads after this script, so wait for DOM ready
   document.addEventListener('DOMContentLoaded', () => {
     const A = window.IncensoAuth;
-    // 24-hour rule: Whish / OMT orders still unpaid a day after placing are cancelled automatically
-    if (A && A.signedIn()) {
-      const acc = A.get(); let dirty = false;
-      (acc.orders || []).forEach((o) => {
-        normOrder(o);
-        if (/whish|omt/i.test(o.pay || '') && o.payStatus === 'pending' && !/cancel/i.test(o.status) && o.placedAt && Date.now() - o.placedAt > 24 * 3600 * 1000) { o.status = 'Cancelled'; o.cancelReason = 'Payment not received within 24 hours.'; dirty = true; restoreGift(o); }
-        if (o.method !== 'Shipped' && o.payStatus === 'due' && !/cancel|collect/i.test(o.status) && o.placedAt && Date.now() - o.placedAt > 3 * 86400000) { o.status = 'Cancelled'; o.cancelReason = 'Not collected within the 3-day hold.'; dirty = true; restoreGift(o); }
-      });
-      if (dirty) A.set(acc);
-    }
+    // The server owns cancellation (unpaid-24h, uncollected-3-day, stock, etc.) via DB
+    // triggers + the scheduler, and refunds any gift there too. The client only displays.
     // Deep link: /checkout?order=OR-XXXX — show that order's page
     const ref = new URLSearchParams(location.search).get('order');
     const paidReturn = new URLSearchParams(location.search).get('paid');
@@ -842,7 +834,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
           const a2 = A.get(); const o2 = a2 && (a2.orders || []).find((x) => x.ref === ref);
           if (o2) { normOrder(o2); renderOrder(o2); }
         });
-        // Coming back from a card payment — poll the server until it shows paid, then re-render.
+        // Coming back from a card payment — poll the server fast until it shows paid.
         if (paidReturn && o.payStatus !== 'paid' && window.SB) {
           (async () => {
             for (let i = 0; i < 20; i++) {
@@ -852,6 +844,8 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
             }
           })();
         }
+        // Keep the order page live with the server (studio marks paid/ready/collected/cancelled).
+        if (A.resync) { A.resync(); setInterval(() => { if (!document.hidden && A.signedIn()) A.resync(); }, 20000); }
         return;
       }
     }

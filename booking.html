@@ -171,7 +171,7 @@ if (cardAwait) {
   const pa = document.querySelector('.bk-pay-again'); if (pa) pa.addEventListener('click', async () => { pa.disabled = true; pa.textContent = 'Starting\u2026'; if (!(A && await A.stripeCheckout('booking', b.ref))) { pa.disabled = false; pa.textContent = 'Pay now by card'; } });
 } else {
 $('h1').textContent = 'Held for you \u2014 send your payment.'; banner('Awaiting ' + esc(b.pay), 'Transfer $' + (b.paid || b.price) + ' to +961 71 930 290 with booking ' + b.ref + '. We confirm on WhatsApp the moment it lands \u2014 the slot is released if unpaid by ' + new Date(deadline).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) + ' (<b class="bk-timer" data-deadline="' + deadline + '"></b> left).');
-const tEl = document.querySelector('.bk-timer'); if (window._bkTimer) clearInterval(window._bkTimer); if (tEl) { const tick = () => { const ms = Number(tEl.dataset.deadline) - Date.now(); if (ms <= 0) { clearInterval(window._bkTimer); const a2 = A.get(); const x = (a2.bookings || []).find((y) => y.ref === b.ref); if (x && x.payStatus === 'pending') { x.status = 'Cancelled'; x.cancelled = new Date().toISOString(); x.cancelReason = 'Payment not received within 24 hours.'; if (x.gift && x.gift.amount && !x.giftRefunded) { const G = window.IncensoGift; if (x.gift.parts && x.gift.parts.length) G.refundParts(x.gift.parts, x.ref); else if (x.gift.code) G.refund(x.gift.code, x.gift.amount, x.ref); x.giftRefunded = true; } A.set(a2); } render(); return; } const hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000), ss = Math.floor((ms % 60000) / 1000); tEl.textContent = hh > 0 ? hh + 'h ' + String(mm).padStart(2, '0') + 'm' : mm + 'm ' + String(ss).padStart(2, '0') + 's'; }; tick(); window._bkTimer = setInterval(tick, 1000); } } }
+const tEl = document.querySelector('.bk-timer'); if (window._bkTimer) clearInterval(window._bkTimer); if (tEl) { const tick = () => { const ms = Number(tEl.dataset.deadline) - Date.now(); if (ms <= 0) { clearInterval(window._bkTimer); if (A.resync) A.resync(); render(); return; } const hh = Math.floor(ms / 3600000), mm = Math.floor((ms % 3600000) / 60000), ss = Math.floor((ms % 60000) / 1000); tEl.textContent = hh > 0 ? hh + 'h ' + String(mm).padStart(2, '0') + 'm' : mm + 'm ' + String(ss).padStart(2, '0') + 's'; }; tick(); window._bkTimer = setInterval(tick, 1000); } } }
 else if (cancelled && /not received/i.test(b.cancelReason || '')) banner('Released', 'We didn\u2019t receive your ' + esc(b.pay) + ' transfer by the deadline, so this slot was released. Nothing was charged \u2014 book again any time.');
 $('h1').textContent = cancelled ? 'This booking was cancelled.' : done ? 'Thanks for coming in.' : 'Your chair is booked.';
 $('dDow').textContent = d.toLocaleDateString('en-GB', { weekday: 'long' });
@@ -233,11 +233,13 @@ window.scrollTo({ top: 0, behavior: 'smooth' });
 const banner = (t, sub) => { const el = $('banner'); el.innerHTML = '<span>' + t + '</span><span class="x">' + sub + '</span>'; el.classList.add('show'); };
 if (params.get('new')) banner('All set \u2726', 'Confirmation is on its way by WhatsApp \u2014 and a reminder the day before.');
 if (params.get('updated')) banner('Updated \u2726', 'Your new booking is set \u2014 confirmation sent by WhatsApp.');
-if (A.signedIn()) { const acc0 = A.get(); let dirty = false; (acc0.bookings || []).forEach((x) => { if (x.payStatus === 'pending' && !/card/i.test(x.pay || '') && !/cancel/i.test(x.status || '') && Date.now() > (x.payDeadline || ((x.placedAt || 0) + 86400000)) && (x.payDeadline || x.placedAt)) { x.status = 'Cancelled'; x.cancelled = new Date().toISOString(); x.cancelReason = 'Payment not received within 24 hours.'; dirty = true; if (x.gift && x.gift.amount && !x.giftRefunded) { const G = window.IncensoGift; if (x.gift.parts && x.gift.parts.length) G.refundParts(x.gift.parts, x.ref); else if (x.gift.code) G.refund(x.gift.code, x.gift.amount, x.ref); x.giftRefunded = true; } } }); if (dirty) A.set(acc0); }
+// The server owns booking cancellation (unpaid past deadline) via the scheduler and refunds
+// gift there. The client only displays what the server sent.
 if (A.signedIn()) render(); else A.open(render);
 // Refresh when the account is re-hydrated from the server, and — coming back from a
 // card payment (?paid=1) — poll the server until the booking shows as paid, then re-render.
 document.addEventListener('account:updated', () => { if (A.signedIn()) render(); });
+if (A.resync) { A.resync(); setInterval(() => { if (!document.hidden && A.signedIn()) A.resync(); }, 20000); }
 if (params.get('paid') && window.SB && A.signedIn()) {
   (async () => {
     for (let i = 0; i < 12; i++) {

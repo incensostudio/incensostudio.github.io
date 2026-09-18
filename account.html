@@ -217,13 +217,10 @@
     const rows = (list, fn, empty) => list && list.length ? list.map(fn).join('') : '<p class="none">' + empty + '</p>';
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const G = window.IncensoGift;
-    // Card bookings are settled through Stripe — their paid/cancelled truth comes from the
-    // webhook (refreshed on hydrate), so never auto-cancel a card booking from local cache
-    // (that could overwrite a genuinely-paid row). Only manual-transfer holds expire here.
-    let dirtyB = false; (a.bookings || []).forEach((x) => { if (x.payStatus === 'pending' && !/card/i.test(x.pay || '') && !/cancel/i.test(x.status || '') && (x.payDeadline || x.placedAt) && Date.now() > (x.payDeadline || (x.placedAt + 86400000))) { x.status = 'Cancelled'; x.cancelReason = 'Payment not received within 24 hours.'; dirtyB = true; if (x.gift && x.gift.parts && !x.giftRestored) { G.refundParts(x.gift.parts, x.ref); x.giftRestored = true; } } });
-    (a.orders || []).forEach((o) => { if (!o.payStatus) o.payStatus = /^Paid/.test(o.pay || '') ? 'paid' : /whish|omt/i.test(o.pay || '') ? 'pending' : 'due'; if (!o.placedAt) o.placedAt = new Date(o.date + 'T12:00:00').getTime(); if (o.method !== 'Shipped' && (o.payStatus === 'paid' || o.payStatus === 'due') && /^(placed|paid · preparing|preparing)$/i.test(o.status || '')) { o.status = 'Ready for pickup'; dirtyB = true; } if (/whish|omt/i.test(o.pay || '') && o.payStatus === 'pending' && !/cancel/i.test(o.status) && o.placedAt && Date.now() - o.placedAt > 86400000) { o.status = 'Cancelled'; o.cancelReason = 'Payment not received within 24 hours.'; dirtyB = true; if (o.gift && o.gift.parts && !o.giftRestored) { G.refundParts(o.gift.parts, o.ref); o.giftRestored = true; } } });
-    (a.orders || []).forEach((o) => { if (o.method !== 'Shipped' && o.payStatus === 'due' && !/cancel|collect/i.test(o.status) && o.placedAt && Date.now() - o.placedAt > 3 * 86400000) { o.status = 'Cancelled'; o.cancelReason = 'Not collected within the 3-day hold.'; dirtyB = true; if (o.gift && o.gift.parts && !o.giftRestored) { G.refundParts(o.gift.parts, o.ref); o.giftRestored = true; } } });
-    if (dirtyB) A.set(a);
+    // Display only — the server owns the lifecycle now (auto-cancel, status advance and gift
+    // refunds run in DB triggers + the scheduler). The client never cancels or persists here;
+    // it just fills in defaults for older rows and shows whatever the server sent.
+    (a.orders || []).forEach((o) => { if (!o.payStatus) o.payStatus = /^Paid/.test(o.pay || '') ? 'paid' : /whish|omt/i.test(o.pay || '') ? 'pending' : 'due'; if (!o.placedAt) o.placedAt = new Date(o.date + 'T12:00:00').getTime(); });
     const bk = (a.bookings || []).slice().sort((x, y) => x.date < y.date ? -1 : 1);
     const isPast = (b) => !/cancel/i.test(b.status || '') && ((b.final && typeof b.final.total === 'number') || /complet/i.test(b.status || ''));
     const upcoming = bk.filter((b) => !isPast(b) && !/cancel/i.test(b.status || ''));
@@ -334,9 +331,10 @@
     else { const a = A.get(); a.restocks = (a.restocks || []).filter((r) => r.name !== b.dataset.name); A.set(a); }
     render();
   });
-  // Re-render when the background hydrate refreshes the account from Supabase,
-  // so a card payment / studio change shows the up-to-date state without a manual reload.
+  // Re-render when the account is refreshed from the server (card payment, studio change,
+  // auto-cancel, etc.) — and poll periodically so the page stays live without a reload.
   document.addEventListener('account:updated', render);
+  if (A.resync) { A.resync(); setInterval(() => { if (!document.hidden && A.signedIn()) A.resync(); }, 20000); }
   render();
 })();
 </script>

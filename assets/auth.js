@@ -157,6 +157,25 @@
     } catch (e) { console.warn('[Incenso] hydrate failed', e); return null; }
   };
 
+  // Pull the latest server state into the cache and tell pages to re-render. This is how
+  // order / booking / gift pages reflect changes the studio (or the scheduler) made
+  // server-side — the server is the single source of truth, the client only displays it.
+  let resyncing = false;
+  const resync = async () => {
+    if (!SB || resyncing) return;
+    resyncing = true;
+    try {
+      const { data: { session } } = await SB.auth.getSession();
+      if (session && session.user) {
+        const a = await hydrate(session.user.id);
+        if (a) { acc = a; writeLocal(a); document.dispatchEvent(new Event('account:updated')); }
+      }
+    } catch (e) { /* offline / transient — keep the current cache */ }
+    finally { resyncing = false; }
+  };
+  // Re-sync whenever the tab regains focus/visibility (cheap, catches studio changes fast).
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) resync(); });
+
 
   const css = '.au{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:clamp(16px,3vw,40px);opacity:0;pointer-events:none;transition:opacity 240ms cubic-bezier(0.16,1,0.3,1)}' +
   '.au.open{opacity:1;pointer-events:auto}body.au-open{overflow:hidden}' +
@@ -387,7 +406,7 @@
     }
   };
 
-  window.IncensoAuth = { get, set, flush, removeRestock, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, orderTotal, payLabel, nextRef, TIERS, sync: syncButtons, findByPhone, all, hydrate, sendDetailOtp, verifyDetailOtp, stripeCheckout };
+  window.IncensoAuth = { get, set, flush, removeRestock, resync, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, orderTotal, payLabel, nextRef, TIERS, sync: syncButtons, findByPhone, all, hydrate, sendDetailOtp, verifyDetailOtp, stripeCheckout };
 
   // ---- Newsletter subscribe (persists to Supabase; members pass straight through) ----
   document.addEventListener('submit', (e) => {

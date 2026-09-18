@@ -168,6 +168,7 @@ document.getElementById('acts').addEventListener('click', (e) => { const b = e.t
 if (A.signedIn()) render(); else { render(); A.open(render); }
 // Coming back from a card payment (?paid=1) — wait for the server to activate the card, then re-render.
 document.addEventListener('account:updated', () => render());
+if (A.resync) { A.resync(); setInterval(() => { if (!document.hidden && A.signedIn()) A.resync(); }, 20000); }
 if (new URLSearchParams(location.search).get('paid') && window.SB && code) {
   (async () => {
     for (let i = 0; i < 12; i++) {
