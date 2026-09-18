@@ -48,6 +48,7 @@
       await SB.from('profiles').upsert({ id: uid, phone: a.phone || null, name: a.name || null, email: a.email || null, photo_url: a.photo || null, prefs: a.prefs || {}, tier: (tierFor(yearSpend(a)) || {}).name || 'Member', spend_12mo: yearSpend(a), updated_at: new Date().toISOString() }, { onConflict: 'id' });
       if ((a.bookings || []).length) await SB.from('bookings').upsert(a.bookings.map((b) => bkToRow(b, uid)), { onConflict: 'ref' });
       if ((a.orders || []).length) await SB.from('orders').upsert(a.orders.map((o) => orToRow(o, uid)), { onConflict: 'ref' });
+      if ((a.restocks || []).length) await SB.from('restock_requests').upsert(a.restocks.map((r) => ({ user_id: uid, product: r.name, phone: a.phone || null })), { onConflict: 'user_id,product' });
     } catch (e) { console.warn('[Incenso] persist failed', e); }
   };
   const set = (a) => { acc = a; writeLocal(a); persist(a); return a; };
@@ -55,15 +56,17 @@
   const hydrate = async (uid) => {
     if (!SB) return null;
     try {
-      const [pr, bk, od] = await Promise.all([
+      const [pr, bk, od, rs] = await Promise.all([
         SB.from('profiles').select('*').eq('id', uid).maybeSingle(),
         SB.from('bookings').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
         SB.from('orders').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
+        SB.from('restock_requests').select('product, created_at').eq('user_id', uid),
       ]);
       const prof = pr.data;
       if (!prof) return null;
       const a = { id: uid, name: prof.name, phone: prof.phone, email: prof.email || '', photo: prof.photo_url || '', prefs: prof.prefs || {}, tier: prof.tier, created: prof.created_at,
-        bookings: (bk.data || []).map(bkFromRow), orders: (od.data || []).map(orFromRow), visits: [] };
+        bookings: (bk.data || []).map(bkFromRow), orders: (od.data || []).map(orFromRow),
+        restocks: (rs.data || []).map((r) => ({ name: r.product, date: (r.created_at || '').slice(0, 10) })), visits: [] };
       a.visits = a.bookings.filter((b) => /complete/i.test(b.status || '')).map((b) => ({ date: b.date, price: b.price, service: b.service }));
       if (window.IncensoGift && window.IncensoGift.attach) { try { await window.IncensoGift.attach(a); } catch (e) {} }
       return a;
