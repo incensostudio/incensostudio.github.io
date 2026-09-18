@@ -133,6 +133,7 @@
         <div class="field"><label for="dName">Name</label><input id="dName" type="text" autocomplete="name" required /></div>
         <div class="field"><label for="dPhone">Phone</label><div class="phone-combo"><select id="dPhoneCC" class="pc-cc" aria-label="Country code"></select><input id="dPhone" type="tel" autocomplete="tel" required /></div></div>
         <div class="field"><label for="dEmail">E-mail</label><input id="dEmail" type="email" autocomplete="email" /></div>
+        <div class="field"><label for="dBirthday">Birthday</label><input id="dBirthday" type="date" autocomplete="bday" required /></div>
         <button type="submit" class="btn ghost" style="margin-top:20px">Save changes</button><span class="saved" id="savedTag" hidden>Saved ✦</span>
         <div id="detOtp" hidden style="margin-top:18px;border:1px solid rgba(0,0,0,0.25);background:rgba(254,254,241,0.6);padding:16px 18px">
           <p id="detOtpMsg" style="margin:0 0 10px;font-size:13px;line-height:1.5;color:rgba(0,0,0,0.78)">To keep your account safe, confirm this change with the code we just sent you on WhatsApp.</p>
@@ -258,6 +259,8 @@
     if (pm) { $('dPhoneCC').value = pm[1]; $('dPhone').value = pm[2].trim(); }
     else { $('dPhone').value = ph.replace(/^\+/, '').trim(); }
     $('dEmail').value = a.email || '';
+    $('dBirthday').value = (a.birthday || '').slice(0, 10);
+    $('dBirthday').max = new Date().toISOString().slice(0, 10);
   };
   // The number the studio actually messages — always country code + local, so WhatsApp can reach it.
   const fullPhone = () => ($('dPhoneCC').value + ' ' + $('dPhone').value.trim()).trim();
@@ -274,7 +277,7 @@
   $('lockBtn').addEventListener('click', () => A.open(render));
   const saveDetails = () => {
     const a = A.get();
-    a.name = $('dName').value.trim(); a.phone = fullPhone(); a.email = $('dEmail').value.trim();
+    a.name = $('dName').value.trim(); a.phone = fullPhone(); a.email = $('dEmail').value.trim(); a.birthday = $('dBirthday').value;
     A.set(a);
     $('detOtp').hidden = true;
     render();

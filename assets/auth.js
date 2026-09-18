@@ -93,7 +93,7 @@
     if (G && G.boughtBy) G.boughtBy(a.phone).forEach((x) => { if (x.status === 'Reserved' || (x.status === 'Expired' && x.expiredReason)) return; const t = new Date(x.confirmed || x.created).getTime(); if (t >= cutoff) s += x.amount || 0; });
     return s;
   };
-  const seed = (name, phone, email) => ({ name, phone, email: email || '', created: new Date().toISOString(), visits: [], orders: [], bookings: [], prefs: {} });
+  const seed = (name, phone, email, birthday) => ({ name, phone, email: email || '', birthday: birthday || '', created: new Date().toISOString(), visits: [], orders: [], bookings: [], prefs: {} });
 
   // ---- Supabase <-> account-object mapping ----
   const bkFromRow = (r) => ({ ref: r.ref, services: r.services || [], serviceMins: r.service_mins || [], staff: r.staff || {}, date: r.date, time: r.time, start: r.start_min, mins: r.mins, price: r.price, priceFrom: r.price_from, quote: r.quote, quoteItems: r.quote_items || [], pay: r.pay, paid: r.paid, due: r.due, refund: r.refund, gift: r.gift && Object.keys(r.gift).length ? r.gift : null, status: r.status, payStatus: r.pay_status, completed: !!r.completed, extra: r.extra || null, final: r.final || null, placedAt: r.placed_at ? new Date(r.placed_at).getTime() : undefined, payDeadline: r.pay_deadline ? new Date(r.pay_deadline).getTime() : undefined, notes: r.notes, mood: r.mood, flags: r.flags || [], drink: r.drink || [], smoke: r.smoke, created: r.created_at, updated: r.updated_at, cancelled: r.cancelled_at, cancelReason: r.cancel_reason, service: (r.services || []).join(' + ') });
@@ -113,7 +113,7 @@
       if (!user) { const u = await SB.auth.getUser(); user = u && u.data ? u.data.user : null; }
       if (!user) return;
       const uid = user.id; currentUid = uid;
-      await SB.from('profiles').upsert({ id: uid, phone: a.phone || null, name: a.name || null, email: a.email || null, photo_url: a.photo || null, prefs: a.prefs || {}, tier: (tierFor(yearSpend(a)) || {}).name || 'Member', spend_12mo: yearSpend(a), updated_at: new Date().toISOString() }, { onConflict: 'id' });
+      await SB.from('profiles').upsert({ id: uid, phone: a.phone || null, name: a.name || null, email: a.email || null, birthday: a.birthday || null, photo_url: a.photo || null, prefs: a.prefs || {}, tier: (tierFor(yearSpend(a)) || {}).name || 'Member', spend_12mo: yearSpend(a), updated_at: new Date().toISOString() }, { onConflict: 'id' });
       if ((a.bookings || []).length) await SB.from('bookings').upsert(a.bookings.map((b) => bkToRow(b, uid)), { onConflict: 'ref' });
       if ((a.orders || []).length) await SB.from('orders').upsert(a.orders.map((o) => orToRow(o, uid)), { onConflict: 'ref' });
       if ((a.restocks || []).length) await SB.from('restock_requests').upsert(a.restocks.map((r) => ({ user_id: uid, product: r.name, phone: a.phone || null })), { onConflict: 'user_id,product' });
@@ -135,7 +135,7 @@
       ]);
       const prof = pr.data;
       if (!prof) return null;
-      const a = { id: uid, name: prof.name, phone: prof.phone, email: prof.email || '', photo: prof.photo_url || '', prefs: prof.prefs || {}, tier: prof.tier, created: prof.created_at,
+      const a = { id: uid, name: prof.name, phone: prof.phone, email: prof.email || '', birthday: prof.birthday || '', photo: prof.photo_url || '', prefs: prof.prefs || {}, tier: prof.tier, created: prof.created_at,
         bookings: (bk.data || []).map(bkFromRow), orders: (od.data || []).map(orFromRow),
         restocks: (rs.data || []).map((r) => ({ name: r.product, date: (r.created_at || '').slice(0, 10) })), visits: [] };
       a.visits = a.bookings.filter((b) => /complete/i.test(b.status || '')).map((b) => ({ date: b.date, price: b.price, service: b.service }));
@@ -264,6 +264,7 @@
       '<p class="au-sub">So we know who’s in the chair — and where to send updates.</p>' +
       '<form id="auDetForm"><div class="au-field"><label for="auName">Full name</label><input id="auName" type="text" autocomplete="name" required /></div>' +
       '<div class="au-field"><label for="auEmail">E-mail</label><input id="auEmail" type="email" autocomplete="email" required /></div>' +
+      '<div class="au-field"><label for="auBirthday">Birthday</label><input id="auBirthday" type="date" autocomplete="bday" max="' + new Date().toISOString().slice(0, 10) + '" required /></div>' +
       '<div class="au-field"><label>Photo <span style="font-weight:400;color:rgba(0,0,0,0.45)">— optional</span></label>' +
       '<div class="au-photo"><span class="av" id="auAv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"></circle><path d="M5 19.5c1.3-3.2 4-4.8 7-4.8s5.7 1.6 7 4.8"></path></svg></span>' +
       '<span><button type="button" class="au-photo-btn" id="auPhotoBtn">Upload photo</button><p class="hint">JPG or PNG, up to 5 MB</p></span>' +
@@ -282,7 +283,7 @@
     });
     body().querySelector('#auDetForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      const a = seed(body().querySelector('#auName').value.trim(), pendingPhone, body().querySelector('#auEmail').value.trim());
+      const a = seed(body().querySelector('#auName').value.trim(), pendingPhone, body().querySelector('#auEmail').value.trim(), body().querySelector('#auBirthday').value);
       if (photoData) a.photo = photoData;
       finish(a);
     });
