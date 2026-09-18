@@ -85,7 +85,7 @@
 @media (max-width:880px){
 .gv-wrap{display:flex;flex-direction:column;gap:0;margin-bottom:0}
 .preview{display:contents}
-.preview .vcard{order:-1;position:fixed;top:calc(max(clamp(24px,3.2vw,40px),env(safe-area-inset-top)) + 60px);left:var(--gutter);right:var(--gutter);width:auto;margin:0;padding:18px 20px;border-radius:18px;box-shadow:0 14px 34px rgba(0,0,0,0.16);z-index:6}
+.preview .vcard{order:-1;width:100%;align-self:stretch;margin:0 0 6px;padding:18px 20px;border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,0.12)}
 .vcard::after{inset:8px;border-radius:12px}
 .vcard .amt{font-size:clamp(40px,12vw,56px)}
 .vcard .to{font-size:14px;margin-top:10px}
@@ -110,7 +110,6 @@
 }
 @media (max-width:880px){
 .g-intro p,.intro p{display:none}
-.intro{display:none}
 #payOpts{flex-direction:column;gap:8px;align-items:stretch}#payOpts .pill{width:100%;height:46px;min-height:46px;justify-content:flex-start;text-align:left;padding:0 16px 0 44px;position:relative;font-size:14px}#payOpts .pill::before{content:"";position:absolute;left:16px;top:50%;width:14px;height:14px;margin-top:-8px;border-radius:999px;border:1.5px solid rgba(0,0,0,0.45);background:transparent}#payOpts .pill[aria-pressed="true"]::before{border-color:#FEFEF1;background:#FEFEF1;box-shadow:inset 0 0 0 3.5px var(--fg-warm)}
 .preview{max-width:none}
 .summary{padding:0;border:0;border-top:1px solid var(--card-line);background:transparent;margin-top:8px}
@@ -270,23 +269,6 @@ if (A.signedIn()) go(); else A.open(go);
 $('mBuy').addEventListener('click', () => $('buyBtn').click());
 if (window.IncensoPhone) window.IncensoPhone.fill($('toPhoneWrap'));
 renderAmts(); render();
-// Mobile: the live card is pinned under the header (position:fixed) — push the
-// form down so it starts just below the card and scrolls beneath it.
-const gvWrap = document.querySelector('.gv-wrap');
-const vcard = document.querySelector('.preview .vcard');
-const pinCard = () => {
-  if (!gvWrap || !vcard) return;
-  if (window.matchMedia('(max-width:880px)').matches) {
-    const cardTop = parseFloat(getComputedStyle(vcard).top) || 0;
-    const wrapTop = gvWrap.getBoundingClientRect().top + window.scrollY;
-    gvWrap.style.paddingTop = Math.max(0, Math.round(cardTop + vcard.offsetHeight + 16 - wrapTop)) + 'px';
-  } else {
-    gvWrap.style.paddingTop = '';
-  }
-};
-pinCard();
-window.addEventListener('resize', pinCard);
-window.addEventListener('orientationchange', pinCard);
 })();
 </script>
 </body>
