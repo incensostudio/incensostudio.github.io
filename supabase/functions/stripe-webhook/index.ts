@@ -1,4 +1,9 @@
 // Stripe webhook: verifies the signature and marks the order / gift / booking paid.
+//
+// IMPORTANT: this function MUST be deployed with verify_jwt = FALSE. Stripe signs
+// requests with its own header (checked below), not a Supabase JWT, so leaving
+// Supabase's JWT gate on makes the platform reject every Stripe call before this
+// code runs — silently breaking all card payments.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 async function verify(payload: string, sigHeader: string, secret: string): Promise<boolean> {
