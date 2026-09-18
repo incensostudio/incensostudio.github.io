@@ -327,11 +327,14 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase.js"></script>
+<script src="assets/products.js"></script>
 <script>
 (() => {
-  // Same placeholder catalogue as the shop — swap for the real range in one place later.
+  // Prices/notes come from Supabase (assets/products.js); this list is the offline fallback.
   const ACCENTS = ['#7DD3FC','#F9A8D4','#86EFAC','#FDE047','#FCA5A5','#D8B4FE','#93C5FD','#A5B4FC','#C4B5FD','#FCC67E'];
-  const PRODUCTS = [
+  const FALLBACK_PRODUCTS = [
     { cat:'hair',  name:'Ritual Hair Oil',      note:'Bergamot + cedar. Three drops, ends first.',  price:28 },
     { cat:'hair',  name:'Repair Mask',          note:'Deep treatment for color-tired lengths.',     price:32 },
     { cat:'hair',  name:'Silk Scrunchie Trio',  note:'Mulberry silk, studio neutrals.',             price:14 },
@@ -346,7 +349,11 @@
     { cat:'home',  name:'Studio Candle',        note:'The scent of the space, 40-hour pour.',       price:30 },
   ];
   const CATLABEL = { hair:'Hair', nails:'Nails', body:'Body', home:'Home' };
-  const BYNAME = Object.fromEntries(PRODUCTS.map((p, i) => [p.name, { ...p, i }]));
+  // Prices/notes come from Supabase (assets/products.js) so cart totals match the live shelf.
+  const liveProducts = () => (window.IncensoProducts && IncensoProducts.list && IncensoProducts.list.length) ? IncensoProducts.list : FALLBACK_PRODUCTS;
+  let PRODUCTS = liveProducts();
+  let BYNAME = Object.fromEntries(PRODUCTS.map((p, i) => [p.name, { ...p, i }]));
+  const refreshCatalog = () => { PRODUCTS = liveProducts(); BYNAME = Object.fromEntries(PRODUCTS.map((p, i) => [p.name, { ...p, i }])); };
 
   const KEY = 'incenso-cart-count';
   const IKEY = 'incenso-cart-items';
@@ -460,6 +467,7 @@
   });
 
   render();
+  document.addEventListener('products:updated', () => { refreshCatalog(); render(); }); // live price/stock edits
   document.addEventListener('DOMContentLoaded', render); // re-run once auth.js is ready so the member discount shows
 
   // Force sign-in before checkout
@@ -547,8 +555,6 @@
   });
 })();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/supabase.js"></script>
 <script src="assets/phone.js"></script>
 <script src="assets/auth.js"></script>
 </body>

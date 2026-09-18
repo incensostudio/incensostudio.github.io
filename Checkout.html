@@ -443,9 +443,12 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase.js"></script>
+<script src="assets/products.js"></script>
 <script>
 (() => {
-  const PRODUCTS = [
+  const FALLBACK_PRODUCTS = [
     { cat:'hair',  name:'Ritual Hair Oil',      price:28 },
     { cat:'hair',  name:'Repair Mask',          price:32 },
     { cat:'hair',  name:'Silk Scrunchie Trio',  price:14 },
@@ -459,6 +462,8 @@
     { cat:'home',  name:'Ceramic Burner',       price:26 },
     { cat:'home',  name:'Studio Candle',        price:30 },
   ];
+  // Prices come from Supabase (assets/products.js) so the order total matches the live shelf.
+  const PRODUCTS = (window.IncensoProducts && IncensoProducts.list && IncensoProducts.list.length) ? IncensoProducts.list : FALLBACK_PRODUCTS;
   const BYNAME = Object.fromEntries(PRODUCTS.map((p) => [p.name, p]));
   const KEY = 'incenso-cart-count';
   const IKEY = 'incenso-cart-items';
@@ -764,8 +769,6 @@
   });
 })();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/supabase.js"></script>
 <script src="assets/image-slot.js"></script>
 <script src="assets/phone.js"></script>
 <script src="assets/auth.js"></script>

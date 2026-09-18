@@ -351,11 +351,14 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase.js"></script>
+<script src="assets/products.js"></script>
 <script>
 (() => {
-  // Placeholder catalogue — swap names/prices/photos for the real range.
+  // Products — admin-editable from Supabase (assets/products.js), design list as fallback.
   const ACCENTS = ['#7DD3FC','#F9A8D4','#86EFAC','#FDE047','#FCA5A5','#D8B4FE','#93C5FD','#A5B4FC','#C4B5FD','#FCC67E'];
-  const PRODUCTS = [
+  const FALLBACK_PRODUCTS = [
     { cat:'hair',  name:'Ritual Hair Oil',      note:'Bergamot + cedar. Three drops, ends first.',            price:28 },
     { cat:'hair',  name:'Repair Mask',          note:'Deep treatment for color-tired lengths.',               price:32, stock:2 },
     { cat:'hair',  name:'Silk Scrunchie Trio',  note:'Mulberry silk, studio neutrals.',                       price:14 },
@@ -370,48 +373,64 @@
     { cat:'home',  name:'Studio Candle',        note:'The scent of the space, 40-hour pour.',                 price:30 },
   ];
   const CATLABEL = { hair:'Hair', nails:'Nails', body:'Body', home:'Home' };
-  const DETAILS = {"Ritual Hair Oil":"Cold-pressed jojoba base with bergamot peel and Atlas cedar. Worked through mid-lengths and ends after every blow-out at the studio. 30 ml, glass dropper.","Repair Mask":"A ten-minute bond-building treatment we reach for after color work. Fine hair takes a coin-size amount; thick hair, two. 200 ml jar.","Silk Scrunchie Trio":"22-momme mulberry silk in three studio neutrals — bone, sand, ink. No creases, no snags, survives a whole appointment book.","Wide-Tooth Comb":"Hand-polished acetate, seamless teeth. The only thing we let near wet hair. Fits a handbag pocket.","Cuticle Oil Pen":"Jojoba, vitamin E and a trace of the studio scent in a click-pen brush. Lives on every station — now on your desk. 4 ml.","Glass File Duo":"Etched Bohemian glass in two grits. Seals the nail edge as it shapes, so polish holds longer. Sleeve included.","Studio Top Coat":"The high-gloss seal we finish every set with. One thin coat every third day keeps a manicure honest between visits. 11 ml.","Hand Cream":"Shea and squalane, sinks in before you pick your phone back up. The incense-trace scent fades within the hour. 50 ml tube.","Body Mist":"Warm amber and a little smoke — a veil, not a statement. Mist once at the collarbone, walk through the rest. 100 ml.","Incenso Sticks №1":"Our namesake blend: frankincense, cedar and a citrus lift. 20 hand-rolled sticks, roughly 40 minutes of slow burn each.","Ceramic Burner":"Unglazed stoneware thrown for us in small batches. The lip catches its own ash; the base stays cool on wood.","Studio Candle":"The exact scent of the space, poured into a 40-hour candle. Cotton wick, reusable vessel worth keeping."};
+  const FALLBACK_DETAILS = {"Ritual Hair Oil":"Cold-pressed jojoba base with bergamot peel and Atlas cedar. Worked through mid-lengths and ends after every blow-out at the studio. 30 ml, glass dropper.","Repair Mask":"A ten-minute bond-building treatment we reach for after color work. Fine hair takes a coin-size amount; thick hair, two. 200 ml jar.","Silk Scrunchie Trio":"22-momme mulberry silk in three studio neutrals — bone, sand, ink. No creases, no snags, survives a whole appointment book.","Wide-Tooth Comb":"Hand-polished acetate, seamless teeth. The only thing we let near wet hair. Fits a handbag pocket.","Cuticle Oil Pen":"Jojoba, vitamin E and a trace of the studio scent in a click-pen brush. Lives on every station — now on your desk. 4 ml.","Glass File Duo":"Etched Bohemian glass in two grits. Seals the nail edge as it shapes, so polish holds longer. Sleeve included.","Studio Top Coat":"The high-gloss seal we finish every set with. One thin coat every third day keeps a manicure honest between visits. 11 ml.","Hand Cream":"Shea and squalane, sinks in before you pick your phone back up. The incense-trace scent fades within the hour. 50 ml tube.","Body Mist":"Warm amber and a little smoke — a veil, not a statement. Mist once at the collarbone, walk through the rest. 100 ml.","Incenso Sticks №1":"Our namesake blend: frankincense, cedar and a citrus lift. 20 hand-rolled sticks, roughly 40 minutes of slow burn each.","Ceramic Burner":"Unglazed stoneware thrown for us in small batches. The lip catches its own ash; the base stays cool on wood.","Studio Candle":"The exact scent of the space, poured into a 40-hour candle. Cotton wick, reusable vessel worth keeping."};
+
+  // Products come from Supabase (assets/products.js) when available, so the admin can edit
+  // price, stock and copy live; the design list above is the offline fallback.
+  const liveProducts = () => (window.IncensoProducts && IncensoProducts.list && IncensoProducts.list.length) ? IncensoProducts.list : FALLBACK_PRODUCTS;
+  const liveDetails = () => { const m = {}; liveProducts().forEach((p) => { if (p.details) m[p.name] = p.details; }); return Object.keys(m).length ? m : FALLBACK_DETAILS; };
+  let PRODUCTS = liveProducts();
+  let DETAILS = liveDetails();
+  const tint = (hex) => hex + '59'; // ~35% alpha, keeps text at full contrast
 
   const shelf = document.getElementById('shelf');
-  PRODUCTS.forEach((p, i) => {
-    const el = document.createElement('article');
-    el.className = 'product';
-    el.dataset.cat = p.cat;
-    el.dataset.accent = ACCENTS[i % ACCENTS.length];
-    const frames = p.imgs || 3; // placeholder count per product — swap for real photo lists
-    let framesHtml = '', dotsHtml = '';
-    for (let f = 0; f < frames; f++) {
-      framesHtml += '<div class="frame' + (f === 0 ? ' on' : '') + '"><span class="ph-label">Photo ' + (f + 1) + ' of ' + frames + '</span></div>';
-      dotsHtml += '<span class="dot' + (f === 0 ? ' on' : '') + '"></span>';
-    }
-    const st = p.stock;
-    const stockTag = st === 0 ? '<span class="stock-tag out">Sold out</span>' : (st > 0 && st <= 3 ? '<span class="stock-tag">' + st + ' left</span>' : '');
-    if (st === 0) el.classList.add('soldout');
-    el.innerHTML =
-      '<div class="photo" data-frame="0" data-frames="' + frames + '">' + stockTag + framesHtml +
-      '<button type="button" class="ph-nav ph-prev" aria-label="Previous photo">&lsaquo;</button>' +
-      '<button type="button" class="ph-nav ph-next" aria-label="Next photo">&rsaquo;</button>' +
-      '<div class="ph-dots" aria-hidden="true">' + dotsHtml + '</div></div>' +
-      '<div class="p-head"><h2 class="p-name">' + p.name + '</h2><span class="p-price">$' + p.price + '</span></div>' +
-      '<p class="p-note">' + p.note + '</p>' +
-      '<div class="p-foot"><span class="p-cat">' + CATLABEL[p.cat] + '</span>' +
-      '<span class="buy" data-idx="' + i + '" data-name="' + p.name + '">' + (st === 0 ? '<button type="button" class="add" disabled>Sold out</button>' : '<button type="button" class="add">Add to cart</button>') + '</span></div>';
-    shelf.appendChild(el);
-  });
-
-  // Paint-on-hover — instant flood, slow candy fade once you leave.
-  const tint = (hex) => hex + '59'; // ~35% alpha, keeps text at full contrast
-  shelf.querySelectorAll('.product').forEach((card, i) => {
-    card.addEventListener('pointerenter', () => {
-      card.classList.add('lit');
-      card.style.backgroundColor = tint(card.dataset.accent);
-      ting(i);
+  const renderShelf = () => {
+    PRODUCTS = liveProducts();
+    DETAILS = liveDetails();
+    shelf.innerHTML = '';
+    PRODUCTS.forEach((p, i) => {
+      const el = document.createElement('article');
+      el.className = 'product';
+      el.dataset.cat = p.cat;
+      el.dataset.accent = ACCENTS[i % ACCENTS.length];
+      const frames = p.imgs || 3; // placeholder count per product — swap for real photo lists
+      let framesHtml = '', dotsHtml = '';
+      for (let f = 0; f < frames; f++) {
+        framesHtml += '<div class="frame' + (f === 0 ? ' on' : '') + '"><span class="ph-label">Photo ' + (f + 1) + ' of ' + frames + '</span></div>';
+        dotsHtml += '<span class="dot' + (f === 0 ? ' on' : '') + '"></span>';
+      }
+      const st = p.stock;
+      const stockTag = st === 0 ? '<span class="stock-tag out">Sold out</span>' : (st > 0 && st <= 3 ? '<span class="stock-tag">' + st + ' left</span>' : '');
+      if (st === 0) el.classList.add('soldout');
+      el.innerHTML =
+        '<div class="photo" data-frame="0" data-frames="' + frames + '">' + stockTag + framesHtml +
+        '<button type="button" class="ph-nav ph-prev" aria-label="Previous photo">&lsaquo;</button>' +
+        '<button type="button" class="ph-nav ph-next" aria-label="Next photo">&rsaquo;</button>' +
+        '<div class="ph-dots" aria-hidden="true">' + dotsHtml + '</div></div>' +
+        '<div class="p-head"><h2 class="p-name">' + p.name + '</h2><span class="p-price">$' + p.price + '</span></div>' +
+        '<p class="p-note">' + p.note + '</p>' +
+        '<div class="p-foot"><span class="p-cat">' + CATLABEL[p.cat] + '</span>' +
+        '<span class="buy" data-idx="' + i + '" data-name="' + p.name + '">' + (st === 0 ? '<button type="button" class="add" disabled>Sold out</button>' : '<button type="button" class="add">Add to cart</button>') + '</span></div>';
+      shelf.appendChild(el);
     });
-    card.addEventListener('pointerleave', () => {
-      card.classList.remove('lit');
-      card.style.backgroundColor = 'transparent';
+    // Paint-on-hover — instant flood, slow candy fade once you leave.
+    shelf.querySelectorAll('.product').forEach((card, i) => {
+      card.addEventListener('pointerenter', () => {
+        card.classList.add('lit');
+        card.style.backgroundColor = tint(card.dataset.accent);
+        ting(i);
+      });
+      card.addEventListener('pointerleave', () => {
+        card.classList.remove('lit');
+        card.style.backgroundColor = 'transparent';
+      });
     });
-  });
+    // Keep the active filter applied after a live rebuild
+    const activeF = document.querySelector('.filter[aria-pressed="true"]');
+    const fcat = activeF ? activeF.dataset.cat : 'all';
+    shelf.querySelectorAll('.product').forEach((card) => { card.hidden = fcat !== 'all' && card.dataset.cat !== fcat; });
+    if (typeof syncBuys === 'function') syncBuys();
+  };
 
   // Filters
   const filters = document.querySelectorAll('.filter');
@@ -452,7 +471,8 @@
   const syncBuys = (name) => {
     document.querySelectorAll(name ? '.buy[data-name="' + name + '"]' : '.buy').forEach((b) => { b.innerHTML = ctrlHtml(b.dataset.name); });
   };
-  syncBuys();
+  renderShelf();
+  document.addEventListener('products:updated', renderShelf);
   document.addEventListener('DOMContentLoaded', () => syncBuys());
 
   // Soft pentatonic "ting" on add — the hero's chime, one note at a time.
@@ -731,8 +751,6 @@
 
 })();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/supabase.js"></script>
 <script src="assets/phone.js"></script>
 <script src="assets/auth.js"></script>
 </body>
