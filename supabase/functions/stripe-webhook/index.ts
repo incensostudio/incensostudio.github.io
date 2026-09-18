@@ -50,11 +50,10 @@ Deno.serve(async (req) => {
           const isTopup = s.metadata?.topup === '1'
           const { data: b } = await admin.from('bookings').select('paid, due, extra').eq('ref', ref).maybeSingle()
           if (isTopup) {
+            // The top-up is tracked in `extra` and shown separately — don't fold it into `paid`.
             const ex = (b && b.extra) || {}
-            const add = Number(ex.amount || 0)
             ex.status = 'paid'
-            const paid = (Number(b?.paid) || 0) + add
-            await admin.from('bookings').update({ pay_status: 'paid', status: 'Upcoming', paid, due: 0, extra: ex }).eq('ref', ref)
+            await admin.from('bookings').update({ pay_status: 'paid', status: 'Upcoming', extra: ex }).eq('ref', ref)
           } else {
             const paid = (Number(b?.paid) || 0) + (Number(b?.due) || 0)
             await admin.from('bookings').update({ pay_status: 'paid', status: 'Upcoming', paid, due: 0 }).eq('ref', ref)

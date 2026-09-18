@@ -232,10 +232,11 @@ document.addEventListener('account:updated', () => { if (A.signedIn()) render();
 if (params.get('paid') && window.SB && A.signedIn()) {
   (async () => {
     for (let i = 0; i < 12; i++) {
-      const { data } = await window.SB.from('bookings').select('pay_status, status, paid, due').eq('ref', ref).maybeSingle();
-      if (data && data.pay_status === 'paid') {
+      const { data } = await window.SB.from('bookings').select('pay_status, status, paid, due, extra').eq('ref', ref).maybeSingle();
+      const extraPending = data && data.extra && data.extra.status === 'pending';
+      if (data && data.pay_status === 'paid' && !extraPending) {
         const acc0 = A.get(); const lb = acc0 && (acc0.bookings || []).find((x) => x.ref === ref);
-        if (lb) { lb.payStatus = 'paid'; lb.status = data.status || 'Upcoming'; lb.paid = data.paid; lb.due = data.due || 0; lb.pay = 'Paid by card'; A.set(acc0); render(); banner('Payment received ✦', 'Your booking is confirmed — see you soon.'); }
+        if (lb) { lb.payStatus = 'paid'; lb.status = data.status || 'Upcoming'; lb.paid = data.paid; lb.due = data.due || 0; lb.pay = 'Paid by card'; lb.extra = data.extra || null; A.set(acc0); render(); banner('Payment received ✦', 'Your booking is confirmed — see you soon.'); }
         break;
       }
       await new Promise((r) => setTimeout(r, 800));
