@@ -90,7 +90,7 @@
     });
     // Gift cards bought by this account count for the buyer once paid.
     const G = window.IncensoGift;
-    if (G && G.boughtBy) G.boughtBy(a.phone).forEach((x) => { if (x.status === 'Reserved' || (x.status === 'Expired' && x.expiredReason)) return; const t = new Date(x.confirmed || x.created).getTime(); if (t >= cutoff) s += x.amount || 0; });
+    if (G && G.boughtBy) G.boughtBy(a.phone).forEach((x) => { if (x.status === 'Reserved' || (x.status === 'Expired' && x.expiredReason)) return; const t = new Date(x.created).getTime(); if (t >= cutoff) s += x.amount || 0; });
     return s;
   };
   const seed = (name, phone, email, birthday) => ({ name, phone, email: email || '', birthday: birthday || '', created: new Date().toISOString(), visits: [], orders: [], bookings: [], prefs: {} });

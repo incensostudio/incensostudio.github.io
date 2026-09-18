@@ -249,20 +249,28 @@
     $('gcMineTitle').hidden = !mine.length;
     $('pGiftIn').innerHTML = mine.map((x) => '<a class="r r-link gc-row" href="/gift-card?code=' + x.code + '"><span class="a"><b>' + money(x.balance) + (x.balance !== x.amount ? ' <span class="of">of ' + money(x.amount) + '</span>' : '') + '</b><small>' + (G.same(x.buyerPhone, a.phone) ? 'Bought for yourself' : 'From ' + x.from) + ' \u00b7 valid to ' + nice(x.expires) + '</small></span>' + pill(x) + '</a>').join('');
     $('gcSentTitle').hidden = !others.length;
-    $('pGiftOut').innerHTML = others.map((x) => '<a class="r r-link gc-row" href="/gift-card?code=' + x.code + '"><span class="a"><b>' + money(x.amount) + ' for ' + x.to + '</b><small>' + x.toPhone + ' \u00b7 ' + (G.confirmed(x) ? 'sent ' + nice((x.confirmed || x.created).slice(0, 10)) : 'reserved ' + nice(x.created.slice(0, 10)) + ' \u00b7 ' + x.pay) + '</small></span>' + (G.cancelled(x) ? pill(x) : G.confirmed(x) ? '<span class="gc-st ok">Sent</span>' : '<span class="gc-st warn">Awaiting payment</span>') + '</a>').join('');
+    $('pGiftOut').innerHTML = others.map((x) => '<a class="r r-link gc-row" href="/gift-card?code=' + x.code + '"><span class="a"><b>' + money(x.amount) + ' for ' + x.to + '</b><small>' + x.toPhone + ' \u00b7 ' + (G.confirmed(x) ? 'sent ' + nice((x.created || '').slice(0, 10)) : 'reserved ' + nice((x.created || '').slice(0, 10)) + ' \u00b7 ' + x.pay) + '</small></span>' + (G.cancelled(x) ? pill(x) : G.confirmed(x) ? '<span class="gc-st ok">Sent</span>' : '<span class="gc-st warn">Awaiting payment</span>') + '</a>').join('');
     const rs = a.restocks || [];
     $('rsTitle').hidden = rs.length === 0;
     $('pRestocks').innerHTML = rs.length ? rs.map((r) =>
       '<div class="r"><span class="a"><b>' + r.name + '</b><small>asked ' + nice(r.date) + ' · we\u2019ll message you on WhatsApp when it\u2019s back</small></span><span class="v"><button type="button" class="rm-rs" data-name="' + r.name + '" aria-label="Remove ' + r.name + ' from wait-list">&times;</button></span></div>').join('')
       : '';
-    $('dName').value = a.name;
-    const ph = String(a.phone || '');
-    const pm = ph.match(/^(\+\d+)\s+(.*)$/);
-    if (pm) { $('dPhoneCC').value = pm[1]; $('dPhone').value = pm[2].trim(); }
-    else { $('dPhone').value = ph.replace(/^\+/, '').trim(); }
-    $('dEmail').value = a.email || '';
-    $('dBirthday').value = (a.birthday || '').slice(0, 10);
+    // Don't overwrite the details form while it's being edited or mid-OTP — a background
+    // resync must never revert what the guest is typing (or desync their phone change).
+    const detIds = ['dName', 'dPhoneCC', 'dPhone', 'dEmail', 'dBirthday'];
+    const editingDetails = (document.activeElement && detIds.includes(document.activeElement.id)) ||
+      ($('detOtp') && !$('detOtp').hidden) ||
+      (document.activeElement && $('detCode') && $('detCode').contains(document.activeElement));
     $('dBirthday').max = new Date().toISOString().slice(0, 10);
+    if (!editingDetails) {
+      $('dName').value = a.name;
+      const ph = String(a.phone || '');
+      const pm = ph.match(/^(\+\d+)\s+(.*)$/);
+      if (pm) { $('dPhoneCC').value = pm[1]; $('dPhone').value = pm[2].trim(); }
+      else { $('dPhone').value = ph.replace(/^\+/, '').trim(); }
+      $('dEmail').value = a.email || '';
+      $('dBirthday').value = (a.birthday || '').slice(0, 10);
+    }
   };
   // The number the studio actually messages — always country code + local, so WhatsApp can reach it.
   const fullPhone = () => ($('dPhoneCC').value + ' ' + $('dPhone').value.trim()).trim();

@@ -26,7 +26,7 @@
   const active = (x) => !!x && x.status === 'Active' && x.balance > 0 && (!x.expires || x.expires >= today());
   // Payment window for a reserved card: 24 h for Whish / OMT, 3 days for pay-at-studio
   const deadlineOf = (x) => new Date(x.created).getTime() + (/whish|omt/i.test(x.pay || '') ? 86400000 : 3 * 86400000);
-  const cancelled = (x) => !!x && x.status === 'Expired' && !!x.expiredReason; // never paid — invisible to the recipient
+  const cancelled = (x) => !!x && (x.status === 'Cancelled' || (x.status === 'Expired' && !!x.expiredReason)); // never paid — invisible to the recipient
   const confirmed = (x) => !!x && x.status !== 'Reserved' && !cancelled(x);
   const forPhone = (p) => cards.filter((x) => same(x.toPhone, p) && confirmed(x));
   const boughtBy = (p) => cards.filter((x) => same(x.buyerPhone, p));
