@@ -13,6 +13,17 @@ function json(body: unknown, status = 200) {
 }
 const clamp = (amount: number, cap: number) => (cap && cap > 0 ? Math.min(amount, cap) : amount)
 
+// The row is saved by the browser's background write, which may land a moment
+// after this call. Retry a few times before giving up.
+async function readRow(admin: any, table: string, col: string, val: string, tries = 6) {
+  for (let i = 0; i < tries; i++) {
+    const { data } = await admin.from(table).select('*').eq(col, val).maybeSingle()
+    if (data) return data
+    await new Promise((r) => setTimeout(r, 500))
+  }
+  return null
+}
+
 async function orderCap(admin: any, items: any[]) {
   try {
     const names = (items || []).map((i) => i.name).filter(Boolean)
@@ -53,7 +64,7 @@ Deno.serve(async (req) => {
     let amount = 0, label = '', email: string | null = null, success = '', cancel = ''
 
     if (kind === 'order') {
-      const { data: o } = await admin.from('orders').select('*').eq('ref', ref).maybeSingle()
+      const o = await readRow(admin, 'orders', 'ref', ref)
       if (!o) return json({ error: 'not found' }, 404)
       amount = clamp(Math.round(Number(o.to_pay ?? o.total ?? 0)), await orderCap(admin, o.items || []))
       label = 'Incenso Studio — order ' + ref
@@ -61,7 +72,7 @@ Deno.serve(async (req) => {
       success = `${base}/checkout?order=${ref}&paid=1`
       cancel = `${base}/checkout?order=${ref}`
     } else if (kind === 'gift') {
-      const { data: g } = await admin.from('gift_cards').select('*').eq('code', ref).maybeSingle()
+      const g = await readRow(admin, 'gift_cards', 'code', ref)
       if (!g) return json({ error: 'not found' }, 404)
       amount = Math.round(Number(g.amount ?? 0))
       if (amount < 10 || amount > 1000) return json({ error: 'amount out of range' }, 400)
@@ -69,7 +80,7 @@ Deno.serve(async (req) => {
       success = `${base}/gift-card?code=${ref}&paid=1`
       cancel = `${base}/gift?ref=${ref}`
     } else {
-      const { data: b } = await admin.from('bookings').select('*').eq('ref', ref).maybeSingle()
+      const b = await readRow(admin, 'bookings', 'ref', ref)
       if (!b) return json({ error: 'not found' }, 404)
       amount = clamp(Math.round(Number(b.paid ?? 0)), await bookingCap(admin, b.services || []))
       label = 'Incenso Studio — appointment ' + ref

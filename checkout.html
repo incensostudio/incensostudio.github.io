@@ -780,7 +780,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     // Card → clear cart, save, then hand off to Stripe's secure page. Webhook marks it paid.
     if (isCard && A) {
       items = {}; try { localStorage.setItem(IKEY, '{}'); localStorage.setItem(KEY, '0'); } catch (err) {} setBadges(0);
-      await A.flush();
+      await Promise.race([ (A.flush ? A.flush() : Promise.resolve()), new Promise((r) => setTimeout(r, 4000)) ]);
       if (await A.stripeCheckout('order', ref)) return;
     }
     useGift = false;

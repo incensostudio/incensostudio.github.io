@@ -265,7 +265,7 @@ window.IncensoGift.attach(acc);
 A.set(acc);
 last = v;
 Object.assign(st, { to: '', msg: '' });
-if (st.pay === 'card') { await A.flush(); if (await A.stripeCheckout('gift', code)) return; }
+if (st.pay === 'card') { await Promise.race([ (A.flush ? A.flush() : Promise.resolve()), new Promise((r) => setTimeout(r, 4000)) ]); if (await A.stripeCheckout('gift', code)) return; }
 location.href = '/gift-card?code=' + code + '&new=1';
 }, 700);
 };
