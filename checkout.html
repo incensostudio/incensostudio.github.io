@@ -614,7 +614,8 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     document.getElementById('qrWhish').hidden = p !== 'whish';
     document.getElementById('qrOmt').hidden = p !== 'omt';
     cardFields.hidden = !card;
-    ['cNum', 'cExp', 'cCvc', 'cName'].forEach((id) => { document.getElementById(id).required = card; });
+    // Card is collected on Stripe's page, so the (hidden) on-site fields are never required.
+    ['cNum', 'cExp', 'cCvc', 'cName'].forEach((id) => { document.getElementById(id).required = false; });
     setMode(mode);
   };
   // Card field formatting
