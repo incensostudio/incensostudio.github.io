@@ -23,9 +23,6 @@
 .sv-photo{position:relative;aspect-ratio:4/5;border:1px solid var(--card-line);background:rgba(254,254,241,0.55);overflow:hidden}
 .sv-photo image-slot{position:absolute;inset:0;width:100%;height:100%}
 .sv-photo::after{content:"";position:absolute;inset:0;background:var(--acc,#F9A8D4);opacity:0.22;pointer-events:none;mix-blend-mode:multiply}
-@media (max-width:880px){.sv-hero{grid-template-columns:1fr}.sv-hero h1{max-width:none}.sv-photo{aspect-ratio:4/3}.menu{grid-template-columns:1fr;gap:16px}.menu-side{position:static}.menu-side .mono-tag{margin-bottom:12px}.jump{flex-direction:row;flex-wrap:wrap;gap:8px 20px;padding-bottom:8px}.jump a::before{display:none}.mi{grid-template-columns:minmax(0,1fr) auto 32px;row-gap:4px}.mi .br{margin:4px 0 0;font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;color:rgba(0,0,0,0.45);line-height:1.5}
-.mi .du{grid-column:1;text-align:left;min-width:0}.mi .pr{grid-row:1;grid-column:2}.mi .go{grid-row:1;grid-column:3}.mi .br{margin:4px 0 0;font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;color:rgba(0,0,0,0.45);line-height:1.5}
-.mi .du{grid-row:2}}
 .menu{padding:clamp(40px,6vw,88px) 0 clamp(20px,3vw,40px);display:grid;grid-template-columns:200px minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:start}
 .menu-side{position:sticky;top:calc(clamp(24px,3.2vw,40px) + 100px)}
 .menu-side h2{font-size:clamp(24px,3vw,40px);font-weight:600;letter-spacing:-0.025em;margin:0 0 14px}
@@ -72,7 +69,7 @@
 .next a{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--card-line);text-decoration:none;color:var(--fg-warm);font-size:clamp(26px,4vw,56px);font-weight:600;letter-spacing:-0.03em;line-height:1;transition:padding-left 240ms cubic-bezier(0.16,1,0.3,1)}
 .next a:hover{padding-left:14px}
 .next a span{font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;font-weight:500;color:rgba(0,0,0,0.5)}
-@media (max-width:880px){.sv-hero{grid-template-columns:1fr;align-items:start}.mi{grid-template-columns:32px minmax(0,1fr) 40px;row-gap:8px}.mi .du,.mi .pr{grid-column:2}.mi .pr{font-size:17px}.mi .go{grid-column:3;grid-row:1}}
+@media (max-width:880px){.sv-hero{grid-template-columns:1fr;align-items:start}.sv-hero h1{max-width:none}.sv-photo{aspect-ratio:4/3}.menu{grid-template-columns:1fr;gap:20px}.menu-side{position:static}.menu-side .mono-tag{margin-bottom:12px}.jump{flex-direction:row;flex-wrap:wrap;gap:6px 18px;padding-bottom:4px}.jump a{padding:8px 0}.jump a::before{display:none}.mg{padding:26px 0 8px;scroll-margin-top:84px}.mg h3{font-size:16px}.mg span{font-size:9px}.mi{grid-template-columns:minmax(0,1fr) 36px;column-gap:12px;row-gap:6px;padding:12px 0;align-items:start}.mi > div{grid-column:1;grid-row:1}.mi .nm{font-size:15px;line-height:1.3}.mi .ds{font-size:12.5px;line-height:1.45;max-width:none;margin-top:2px}.mi .br{font-size:9.5px}.mi .du{grid-column:1;grid-row:2;display:flex;align-items:baseline;gap:10px;text-align:left;min-width:0;font-size:10px}.mi .pr{grid-column:1;grid-row:2;justify-self:end;text-align:right;min-width:0;font-size:14px}.mi .pr small{font-size:8.5px}.mi .pr .q{font-size:8.5px;padding:3px 8px;white-space:nowrap}.mi .go{grid-column:2;grid-row:1 / 3;align-self:center;width:36px;height:36px}.mi .go svg{width:12px;height:12px}.jump{display:none}body.m-acc .mg{cursor:pointer;padding:16px 0 14px;display:grid;grid-template-columns:minmax(0,1fr) auto 18px;align-items:center;gap:12px;border-bottom:1px solid var(--fg-warm)}body.m-acc .mg::after{content:"";width:8px;height:8px;border-right:1.5px solid var(--fg-warm);border-bottom:1.5px solid var(--fg-warm);transform:rotate(45deg);margin:-4px 4px 0 0;transition:transform 200ms}body.m-acc .mg.closed::after{transform:rotate(-45deg);margin-top:4px}body.m-acc .mg.closed{border-bottom-color:var(--card-line)}body.m-acc .mg h3{font-size:17px}body.m-acc .mi[hidden]{display:none}body.m-acc .mi:last-child{border-bottom:0}.menu-side .mono-tag{margin-bottom:0}.menu{gap:12px}.menu{padding-top:32px}.menu-side h2{font-size:26px;margin-bottom:8px}.sv-hero h1{font-size:clamp(28px,8vw,34px)}.chairs{padding:40px 0}.chairs h2{font-size:28px}.ch-row{display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:200px;justify-content:start;gap:14px;max-width:none;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;scrollbar-width:thin}.chair{scroll-snap-align:start}.chair .nm{font-size:18px;margin-top:12px}.chair .bio{font-size:13px}}
 </style>
 <template id="__bundler_thumbnail" data-bg-color="#e5dcc9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#e5dcc9"/><text x="200" y="262" text-anchor="middle" font-family="Georgia,serif" font-size="180" fill="#000">i</text></svg></template>
 </head>
@@ -87,7 +84,7 @@
 <aside class="menu-side"><h2>The menu</h2><span class="mono-tag" id="menuNote">Prices in USD</span><nav class="jump" id="jump" aria-label="Menu sections"></nav></aside>
 <ol class="menu-list" id="menu"></ol>
 </section>
-<section class="chairs" aria-label="The chairs">
+<section class="chairs" aria-label="The team">
 <h2>The chairs</h2>
 <p class="sub" id="chSub"></p>
 <div class="ch-row" id="chairs"></div>
@@ -111,13 +108,13 @@ const cat = C.CATS.find((x) => x.name === catName);
 const dur = (m) => m >= 60 ? Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : '') : m + ' min';
 document.getElementById('h1').textContent = cat.h1;
 document.getElementById('introP').textContent = cat.intro;
-document.getElementById('chSub').textContent = cat.chairs;
 const staff = C.STAFF.filter((s) => s.cats.includes(catName));
 const list = C.SERVICES.filter((s) => s.cat === catName);
 document.getElementById('svcCount').textContent = list.length + ' services';
 document.getElementById('svcCount').textContent = list.length + ' services \u00b7 from $' + Math.min.apply(null, list.filter((s) => s.price != null && !s.unit).map((s) => s.price));
 document.getElementById('svPhoto').style.setProperty('--acc', staff[0] ? staff[0].accent : '#D8B4FE');
 if (!staff.length) document.querySelector('.chairs').hidden = true;
+else document.getElementById('chSub').textContent = staff.length === 1 ? staff[0].name + ' takes every ' + catName.toLowerCase() + ' appointment.' : staff.map((s) => s.name).join(', ').replace(/, ([^,]*)$/, ' and $1') + ' \u2014 pick who you book with.';
 const ACC = staff.map((s) => s.accent).concat(['#7DD3FC', '#F9A8D4', '#FDE047']);
 const menu = document.getElementById('menu');
 const groups = C.groupsOf(catName);
@@ -130,7 +127,16 @@ const onScroll = () => { const y = window.scrollY + 140; let cur = null; heads()
 window.addEventListener('scroll', onScroll, { passive: true });
 setTimeout(onScroll, 0);
 let lg = '';
-menu.innerHTML = list.map((s, i) => { const gh = s.group !== lg ? '<li class="mg" id="g-' + s.group.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '"><h3>' + s.group + '</h3><span>' + list.filter((x) => x.group === s.group).length + ' services</span></li>' : ''; lg = s.group; return gh + '<li class="mi" data-accent="' + ACC[i % ACC.length] + '"><div><h3 class="nm">' + s.name + '</h3>' + (s.desc ? '<p class="ds">' + s.desc + '</p>' : '') + (s.brands ? '<p class="br">Featuring ' + s.brands + '</p>' : '') + '</div><span class="du">' + dur(s.mins) + '</span><span class="pr">' + (s.price == null ? '<span class="q">Custom quote</span>' : (s.from ? '<small>from</small>' : '') + '$' + s.price + (s.unit ? '<small class="u">/ ' + s.unit + '</small>' : '')) + '</span><a class="go" href="/Book?svc=' + encodeURIComponent(s.name) + '" aria-label="Book ' + s.name + '"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8 H13 M9.5 3.5 L14 8 L9.5 12.5"></path></svg></a></li>'; }).join('');
+menu.innerHTML = list.map((s, i) => { const gh = s.group !== lg ? '<li class="mg" id="g-' + s.group.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '"><h3>' + s.group + '</h3><span>' + list.filter((x) => x.group === s.group).length + ' services</span></li>' : ''; lg = s.group; return gh + '<li class="mi" data-accent="' + ACC[i % ACC.length] + '" data-group="' + s.group.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '"><div><h3 class="nm">' + s.name + '</h3>' + (s.desc ? '<p class="ds">' + s.desc + '</p>' : '') + (s.brands ? '<p class="br">Featuring ' + s.brands + '</p>' : '') + '</div><span class="du">' + dur(s.mins) + '</span><span class="pr">' + (s.price == null ? '<span class="q">Custom quote</span>' : (s.from ? '<small>from</small>' : '') + '$' + s.price + (s.unit ? '<small class="u">/ ' + s.unit + '</small>' : '')) + '</span><a class="go" href="/Book?svc=' + encodeURIComponent(s.name) + '" aria-label="Book ' + s.name + '"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8 H13 M9.5 3.5 L14 8 L9.5 12.5"></path></svg></a></li>'; }).join('');
+// Phones: groups fold like an accordion (all closed); desktop shows the whole menu
+const mqAcc = window.matchMedia('(max-width:880px)');
+const applyAcc = () => {
+const on = mqAcc.matches && groups.length > 1;
+document.body.classList.toggle('m-acc', on);
+menu.querySelectorAll('.mg').forEach((g, i) => { const id = g.id.replace('g-', ''); const open = !on || g.dataset.open === '1'; if (on && g.dataset.open == null) g.dataset.open = '0'; g.classList.toggle('closed', on && !open); menu.querySelectorAll('.mi[data-group="' + id + '"]').forEach((r) => { r.hidden = on && !open; }); });
+};
+menu.addEventListener('click', (e) => { const g = e.target.closest('.mg'); if (!g || !document.body.classList.contains('m-acc')) return; g.dataset.open = g.dataset.open === '1' ? '0' : '1'; applyAcc(); });
+applyAcc(); mqAcc.addEventListener('change', applyAcc);
 menu.querySelectorAll('.mi').forEach((row) => {
 row.addEventListener('pointerenter', () => { row.classList.add('lit'); row.style.backgroundColor = row.dataset.accent + '30'; });
 row.addEventListener('pointerleave', () => { row.classList.remove('lit'); row.style.backgroundColor = 'transparent'; });

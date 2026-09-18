@@ -158,8 +158,35 @@
 .mbar .mb-l{display:block;font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.55);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mbar strong{font-family:var(--font-mono);font-size:18px}
 .mbar .btn{flex:none}
-@media (max-width:1024px){.bk-wrap{grid-template-columns:1fr}.summary{position:static;max-width:640px}.mbar{display:flex}.page{padding-bottom:84px}}
+@media (max-width:1024px){.bk-wrap{grid-template-columns:1fr}.summary{position:static;max-width:640px}}
 @media (max-width:640px){.when{grid-template-columns:1fr}.cal{max-width:340px}.st-sum{display:none}.svc button{grid-template-columns:18px minmax(0,1fr) auto}.qr-pane{grid-template-columns:1fr}}
+@media (max-width:880px){.cat{min-height:40px;padding:8px 0;display:inline-flex;align-items:center;font-size:10px}.cal-nav{width:36px;height:36px}.pill{height:38px;min-height:38px;padding:0 16px;font-size:13px}.slot{height:38px;min-height:38px;font-size:11.5px}.chip{height:34px;min-height:34px;font-size:12px;padding:0 14px}.svc button{padding:12px 0}.svc-count,.svc-none{padding-left:0;padding-right:0}}
+.m-prog,.m-next,.m-err{display:none}
+.m-err.show{margin:4px 0 0}
+@media (max-width:880px){body.m-steps .m-err.show{display:block}}
+@media (max-width:880px){
+body.m-steps .intro{padding:14px 0 8px}body.m-steps .intro p{display:none}
+body.m-steps .m-prog{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:0 0 6px;padding:0}
+.m-prog button{appearance:none;background:none;border:0;padding:10px 0 8px;font-family:var(--font-mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(0,0,0,0.4);text-align:left;cursor:pointer;position:relative}
+.m-prog button::before{content:"";display:block;height:2px;background:rgba(0,0,0,0.14);margin-bottom:8px;border-radius:1px}
+.m-prog button.done::before{background:rgba(0,0,0,0.55)}.m-prog button.done{color:rgba(0,0,0,0.7)}
+.m-prog button.on::before{background:var(--fg-warm)}.m-prog button.on{color:var(--fg-warm);font-weight:600}
+.m-prog button:disabled{cursor:default}
+body.m-steps .bk-wrap{margin-bottom:40px}
+body.m-steps .step{display:none;border-top:0;padding:10px 0 0}
+body.m-steps .step.m-active{display:block;opacity:1;pointer-events:auto}
+body.m-steps .step.m-active *{user-select:auto}
+body.m-steps .st-head{margin-bottom:14px}body.m-steps .f-step{font-size:10px}
+body.m-steps .svc{max-height:none;-webkit-mask-image:none;mask-image:none;overflow:visible}
+body.m-steps .cal{max-width:none}
+body.m-steps .summary{display:none}
+body.m-steps[data-mstep="5"] .summary{display:block;margin-top:24px;padding:20px}
+body.m-steps .step.m-active .m-next{display:block;margin-top:22px}
+.m-next .btn{width:100%}
+.m-next .btn:disabled{opacity:0.4;cursor:default}
+#payOpts{flex-direction:column;gap:8px;align-items:stretch}#payOpts .pill{width:100%;height:46px;min-height:46px;justify-content:flex-start;text-align:left;padding:0 16px 0 44px;position:relative;font-size:14px}#payOpts .pill::before{content:"";position:absolute;left:16px;top:50%;width:14px;height:14px;margin-top:-8px;border-radius:999px;border:1.5px solid rgba(0,0,0,0.45);background:transparent}#payOpts .pill[aria-pressed="true"]::before{border-color:#FEFEF1;background:#FEFEF1;box-shadow:inset 0 0 0 3.5px var(--fg-warm)}
+.m-next .skip{display:block;width:100%;margin-top:10px;appearance:none;border:0;background:none;font:inherit;font-size:13px;color:rgba(0,0,0,0.55);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:8px}
+}
 </style>
 <template id="__bundler_thumbnail" data-bg-color="#e5dcc9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#e5dcc9"/><text x="200" y="262" text-anchor="middle" font-family="Georgia,serif" font-size="180" fill="#000">i</text></svg></template>
 </head>
@@ -170,6 +197,8 @@
 <h1 id="h1">Book your chair.</h1>
 <p id="introP">Choose your services, the hands you trust, and a time that suits you — live availability, tailored to your preferences, confirmed in seconds.</p>
 </section>
+<nav class="m-prog" id="mProg" aria-label="Booking steps"></nav>
+<p class="err m-err" id="mErr" role="alert"></p>
 <div class="bk-wrap">
 <div class="bk">
 <section class="step" id="step1">
@@ -178,11 +207,13 @@
 <div class="cats" role="group" aria-label="Service category" id="cats"></div>
 <div class="svc" id="svc" role="group" aria-label="Services"></div>
 <p class="d-note">Pick more than one — we'll line them up back to back in a single visit.</p>
+<div class="m-next"><button type="button" class="btn" data-mnext="2">Continue</button></div>
 </section>
 <section class="step locked" id="step2">
 <div class="st-head"><p class="f-step"><span class="n">02</span>With</p><span class="st-sum" id="sum2"></span></div>
 <div id="staff"></div>
 <p class="d-note" id="staffNote"></p>
+<div class="m-next"><button type="button" class="btn" data-mnext="3">Continue</button></div>
 </section>
 <section class="step locked" id="step3">
 <div class="st-head"><p class="f-step"><span class="n">03</span>When</p><span class="st-sum" id="sum3"></span></div>
@@ -194,6 +225,7 @@
 </div>
 <div class="slots-wrap"><div id="slots" aria-live="polite"></div><p class="d-note" id="slotNote"></p></div>
 </div>
+<div class="m-next"><button type="button" class="btn" data-mnext="4">Continue</button></div>
 </section>
 <section class="step locked" id="step4">
 <div class="st-head"><p class="f-step"><span class="n">04</span>Details</p></div>
@@ -203,6 +235,7 @@
 <div><p class="sg-h">Smoking</p><div class="pills" id="smoke" role="group" aria-label="Smoking"></div><p class="d-note" style="margin-top:10px">The studio is IQOS-only — no cigarettes. Don’t have one? We keep IQOS at the studio for you.</p></div>
 </div>
 <div class="field" style="margin-top:0"><label for="bkNotes">Anything else? <span class="opt">— optional</span></label><textarea id="bkNotes" rows="2" placeholder="Which allergy, inspiration, how you like your coffee, running late…"></textarea></div>
+<div class="m-next"><button type="button" class="btn" data-mnext="5">Continue</button></div>
 </section>
 <section class="step locked" id="step5">
 <div class="st-head"><p class="f-step"><span class="n">05</span>Payment</p></div>
@@ -449,9 +482,29 @@ $('step2').classList.toggle('locked', !has);
 $('step3').classList.toggle('locked', !has);
 $('step4').classList.toggle('locked', !(has && when));
 $('step5').classList.toggle('locked', !(has && when));
+renderM();
 };
 const save = () => { if (editing) return; try { localStorage.setItem(DRAFT, JSON.stringify(Object.assign({ cat }, st))); } catch (e) {} };
-const renderAll = () => { renderCats(); renderSvc(); renderStaff(); renderPrefs(); renderCal(); renderSlots(); renderSum(); renderSteps(); save(); };
+const renderAll = () => { renderCats(); renderSvc(); renderStaff(); renderPrefs(); renderCal(); renderSlots(); renderSum(); renderSteps(); renderM(); save(); };
+// Mobile: one step at a time
+const mq = window.matchMedia('(max-width:880px)');
+let mstep = 1;
+const M_LABELS = ['Service', 'With', 'When', 'Details', 'Pay'];
+const mCan = (n) => n === 1 || (n <= 3 ? sel().length > 0 : sel().length > 0 && !!(st.date && st.time));
+const mDone = (n) => n === 1 ? sel().length > 0 : n === 2 ? sel().length > 0 : n === 3 ? !!(st.date && st.time) : n === 4 ? mstep > 4 : false;
+const renderM = () => {
+document.body.classList.toggle('m-steps', mq.matches);
+if (!mq.matches) return;
+if (!mCan(mstep)) mstep = mstep <= 3 ? 1 : 3;
+document.body.dataset.mstep = mstep;
+$('mProg').innerHTML = M_LABELS.map((l, i) => { const n = i + 1; return '<button type="button" data-go="' + n + '"' + (mCan(n) ? '' : ' disabled') + ' class="' + (n === mstep ? 'on' : mDone(n) ? 'done' : '') + '" aria-current="' + (n === mstep ? 'step' : 'false') + '">' + n + ' ' + l + '</button>'; }).join('');
+for (let n = 1; n <= 5; n++) $('step' + n).classList.toggle('m-active', n === mstep);
+document.querySelectorAll('[data-mnext]').forEach((b) => { b.disabled = !mCan(+b.dataset.mnext); });
+};
+const mGo = (n) => { if (!mCan(n)) return; mstep = n; $('mErr').classList.remove('show'); renderM(); const top = $('mProg').getBoundingClientRect().top + window.scrollY - 90; window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' }); };
+$('mProg').addEventListener('click', (e) => { const b = e.target.closest('[data-go]'); if (b && !b.disabled) mGo(+b.dataset.go); });
+document.addEventListener('click', (e) => { const b = e.target.closest('[data-mnext]'); if (b && !b.disabled) mGo(+b.dataset.mnext); });
+mq.addEventListener('change', renderM);
 let dropped = '';
 const revalidate = () => {
 Object.keys(st.staffBy).forEach((c) => { if (!selCats().includes(c)) delete st.staffBy[c]; else if (st.staffBy[c] !== 'any' && !STAFF.some((s) => s.name === st.staffBy[c] && s.cats.includes(c))) st.staffBy[c] = 'any'; });
@@ -542,6 +595,7 @@ return first;
 // Confirm
 const scrollTo = (el) => window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 130, behavior: 'smooth' });
 const fail = (stepId, msg, focus) => {
+if (mq.matches) { const n = +stepId.replace('step', ''); if (mCan(n)) mGo(n); const me = $('mErr'); me.textContent = msg; me.classList.add('show'); }
 const err = $('bkErr'); err.textContent = msg; err.classList.add('show');
 const s = $(stepId); s.classList.remove('flash'); void s.offsetWidth; s.classList.add('flash');
 scrollTo(s); if (focus) setTimeout(() => focus.focus(), 400);

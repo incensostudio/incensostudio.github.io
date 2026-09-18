@@ -819,7 +819,7 @@
     inset: 0;
     z-index: 20;
     background: var(--bg-warm);
-    padding: 80px clamp(24px, 6vw, 48px) clamp(24px, 6vw, 48px);
+    padding: 100px clamp(24px, 6vw, 48px) max(24px, env(safe-area-inset-bottom));
     display: none;
     flex-direction: column;
     gap: 4px;
@@ -827,6 +827,11 @@
     opacity: 0;
     transition: opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
   }
+  .mobile-nav .m-actions{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:24px}
+  .mobile-nav .m-actions a{display:flex;align-items:center;justify-content:center;height:52px;padding:0;border-radius:999px;font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;border-bottom:0}
+  .mobile-nav .m-actions .m-acc{border:1px solid rgba(0,0,0,0.6);background:transparent;color:var(--fg-warm)}
+  .mobile-nav .m-book{background:var(--fg-warm);color:#FEFEF1 !important}
+  .mobile-nav .m-book:hover{background:#000}
   body.menu-open .mobile-nav { display: flex; opacity: 1; }
   body.menu-open .frame { z-index: 30; }
   body.menu-open .frame .tl, body.menu-open .frame .bl, body.menu-open .frame .bc, body.menu-open .frame .br { visibility: hidden; }
@@ -1436,7 +1441,6 @@
   </div>
 
     <nav class="mobile-nav" id="mobileNav" aria-label="Mobile primary" aria-hidden="true">
-    <a href="/Book">Book an appointment</a>
     <a href="/Shop">Shop</a>
     <details class="m-services">
       <summary><span>Services</span><svg class="m-caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4 L5 7 L8 4"></path></svg></summary>
@@ -1450,7 +1454,7 @@
     <a href="/Our-Work">Our Work</a>
     <a href="/The-Space">The Space</a>
     <a href="/Vouchers">Gift</a>
-    <a href="/Account" data-account-btn>Account</a>
+    <div class="m-actions"><a class="m-acc" href="/Account" data-account-btn>Account</a><a class="m-book" href="/Book">Book Now</a></div>
   </nav>
 
   <!-- Instagram-style story viewer (opened by the highlight rings) -->

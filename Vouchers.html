@@ -80,6 +80,16 @@
 .s-note{margin:12px 0 0;font-size:12px;color:rgba(0,0,0,0.55);line-height:1.5}
 @media (max-width:1024px){.gv-wrap{grid-template-columns:1fr}.preview{position:static;max-width:520px}}
 @media (max-width:640px){.qr-pane{grid-template-columns:1fr}.amts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:880px){.acc-row button{width:32px;height:32px}.pill{height:38px;min-height:38px;padding:0 16px;font-size:13px}.step{padding:22px 0}.f-step{margin-bottom:14px;font-size:10px}.amt-btn{padding:12px 12px;font-size:22px}.amt-btn small,.amt-btn .amt-sub{font-size:9px}.custom{margin-top:12px;max-width:200px}.field input,.field select{height:40px;font-size:14px}.field textarea{min-height:72px;font-size:14px}.sg-h{margin:16px 0 8px}.summary{padding:20px}.s-row{font-size:13px;padding:5px 0}.s-total{font-size:15px}.s-total .v{font-size:18px}.gv-wrap{margin-bottom:40px}}
+@media (max-width:880px){
+.g-intro p,.intro p{display:none}
+#payOpts{flex-direction:column;gap:8px;align-items:stretch}#payOpts .pill{width:100%;height:46px;min-height:46px;justify-content:flex-start;text-align:left;padding:0 16px 0 44px;position:relative;font-size:14px}#payOpts .pill::before{content:"";position:absolute;left:16px;top:50%;width:14px;height:14px;margin-top:-8px;border-radius:999px;border:1.5px solid rgba(0,0,0,0.45);background:transparent}#payOpts .pill[aria-pressed="true"]::before{border-color:#FEFEF1;background:#FEFEF1;box-shadow:inset 0 0 0 3.5px var(--fg-warm)}
+.preview{max-width:none}
+.summary{padding:0;border:0;border-top:1px solid var(--card-line);background:transparent;margin-top:8px}
+.summary .s-head{padding-top:18px}
+.summary .btn{height:48px}
+.who .pill{flex:1;justify-content:center}
+}
 </style>
 <style media="print">.topbar,.mobile-nav,footer,.done h2,.done p,.done .acts,.skip-link{display:none !important}.page{padding:0}.done .vcard{box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}</style>
 <template id="__bundler_thumbnail" data-bg-color="#e5dcc9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#e5dcc9"/><text x="200" y="262" text-anchor="middle" font-family="Georgia,serif" font-size="180" fill="#000">i</text></svg></template>
@@ -117,7 +127,7 @@
 
 <section class="step">
 <div class="f-step"><span class="n">03</span>Payment</div>
-<div class="pills" id="payOpts" role="group" aria-label="Payment"><button type="button" class="pill" data-pay="card" aria-pressed="true">Card</button><button type="button" class="pill" data-pay="whish" aria-pressed="false">Whish Money</button><button type="button" class="pill" data-pay="omt" aria-pressed="false">OMT Pay</button><button type="button" class="pill" data-pay="later" aria-pressed="false">Pay at the studio</button></div>
+<div class="pills" id="payOpts" role="group" aria-label="Payment"><button type="button" class="pill" data-pay="later" aria-pressed="true">Pay at the studio</button><button type="button" class="pill" data-pay="card" aria-pressed="false">Card</button><button type="button" class="pill" data-pay="whish" aria-pressed="false">Whish Money</button><button type="button" class="pill" data-pay="omt" aria-pressed="false">OMT Pay</button></div>
 <div id="cardFields">
 <div class="field"><label for="cNum">Card number</label><div class="card-wrap-in"><input id="cNum" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="19" /><span class="brand" id="cBrand"></span></div></div>
 <div class="row2"><div class="field"><label for="cExp">Expiry</label><input id="cExp" type="text" inputmode="numeric" autocomplete="cc-exp" placeholder="MM / YY" maxlength="7" /></div><div class="field"><label for="cCvc">CVC</label><input id="cCvc" type="text" inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4" /></div></div>
@@ -156,9 +166,9 @@
 const A = window.IncensoAuth, $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const AMTS = [25, 50, 75, 100, 150, 200], ACCS = ['#F9A8D4', '#7DD3FC', '#86EFAC', '#FDE047', '#D8B4FE', '#FCC67E'];
-const PAYS = { card: 'Paid by card', whish: 'Whish Money', omt: 'OMT Pay', later: 'Pay at studio' };
+const PAYS = { later: 'Pay at studio', card: 'Paid by card', whish: 'Whish Money', omt: 'OMT Pay' };
 const NOTE = { card: 'Charged securely now \u2014 the gift card is sent and active instantly.', whish: 'Transfer from your Whish wallet \u2014 the card is reserved and sent once the studio confirms it \u2014 unpaid after 24 hours, it\u2019s cancelled.', omt: 'Transfer with OMT Pay \u2014 the card is reserved and sent once the studio confirms it \u2014 unpaid after 24 hours, it\u2019s cancelled.', later: 'Reserve it now, pay at the desk within 3 days \u2014 the card is sent once the studio confirms payment; unpaid after that, it\u2019s cancelled.' };
-const st = { amount: 50, to: '', from: '', msg: '', acc: ACCS[0], pay: 'card', who: 'them' };
+const st = { amount: 50, to: '', from: '', msg: '', acc: ACCS[0], pay: 'later', who: 'them' };
 const forMe = () => st.who === 'me';
 const amount = () => st.amount;
 const renderAmts = () => {

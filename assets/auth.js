@@ -307,8 +307,9 @@
       b.setAttribute('aria-label', signedIn() ? 'Your account' : 'Sign in');
       b.classList.toggle('signed', signedIn());
       const ph = a && a.photo;
-      b.classList.toggle('has-photo', !!ph);
-      b.style.backgroundImage = ph ? 'url(' + ph + ')' : '';
+      const textPill = b.classList.contains('m-acc');
+      b.classList.toggle('has-photo', !!ph && !textPill);
+      b.style.backgroundImage = ph && !textPill ? 'url(' + ph + ')' : '';
     });
   };
   document.addEventListener('click', (e) => {

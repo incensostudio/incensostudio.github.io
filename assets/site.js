@@ -19,11 +19,11 @@
   mnav.id = 'mobileNav';
   mnav.setAttribute('aria-label', 'Mobile primary');
   mnav.setAttribute('aria-hidden', 'true');
-  mnav.innerHTML = '<a href="/Book">Book an appointment</a><a href="/Shop">Shop</a>' +
+  mnav.innerHTML = '<a href="/Shop">Shop</a>' +
     '<details class="m-services"><summary><span>Services</span><svg class="m-caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4 L5 7 L8 4"></path></svg></summary>' +
     '<div class="m-sub"><a href="/Hair">Hair</a><a href="/Nails">Nails</a><a href="/Makeup">Make-up</a><a href="/Brows-Lashes">Brows &amp; Lashes</a></div></details>' +
     '<a href="/Our-Work">Our Work</a><a href="/The-Space">The Space</a><a href="/Vouchers">Gift</a>' +
-    '<a href="/Account" data-account-btn>Account</a>';
+    '<div class="m-actions"><a class="m-acc" href="/Account" data-account-btn>Account</a><a class="m-book" href="/Book">Book Now</a></div>';
   const footer = document.createElement('footer');
   footer.innerHTML = '<div class="news-row"><p class="news-line">Be first to hear — new services, quiet offers, studio news.</p>' +
     '<form class="news-form" id="newsForm"><div class="phone-combo news-combo"><select name="cc" class="pc-cc" aria-label="Country code"></select><input type="tel" name="email" inputmode="tel" placeholder="Phone number" aria-label="Phone number" required /></div>' +
@@ -37,6 +37,10 @@
   document.body.insertBefore(mnav, document.body.firstChild);
   document.body.insertBefore(header, document.body.firstChild);
   document.body.appendChild(footer);
+
+  // On phones the mark is the O alone — reframe the wordmark to the O's bounding box
+  const fitMark = () => { document.querySelectorAll('.topbar .wordmark').forEach((svg) => { if (!svg.dataset.full) svg.dataset.full = svg.getAttribute('viewBox'); svg.setAttribute('viewBox', window.matchMedia('(max-width:880px)').matches ? '972 69 324 240' : svg.dataset.full); }); };
+  fitMark(); window.addEventListener('resize', fitMark);
 
   // Mark the current page in the nav
   const here = decodeURIComponent((location.pathname.replace(/\/$/, '').split('/').pop() || '')).replace(/\.html$/, '');

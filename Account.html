@@ -80,7 +80,26 @@
   .lock p{margin:0 0 28px;font-size:clamp(15px,1.3vw,18px);line-height:1.55;color:rgba(0,0,0,0.78);max-width:52ch}
   body.locked .dash,body.locked .intro .sub,body.locked #introBook{display:none}
   body.locked .lock{display:block}
-  @media (max-width:880px){.dash{grid-template-columns:1fr}}
+  .m-tabs{display:none}
+  @media (max-width:880px){
+  .intro{padding:14px 0 10px}.intro .sub{font-size:12px}
+  .m-tabs{display:flex;gap:8px;overflow-x:auto;margin:4px calc(-1 * var(--gutter)) 0;padding:6px var(--gutter) 14px;scrollbar-width:none;-webkit-overflow-scrolling:touch;position:sticky;top:calc(max(clamp(24px,3.2vw,40px),env(safe-area-inset-top)) + 54px);z-index:5;background:var(--bg-warm)}
+  .m-tabs::before{content:"";position:absolute;left:0;right:0;top:-20px;height:20px;background:var(--bg-warm)}
+  body:has(.m-tabs) .topbar{background:var(--bg-warm)}
+  .m-tabs::-webkit-scrollbar{display:none}
+  .m-tabs button{flex:0 0 auto;appearance:none;height:34px;padding:0 14px;border:1px solid rgba(0,0,0,0.3);border-radius:999px;background:rgba(254,254,241,0.4);font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(0,0,0,0.65);cursor:pointer;white-space:nowrap}
+  .m-tabs button[aria-pressed="true"]{background:var(--fg-warm);border-color:var(--fg-warm);color:#FEFEF1}
+  body.locked .m-tabs{display:none}
+  .dash{grid-template-columns:1fr;border:0;margin-bottom:40px}
+  .panel{display:none;border:0;padding:18px 0 22px}
+  .panel::before,.panel::after{display:none}
+  .panel.m-on{display:block}
+  .panel.m-on + .panel.m-on{border-top:1px solid var(--card-line)}
+  .p-title{margin-bottom:14px}
+  .gc-amt{font-size:32px}
+  a.r-link{padding-left:0;padding-right:0}
+  .panel .btn{width:100%;margin-top:16px}
+  }
 </style>
 <template id="__bundler_thumbnail" data-bg-color="#e5dcc9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#e5dcc9"/><text x="200" y="262" text-anchor="middle" font-family="Georgia,serif" font-size="180" fill="#000">i</text></svg></template>
 </head>
@@ -89,7 +108,7 @@
 <main class="page" id="main" data-screen-label="Account">
   <section class="intro">
     <div class="hi-row"><button type="button" class="pfp" id="pfp" hidden aria-label="Change profile photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"></circle><path d="M5 19.5c1.3-3.2 4-4.8 7-4.8s5.7 1.6 7 4.8"></path></svg></button><input id="pfpFile" type="file" accept="image/*" hidden /><h1 id="hi">Your account.</h1></div>
-    <p class="sub"><span id="phoneLine"></span> · <button type="button" id="signOut">Sign out</button> · <button type="button" id="resetAll" title="Prototype only — clears every account, booking, order and gift card stored on this device">Reset demo data</button></p>
+    <p class="sub"><span id="phoneLine"></span> · <button type="button" id="signOut">Sign out</button></p>
   </section>
 
   <section class="lock" aria-label="Sign in">
@@ -97,8 +116,9 @@
     <button type="button" class="btn" id="lockBtn">Sign in / Create account</button>
   </section>
 
+  <nav class="m-tabs" id="mTabs" aria-label="Account sections"><button type="button" data-tab="level" aria-pressed="true">Level</button><button type="button" data-tab="visits" aria-pressed="false">Appointments</button><button type="button" data-tab="orders" aria-pressed="false">Orders</button><button type="button" data-tab="gift" aria-pressed="false">Gift</button><button type="button" data-tab="details" aria-pressed="false">Details</button></nav>
   <div class="dash">
-    <section class="panel wide" aria-label="Level">
+    <section class="panel wide" aria-label="Level" data-tab="level">
       <h2 class="p-title">Your level</h2>
       <div class="lv">
         <p class="lv-name" id="lvName">—</p>
@@ -107,7 +127,7 @@
       <span class="lv-next" id="lvNext"></span>
       <div class="lv-tiers" id="lvTiers"></div>
     </section>
-    <section class="panel" aria-label="Details">
+    <section class="panel" aria-label="Details" data-tab="details">
       <h2 class="p-title">Your details</h2>
       <form id="detForm">
         <div class="field"><label for="dName">Name</label><input id="dName" type="text" autocomplete="name" required /></div>
@@ -122,7 +142,7 @@
         </div>
       </form>
     </section>
-    <section class="panel" aria-label="Gift cards">
+    <section class="panel" aria-label="Gift cards" data-tab="gift">
       <h2 class="p-title">Gift balance</h2>
       <div class="gc-hero" id="gcHero"></div>
       <h2 class="p-title" style="margin-top:28px" id="gcMineTitle" hidden>Your cards</h2>
@@ -131,16 +151,16 @@
       <div id="pGiftOut"></div>
       <a class="btn ghost" href="/Vouchers">Buy a gift card</a>
     </section>
-    <section class="panel" aria-label="Bookings">
+    <section class="panel" aria-label="Bookings" data-tab="visits">
       <h2 class="p-title">Appointments</h2>
       <div id="pBookings"></div>
       <a class="btn" href="/Book">Book an appointment</a>
     </section>
-    <section class="panel" aria-label="Visit history">
+    <section class="panel" aria-label="Visit history" data-tab="visits">
       <h2 class="p-title">Visit history<span class="mono-tag" id="visitCount"></span></h2>
       <div id="pVisits"></div>
     </section>
-    <section class="panel" aria-label="Orders">
+    <section class="panel" aria-label="Orders" data-tab="orders">
       <h2 class="p-title">Orders<span class="mono-tag" id="orderCount"></span></h2>
       <div id="pOrders"></div>
       <h2 class="p-title" style="margin-top:28px" id="rsTitle" hidden>Restock requests</h2>
@@ -158,6 +178,11 @@
 (() => {
   const A = window.IncensoAuth;
   const $ = (id) => document.getElementById(id);
+  // Mobile tabs (desktop shows every panel)
+  const TABS = ['level', 'visits', 'orders', 'gift', 'details'];
+  const showTab = (t) => { if (!TABS.includes(t)) t = 'level'; document.querySelectorAll('.panel').forEach((p) => p.classList.toggle('m-on', p.dataset.tab === t)); document.querySelectorAll('#mTabs button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tab === t))); try { sessionStorage.setItem('inc_acc_tab', t); } catch (e) {} };
+  $('mTabs').addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (b) showTab(b.dataset.tab); });
+  showTab((location.hash || '').replace('#', '') || (() => { try { return sessionStorage.getItem('inc_acc_tab'); } catch (e) { return ''; } })() || 'level');
   const money = (n) => '$' + n;
   const nice = (iso) => new Date(iso + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -264,8 +289,6 @@
     $('savedTag').hidden = false;
     setTimeout(() => { $('savedTag').hidden = true; }, 1800);
   });
-  // Prototype-only: wipe everything this site stored on the device (accounts, bookings, orders, gift cards, cart, drafts, counters)
-  $('resetAll').addEventListener('click', () => { if (!confirm('Clear all demo data on this device? Every account, booking, order and gift card goes.')) return; Object.keys(localStorage).filter((k) => /^incenso/i.test(k)).forEach((k) => localStorage.removeItem(k)); location.href = '/'; });
   $('pRestocks').addEventListener('click', (e) => {
     const b = e.target.closest('.rm-rs');
     if (!b) return;
