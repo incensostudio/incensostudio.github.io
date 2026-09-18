@@ -326,7 +326,32 @@
   const findByPhone = () => null;
   const all = () => ({});
 
-  window.IncensoAuth = { get, set, flush, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, orderTotal, payLabel, nextRef, TIERS, sync: syncButtons, findByPhone, all, hydrate };
+  // ---- Re-verify a signed-in member's detail change with a real WhatsApp OTP ----
+  let detailChange = null; // { phone, type }
+  const sendDetailOtp = async (newPhoneRaw) => {
+    if (!SB) return { ok: false, offline: true };
+    const cur = acc ? e164(acc.phone) : '';
+    const newPhoneE164 = newPhoneRaw ? e164(newPhoneRaw) : '';
+    let phone = cur, type = 'sms', error;
+    if (newPhoneE164 && cur && newPhoneE164 !== cur) {
+      phone = newPhoneE164; type = 'phone_change';
+      ({ error } = await SB.auth.updateUser({ phone }));
+    } else {
+      ({ error } = await SB.auth.signInWithOtp({ phone: cur }));
+    }
+    if (error) return { ok: false, error };
+    detailChange = { phone, type };
+    return { ok: true, phone, type };
+  };
+  const verifyDetailOtp = async (token) => {
+    if (!SB || !detailChange) return { ok: false };
+    const { data, error } = await SB.auth.verifyOtp({ phone: detailChange.phone, token, type: detailChange.type });
+    if (error || !data || !data.user) return { ok: false, error };
+    detailChange = null;
+    return { ok: true };
+  };
+
+  window.IncensoAuth = { get, set, flush, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, orderTotal, payLabel, nextRef, TIERS, sync: syncButtons, findByPhone, all, hydrate, sendDetailOtp, verifyDetailOtp };
 
   // ---- Newsletter subscribe (persists to Supabase; members pass straight through) ----
   document.addEventListener('submit', (e) => {
