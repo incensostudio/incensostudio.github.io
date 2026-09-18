@@ -252,8 +252,15 @@
     $('pRestocks').innerHTML = rs.length ? rs.map((r) =>
       '<div class="r"><span class="a"><b>' + r.name + '</b><small>asked ' + nice(r.date) + ' · we\u2019ll message you on WhatsApp when it\u2019s back</small></span><span class="v"><button type="button" class="rm-rs" data-name="' + r.name + '" aria-label="Remove ' + r.name + ' from wait-list">&times;</button></span></div>').join('')
       : '';
-    $('dName').value = a.name; $('dPhone').value = a.phone; $('dEmail').value = a.email || '';
+    $('dName').value = a.name;
+    const ph = String(a.phone || '');
+    const pm = ph.match(/^(\+\d+)\s+(.*)$/);
+    if (pm) { $('dPhoneCC').value = pm[1]; $('dPhone').value = pm[2].trim(); }
+    else { $('dPhone').value = ph.replace(/^\+/, '').trim(); }
+    $('dEmail').value = a.email || '';
   };
+  // The number the studio actually messages — always country code + local, so WhatsApp can reach it.
+  const fullPhone = () => ($('dPhoneCC').value + ' ' + $('dPhone').value.trim()).trim();
 
   $('signOut').addEventListener('click', () => { A.signOut(); location.href = '/'; });
   $('pfp').addEventListener('click', () => $('pfpFile').click());
@@ -267,7 +274,7 @@
   $('lockBtn').addEventListener('click', () => A.open(render));
   const saveDetails = () => {
     const a = A.get();
-    a.name = $('dName').value.trim(); a.phone = $('dPhone').value.trim(); a.email = $('dEmail').value.trim();
+    a.name = $('dName').value.trim(); a.phone = fullPhone(); a.email = $('dEmail').value.trim();
     A.set(a);
     $('detOtp').hidden = true;
     render();
@@ -279,7 +286,8 @@
     const btn = e.submitter || document.activeElement;
     const label = btn && btn.tagName === 'BUTTON' ? btn.textContent : '';
     if (btn && btn.tagName === 'BUTTON') { btn.disabled = true; btn.textContent = 'Sending code…'; }
-    const r = await A.sendDetailOtp($('dPhone').value.trim());
+    if ($('dPhone').value.replace(/\D/g, '').length < 6) { $('detOtp').hidden = true; $('dPhone').focus(); return; }
+    const r = await A.sendDetailOtp(fullPhone());
     if (btn && btn.tagName === 'BUTTON') { btn.disabled = false; btn.textContent = label || 'Save changes'; }
     if (r && r.offline) { saveDetails(); return; }
     if (!r || !r.ok) {
