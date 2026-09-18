@@ -223,7 +223,7 @@ $('cancelYes').addEventListener('click', () => {
 const acc = A.get(); if (!acc) return;
 const b = (acc.bookings || []).find((x) => x.ref === ref); if (!b) return;
 b.status = 'Cancelled'; b.cancelled = new Date().toISOString(); b.cancelReason = $('cReason').value.trim(); if (b.extra && b.extra.status !== 'paid') b.extra = null;
-if (b.gift && b.gift.amount && !b.giftRefunded) { const G = window.IncensoGift; if (b.gift.parts && b.gift.parts.length) G.refundParts(b.gift.parts, b.ref); else if (b.gift.code) G.refund(b.gift.code, b.gift.amount, b.ref); b.giftRefunded = true; }
+// Gift is refunded server-side by the booking cancel trigger (once), so the client doesn't.
 A.set(acc);
 $('cancelBox').classList.remove('show');
 render();
