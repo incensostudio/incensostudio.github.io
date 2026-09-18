@@ -836,12 +836,18 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
       const acc1 = A.get(); const o = (acc1.orders || []).find((x) => x.ref === ref);
       if (o) {
         const before = o.status; normOrder(o); if (o.status !== before) A.set(acc1); renderOrder(o);
+        // Re-render when the account is refreshed from the server (e.g. the studio confirmed a
+        // Whish/OMT payment, or a card payment landed) so the status updates without a reload.
+        document.addEventListener('account:updated', () => {
+          const a2 = A.get(); const o2 = a2 && (a2.orders || []).find((x) => x.ref === ref);
+          if (o2) { normOrder(o2); renderOrder(o2); }
+        });
         // Coming back from a card payment — poll the server until it shows paid, then re-render.
         if (paidReturn && o.payStatus !== 'paid' && window.SB) {
           (async () => {
-            for (let i = 0; i < 12; i++) {
+            for (let i = 0; i < 20; i++) {
               const { data } = await window.SB.from('orders').select('pay_status, status').eq('ref', ref).maybeSingle();
-              if (data && data.pay_status === 'paid') { o.payStatus = 'paid'; o.status = data.status || 'Paid · preparing'; o.pay = 'Paid by card'; A.set(A.get()); renderOrder(o); break; }
+              if (data && data.pay_status === 'paid') { o.payStatus = 'paid'; o.status = data.status || 'Ready for pickup'; o.pay = 'Paid by card'; A.set(A.get()); renderOrder(o); break; }
               await new Promise((r) => setTimeout(r, 800));
             }
           })();
