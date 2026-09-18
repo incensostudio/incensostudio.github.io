@@ -25,9 +25,9 @@
 .pay-note.cx{border-color:rgba(179,38,30,0.35);background:rgba(179,38,30,0.05)}
 .pay-note b.amt{font-family:var(--font-mono)}
 .status::before{content:"";width:6px;height:6px;border-radius:999px;background:currentColor}
-.wrap{display:grid;grid-template-columns:minmax(300px,480px) minmax(0,1fr);gap:clamp(28px,4.5vw,64px);align-items:start;margin-bottom:clamp(48px,7vw,96px)}
-.vcard{position:relative;aspect-ratio:1.586;display:flex;flex-direction:column;justify-content:space-between;background:var(--acc,#F9A8D4);background-image:radial-gradient(120% 90% at 100% 0%,rgba(254,254,241,0.55),rgba(254,254,241,0) 60%);color:var(--fg-warm);padding:clamp(20px,2.4vw,30px);border-radius:24px;overflow:hidden;box-shadow:0 24px 56px rgba(0,0,0,0.14);margin-bottom:18px}
-.vcard::after{content:"";position:absolute;inset:9px;border:1px dashed rgba(0,0,0,0.3);border-radius:16px;pointer-events:none}
+.wrap{display:flex;flex-direction:column;gap:28px;margin-bottom:clamp(48px,7vw,96px)}
+.vcard{position:relative;aspect-ratio:1.586;display:flex;flex-direction:column;justify-content:space-between;background:var(--acc,#F9A8D4);background-image:radial-gradient(120% 90% at 100% 0%,rgba(254,254,241,0.55),rgba(254,254,241,0) 60%);color:var(--fg-warm);padding:20px;border-radius:20px;overflow:hidden;box-shadow:0 14px 34px rgba(0,0,0,0.12)}
+.vcard::after{content:"";position:absolute;inset:8px;border:1px dashed rgba(0,0,0,0.3);border-radius:13px;pointer-events:none}
 .vcard > *{position:relative}
 .vcard .wm{display:inline-flex;align-items:center}
 .vcard .wm .wordmark{height:17px;width:auto;display:block}
@@ -36,20 +36,23 @@
 .vcard .k{font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.22em;text-transform:uppercase;opacity:0.65}
 .vcard .k.v{display:block;margin-top:5px}
 .vcard .mid{flex:1;display:flex;flex-direction:column;justify-content:center;padding:14px 0}
-.vcard .amt{font-family:var(--font-mono);font-weight:600;font-size:clamp(40px,4.6vw,60px);letter-spacing:-0.04em;line-height:1}
-.vcard .to{font-size:15px;margin:14px 0 0;line-height:1.5}
+.vcard .amt{font-family:var(--font-mono);font-weight:600;font-size:clamp(38px,11vw,60px);letter-spacing:-0.04em;line-height:1}
+.vcard .to{font-size:14px;margin:12px 0 0;line-height:1.5}
 .vcard .to b{font-weight:600}
 .vcard .to .fr{opacity:0.75}
 .vcard .to .msg{opacity:0.75;font-style:italic;font-size:14px}
 .vcard .code{font-family:var(--font-mono);font-size:13px;font-weight:600;letter-spacing:0.22em}
 .vcard .cbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:22px}
 .vcard .cbar.end{align-items:flex-end}
-.vcard .qr{display:block;width:clamp(44px,4.6vw,58px);aspect-ratio:1;opacity:0.9}
+.vcard .qr{display:block;width:clamp(44px,12vw,58px);aspect-ratio:1;opacity:0.9}
 .vcard .qr svg{display:block;width:100%;height:100%}
-.vcard{margin-bottom:0}
-.side{min-width:0;max-width:560px}
-.blk{border-top:1px solid var(--card-line);padding:clamp(20px,2.6vw,30px) 0}
+.side{min-width:0;display:flex;flex-direction:column}
+.blk{border-top:1px solid var(--card-line);padding:20px 0}
 .blk:first-child{border-top:0;padding-top:0}
+.blk.b-acts{order:-1;border-top:0;padding-top:0;padding-bottom:8px}
+.blk.b-bal{order:-2}
+.blk.b-acts .acts{margin:14px 0 4px;flex-direction:column;gap:10px}
+.blk.b-acts .acts .btn{width:100%}
 .blk-h{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:rgba(0,0,0,0.82);margin:0 0 14px}
 .big{display:flex;align-items:baseline;justify-content:space-between;gap:16px;font-weight:600;font-size:16px}
 .big .v{font-family:var(--font-mono);font-size:clamp(28px,3vw,40px);letter-spacing:-0.03em}
@@ -63,12 +66,32 @@
 .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
 .acts .btn:disabled{opacity:0.75;cursor:default}
 .none{font-size:14px;color:rgba(0,0,0,0.55);margin:0}
-.missing{display:none;max-width:560px;padding:clamp(24px,3vw,40px) 0 clamp(64px,9vw,128px)}
+section.missing{display:none;max-width:560px;padding:clamp(24px,3vw,40px) 0 clamp(64px,9vw,128px)}
 .missing p{margin:0 0 24px;font-size:clamp(15px,1.3vw,18px);line-height:1.55;color:rgba(0,0,0,0.78)}
+.missing .m-acts{display:flex;flex-direction:column;gap:10px}
+.missing .m-acts .btn{width:100%}
 body.missing .wrap{display:none}
-body.missing .missing{display:block}
-@media (max-width:880px){.wrap{grid-template-columns:1fr}}
-@media (max-width:880px){.banner.show{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:16px 18px;line-height:1.5}.banner .x{font-size:13px;line-height:1.5}}
+body.missing section.missing{display:block}
+.banner.show{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:16px 18px;line-height:1.5}
+.banner .x{font-size:13px;line-height:1.5}
+@media (min-width:881px){
+.wrap{display:grid;grid-template-columns:minmax(300px,480px) minmax(0,1fr);gap:clamp(28px,4.5vw,64px);align-items:start}
+.vcard{padding:clamp(20px,2.4vw,30px);border-radius:24px;box-shadow:0 24px 56px rgba(0,0,0,0.14)}
+.vcard::after{inset:9px;border-radius:16px}
+.vcard .amt{font-size:clamp(40px,4.6vw,60px)}
+.vcard .to{font-size:15px;margin-top:14px}
+.vcard .qr{width:clamp(44px,4.6vw,58px)}
+.side{max-width:560px}
+.blk{padding:clamp(20px,2.6vw,30px) 0}
+.blk.b-acts{order:0;border-top:1px solid var(--card-line);padding-top:clamp(20px,2.6vw,30px);padding-bottom:clamp(20px,2.6vw,30px)}
+.blk.b-bal{order:0}
+.blk.b-acts .acts{margin:8px 0 0;flex-direction:row;flex-wrap:wrap}
+.blk.b-acts .acts .btn{width:auto}
+.banner.show{display:inline-flex;flex-direction:row;align-items:center;gap:12px;padding:13px 18px;line-height:normal}
+.banner .x{font-size:14px}
+.missing .m-acts{flex-direction:row;flex-wrap:wrap}
+.missing .m-acts .btn{width:auto}
+}
 </style>
 <template id="__bundler_thumbnail" data-bg-color="#e5dcc9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#e5dcc9"/><text x="200" y="262" text-anchor="middle" font-family="Georgia,serif" font-size="180" fill="#000">i</text></svg></template>
 </head>
@@ -83,15 +106,15 @@ body.missing .missing{display:block}
 <div class="wrap">
 <div class="vcard" id="vcard"></div>
 <aside class="side">
-<div class="blk"><div class="big"><span>Balance<small id="balSub"></small></span><span class="v" id="bal"></span></div><p class="pay-note" id="payNote" hidden></p></div>
+<div class="blk b-bal"><div class="big"><span>Balance<small id="balSub"></small></span><span class="v" id="bal"></span></div><p class="pay-note" id="payNote" hidden></p></div>
 <div class="blk"><p class="blk-h">Details</p><div id="kv"></div></div>
 <div class="blk" id="histBlk"><p class="blk-h">Used on</p><div id="hist"></div></div>
-<div class="blk"><div class="acts" id="acts"></div></div>
+<div class="blk b-acts"><div class="acts" id="acts"></div></div>
 </aside>
 </div>
 <section class="missing" role="status">
 <p id="missingMsg">We couldn't find that gift card.</p>
-<div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="/Account">Your account</a><a class="btn ghost" href="/Vouchers">Buy a gift card</a></div>
+<div class="m-acts"><a class="btn" href="/Account">Your account</a><a class="btn ghost" href="/Vouchers">Buy a gift card</a></div>
 </section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

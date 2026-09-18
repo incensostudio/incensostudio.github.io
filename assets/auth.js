@@ -33,13 +33,13 @@
     return Math.max(0, act - disc + ship);
   };
 
-  // Sequential references — IS-0001 (bookings), INC-0001 (orders), IS-G-0001 (gift cards).
+  // Sequential references — BK0001 (bookings), OR0001 (orders), GF0001 (gift cards).
   // Prototype counter; the backend issues the real sequence in production.
   // Global, unique, in-order references from the server counter (next_ref RPC).
   // Falls back to a local counter only when offline / signed out.
   const nextRef = async (prefix) => {
     if (SB) { try { const { data, error } = await SB.rpc('next_ref', { p_prefix: prefix }); if (!error && data) return data; } catch (e) {} }
-    const k = 'incenso-seq'; let m = {}; try { m = JSON.parse(localStorage.getItem(k) || '{}') || {}; } catch (e) {} m[prefix] = (m[prefix] || 0) + 1; try { localStorage.setItem(k, JSON.stringify(m)); } catch (e) {} return prefix + '-' + String(m[prefix]).padStart(4, '0');
+    const k = 'incenso-seq'; let m = {}; try { m = JSON.parse(localStorage.getItem(k) || '{}') || {}; } catch (e) {} m[prefix] = (m[prefix] || 0) + 1; try { localStorage.setItem(k, JSON.stringify(m)); } catch (e) {} return prefix + String(m[prefix]).padStart(4, '0');
   };
 
   // One-line payment label for a booking, derived from the money actually held

@@ -756,7 +756,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
   document.getElementById('coForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const A = window.IncensoAuth;
-    const ref = A ? await A.nextRef('INC') : 'INC-0001';
+    const ref = A ? await A.nextRef('OR') : 'OR0001';
     const ship = mode === 'ship';
     const total = subtotal - discAmt + (ship ? 5 : 0);
     const g = giftAmt(total), toPay = total - g, covered = g > 0 && toPay <= 0;
@@ -792,7 +792,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
       });
       if (dirty) A.set(acc);
     }
-    // Deep link: /Checkout?order=INC-XXXX — show that order's page
+    // Deep link: /Checkout?order=OR-XXXX — show that order's page
     const ref = new URLSearchParams(location.search).get('order');
     if (ref && A && A.signedIn()) {
       const acc1 = A.get(); const o = (acc1.orders || []).find((x) => x.ref === ref);
