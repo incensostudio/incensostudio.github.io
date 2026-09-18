@@ -241,7 +241,9 @@ cExp.addEventListener('input', () => { let d = cExp.value.replace(/\D/g, '').sli
 cCvc.addEventListener('input', () => { cCvc.value = cCvc.value.replace(/\D/g, '').slice(0, 4); });
 const fail = (m, f) => { const e = $('gvErr'); e.textContent = m; e.classList.add('show'); const ms = $('mSub'); ms.textContent = m; ms.classList.add('bad'); if (f) f.focus(); };
 let last = null;
+let buying = false;
 $('buyBtn').addEventListener('click', () => {
+if (buying) return;
 $('gvErr').classList.remove('show');
 if (!forMe() && !st.to) return fail('Who is it for? Add their name.', $('toName'));
 if (!forMe() && $('toPhone').value.replace(/\D/g, '').length < 6) return fail('Add their phone number.', $('toPhone'));
@@ -253,6 +255,7 @@ else if ($('cName').value.trim().length < 2) { bad = $('cName'); msg = 'Add the 
 if (bad) { bad.classList.add('bad'); bad.focus(); return fail(msg); } }
 const go = (acc) => {
 acc = acc || A.get();
+buying = true;
 $('buyBtn').disabled = true; $('buyBtn').textContent = 'One moment\u2026'; $('mBuy').disabled = true; $('mBuy').textContent = 'One moment\u2026';
 setTimeout(async () => {
 const code = await A.nextRef('GF');

@@ -771,8 +771,15 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
   };
 
   // Place order
+  let placing = false;
   document.getElementById('coForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    // Guard against a double-tap creating two orders (one of which would be orphaned).
+    if (placing) return;
+    placing = true;
+    const btn = e.submitter; const btnLabel = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Placing…'; }
+    try {
     const A = window.IncensoAuth;
     const ref = A ? await A.nextRef('OR') : 'OR0001';
     const ship = mode === 'ship';
@@ -784,7 +791,8 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     const name = gv('fName'), phone = (/^\+/.test(gv('fPhone')) ? gv('fPhone') : (gv('fPhoneCC') + ' ' + gv('fPhone')).trim()), email = gv('fEmail');
     const address = ship ? [gv('fStreet'), gv('fBldg') && 'Bldg ' + gv('fBldg'), gv('fFloor'), gv('fCity'), gv('fGov'), 'Lebanon'].filter(Boolean).join(', ') : '';
     const isCard = pay === 'card' && !covered && toPay > 0;
-    const order = { ref: ref, date: new Date().toISOString().slice(0, 10), time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }), items: orderLines, total: total, status: isCard ? 'Awaiting payment' : (transfer ? 'Awaiting payment' : (!ship ? 'Ready for pickup' : (covered ? 'Paid · preparing' : 'Placed'))), payStatus: covered ? 'paid' : isCard ? 'pending' : (transfer ? 'pending' : 'due'), gift: g > 0 ? { amount: g } : null, toPay: toPay, placedAt: Date.now(), method: ship ? 'Shipped' : 'Studio pickup', pay: payLabel, name: name, phone: phone, email: email, address: address, discount: discAmt, tier: discTier };
+    // Whish / OMT orders get a 24-hour payment window (drives the reminder + auto-release).
+    const order = { ref: ref, date: new Date().toISOString().slice(0, 10), time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }), items: orderLines, total: total, status: isCard ? 'Awaiting payment' : (transfer ? 'Awaiting payment' : (!ship ? 'Ready for pickup' : (covered ? 'Paid · preparing' : 'Placed'))), payStatus: covered ? 'paid' : isCard ? 'pending' : (transfer ? 'pending' : 'due'), gift: g > 0 ? { amount: g } : null, toPay: toPay, placedAt: Date.now(), payDeadline: transfer ? Date.now() + 86400000 : null, method: ship ? 'Shipped' : 'Studio pickup', pay: payLabel, name: name, phone: phone, email: email, address: address, discount: discAmt, tier: discTier };
     if (A && A.signedIn()) {
       const acc = A.get();
       if (g > 0 && window.IncensoGift) { const parts = window.IncensoGift.redeemFrom(acc, g, ref, 'Shop order'); order.gift.parts = parts; order.gift.codes = [...new Set(parts.map((p) => p.code))]; window.IncensoGift.attach(acc); }
@@ -802,6 +810,10 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     items = {};
     try { localStorage.setItem(IKEY, '{}'); localStorage.setItem(KEY, '0'); } catch (err) {}
     setBadges(0);
+    } finally {
+      placing = false;
+      if (btn) { btn.disabled = false; btn.textContent = btnLabel || 'Place order'; }
+    }
   });
 
   // Sign-in gate — auth.js loads after this script, so wait for DOM ready

@@ -45,7 +45,11 @@ Deno.serve(async (req) => {
         }).eq('stripe_session_id', s.id)
 
         if (kind === 'order' && ref) {
-          await admin.from('orders').update({ pay_status: 'paid', status: 'Paid · preparing' }).eq('ref', ref)
+          // A paid pickup order is ready to collect right away (fires the pickup message);
+          // a shipped one goes to preparing until it's handed to a courier.
+          const { data: o } = await admin.from('orders').select('method').eq('ref', ref).maybeSingle()
+          const pickup = !o || String(o.method || '') !== 'Shipped'
+          await admin.from('orders').update({ pay_status: 'paid', status: pickup ? 'Ready for pickup' : 'Paid · preparing' }).eq('ref', ref)
         } else if (kind === 'booking' && ref) {
           const isTopup = s.metadata?.topup === '1'
           const { data: b } = await admin.from('bookings').select('paid, due, extra').eq('ref', ref).maybeSingle()
