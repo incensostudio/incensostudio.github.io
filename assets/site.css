@@ -6,6 +6,7 @@ html,body{min-height:100%}
 body{margin:0;font-family:var(--font-sans);color:var(--fg-warm);background:var(--bg-warm);overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;display:flex;flex-direction:column}
 a{color:var(--fg-warm)}
 a:hover{color:#000000}
+button{color:var(--fg-warm)}
 .skip-link{position:absolute;left:12px;top:-100px;z-index:100;padding:10px 16px;background:var(--fg-warm);color:#FEFEF1;font-family:var(--font-mono);font-size:12px;text-decoration:none;border-radius:4px;transition:top 180ms cubic-bezier(0.4,0,0.2,1)}
 .skip-link:focus{top:12px}
 :focus{outline:none}
