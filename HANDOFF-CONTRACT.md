@@ -210,3 +210,45 @@ until approved the site uses Bird's generic approved templates, then switches au
 - WhatsApp: Bird (MessageBird), EU region.
 - Home page is `index.html`; the design package calls it `Home.html` — map Home → index and keep
   the lattice/sound/rings intact.
+
+---
+
+## 10. Keeping design in sync BOTH ways
+
+Design can change in two places — in Claude design, and directly on the live site (bug fixes,
+mobile tweaks). To stop the two from drifting:
+
+- **The live site is the source of truth for design.** Before Claude design makes a new change,
+  it must first absorb the “live‑side design changes” below so it doesn't undo them.
+- **Every design change made on the live side is logged here in plain English** (this section).
+  Paste it into Claude design and ask it to apply these to its project first; then make the new
+  change. Claude Code adds to this list whenever it changes design directly.
+- Alternative when in doubt: take the **current live page file from the repo** into Claude design
+  as the starting point (it already contains every live change) and restyle from there.
+
+### Live‑side design changes to mirror back into Claude design
+*(made on the live site after the last design handoff — apply these to the Claude design project)*
+
+1. **Clean lowercase URLs.** All pages renamed and shortened — this is the current URL map in §3
+   (`/shop /book /gift /gift-card /work /space /brows-lashes …`). Internal links/nav use these.
+2. **Birthday field (required).** Added to the sign‑up modal and to Account → details, styled like
+   the other fields; a date field, can't be in the future.
+3. **iOS button text colour.** Buttons must set an explicit dark text colour (e.g. the booking
+   service list, generic buttons) — on iPhone unset buttons render system‑blue. Keep a dark
+   `color` on buttons.
+4. **Gift checkout default.** The card inputs are **hidden by default** when “Pay at the studio”
+   (the default) is selected; they appear only when “Card” is chosen.
+5. **Shop product tint (mobile).** The hover/tap colour on a product clears when you press
+   elsewhere (it must not stick on touch).
+6. **Shop top bar (mobile).** Solid/opaque with a cream cap above it so product photos never peek
+   through the top on iOS scroll; no frosted blur on the scrolled bar.
+7. **Footer hidden on mobile** on: `book`, `gift-card`, `checkout`, `gift`, `cart`, `account`.
+   Shown on desktop and on all other pages.
+8. **Gift page (mobile).** The “Give someone the chair.” heading is hidden on phones (card sits at
+   the top); desktop keeps it. The rest of the gift mobile layout is the last handoff design
+   (card scrolls at the top, sticky bottom pay bar) — the pinned/fixed‑card experiment was
+   reverted.
+9. **Theme colours confirmed:** home bar `#f7f4eb`, every other page `#e5dcc9`.
+10. **Settings phone field** splits into country‑code select + local number (so the country code
+    is always kept); references shown as `BK#### / OR#### / GF####`.
+
