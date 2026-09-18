@@ -12,20 +12,29 @@ Everything technical is already deployed:
 
 ---
 
-## Part A — Get a MessageBird (Bird) account  (~15 min)
+> ⚠️ Important: do **not** use Supabase's built-in "Messagebird" dropdown under
+> Authentication → Providers. That integration is currently broken and rejects
+> modern Bird `bk_` keys. We use the **Send SMS hook + our function** instead,
+> which talks to Bird's current API. (Leaving Phone enabled is fine; the hook
+> overrides the dropdown.)
 
-1. Go to **bird.com** and sign up. Use your business email.
-2. Add a little credit / a payment method (SMS is pay-as-you-go, a few cents
-   each).
-3. Find your **API access key** (Bird calls it an *access key* or *API key*).
-   It's usually under **Settings → Developers / API access → Access keys**.
-   Create a **live** key and copy it somewhere safe.
-4. Set a **sender name** so texts show as being from you. "Incenso" works in
-   most of the world. (If Lebanon rejects a name sender, Bird will tell you —
-   then you buy a small virtual number from them instead. I'll help if so.)
+## Part A — Get your Bird account + three values  (~20 min)
 
-> If you get stuck creating the account or finding the key, send me a
-> screenshot of the screen you're on and I'll point to the exact button.
+1. Go to **bird.com** and sign up with your business email.
+2. Add a little credit / payment method (SMS is pay-as-you-go, a few cents each).
+3. Create an **SMS channel**: in Bird, go to **Channels → add an SMS channel**
+   and connect a sender (a name like "INCENSO", or a virtual number Bird sells
+   you if Lebanon needs one). This is what lets the account actually send SMS.
+4. Now collect **three** things and paste them into a note:
+   - **Access key** — Settings → **Developers / API access → Access keys** →
+     create a **live** key (starts with `bk_`).
+   - **Workspace ID** — a long id (UUID). You'll see it in the browser address
+     bar when logged in: `app.bird.com/workspaces/`**`<this part>`**`/…`, or
+     under **Settings → Workspace**.
+   - **SMS Channel ID** — open the SMS channel you just made; its id (UUID) is
+     in the address bar or the channel's settings/overview.
+
+> Send me a screenshot of any screen and I'll point at the exact value to copy.
 
 ---
 
@@ -33,20 +42,22 @@ Everything technical is already deployed:
 
 Open your project at **supabase.com** → your Incenso project.
 
-1. **Turn on phone sign-in.** Left menu → **Authentication** →
-   **Sign In / Providers** → enable **Phone**. Save.
-2. **Turn on the code sender.** Left menu → **Authentication** → **Hooks** →
-   **Send SMS** → choose **HTTPS** and paste the function address:
+1. **Phone sign-in on.** Authentication → **Sign In / Providers** → **Phone** →
+   on → Save. (You already did this. The "Messagebird" dropdown here is ignored
+   once the hook below is on — leave it as-is.)
+2. **Turn on the code sender.** Authentication → **Hooks** → **Send SMS hook** →
+   **Enable** → **HTTPS** → paste the function address:
    `https://gcqkkruzgxpqpqxeymqx.supabase.co/functions/v1/send-sms-otp`
-   Save. Supabase shows a **secret** that starts with `v1,whsec_…` — copy it.
-3. **Give the function its keys.** Left menu → **Edge Functions** →
-   **Secrets** (or **Manage secrets**). Add these three:
+   Save. Supabase shows a **secret** starting with `v1,whsec_…` — copy it.
+3. **Give the function its keys.** **Edge Functions** → **send-sms-otp** →
+   **Secrets** (Manage secrets). Add these four:
 
    | Name | Value |
    |---|---|
-   | `SEND_SMS_HOOK_SECRET` | the `v1,whsec_…` secret you just copied |
-   | `MESSAGEBIRD_API_KEY` | your live access key from Part A |
-   | `MESSAGEBIRD_ORIGINATOR` | `Incenso` (or your bought number) |
+   | `SEND_SMS_HOOK_SECRET` | the `v1,whsec_…` secret from step 2 |
+   | `BIRD_API_KEY` | your `bk_…` access key |
+   | `BIRD_WORKSPACE_ID` | your workspace UUID |
+   | `BIRD_SMS_CHANNEL_ID` | your SMS channel UUID |
 
    Save.
 
@@ -69,13 +80,12 @@ the site changes — we just flip WhatsApp on in the same function.
    template — use that.
 3. Once approved, note four things from Bird: the **channel ID**, the template
    **namespace**, the **template name**, and its **language** (e.g. `en`).
-4. Back in Supabase → **Edge Functions → Secrets**, add:
+4. Back in Supabase → **Edge Functions → send-sms-otp → Secrets**, add:
 
    | Name | Value |
    |---|---|
-   | `MESSAGEBIRD_WA_CHANNEL_ID` | the WhatsApp channel ID |
-   | `MESSAGEBIRD_WA_NAMESPACE` | the template namespace |
-   | `MESSAGEBIRD_WA_TEMPLATE` | the template name |
+   | `BIRD_WA_CHANNEL_ID` | the WhatsApp channel ID (UUID) |
+   | `BIRD_WA_TEMPLATE_PROJECT_ID` | the approved template's project ID |
    | `OTP_CHANNELS` | `whatsapp,sms` |
 
    `OTP_CHANNELS = whatsapp,sms` means: try WhatsApp first, and if it can't be
