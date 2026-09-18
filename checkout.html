@@ -265,6 +265,8 @@
   body.locked:not(.cart-empty) .co-wrap{display:none}
   body.locked:not(.cart-empty) .lock{display:block}
   #cardFields[hidden]{display:none}
+  #cardFields .field{display:none}
+  .stripe-note{margin:12px 0 0;font-size:13.5px;line-height:1.55;color:rgba(0,0,0,0.7)}
   .pay-opts{display:flex;flex-wrap:wrap;gap:10px}
   .pill{appearance:none;height:40px;padding:0 20px;border-radius:999px;border:1px solid rgba(0,0,0,0.35);background:rgba(254,254,241,0.5);font:inherit;font-size:14px;font-weight:500;color:rgba(0,0,0,0.7);cursor:pointer;transition:background-color 200ms,color 200ms,border-color 200ms}
   .pill:hover{border-color:var(--fg-warm);color:var(--fg-warm)}
@@ -441,6 +443,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
           <div class="qr-pane" id="qrWhish" hidden><image-slot id="qr-whish" shape="rect" fit="contain" placeholder="Whish Money QR"></image-slot><div class="qr-txt"><p class="qr-h">Whish Money</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan the code in the Whish app, pay the total, then place your order. We match the transfer to your order number and confirm on WhatsApp — unpaid orders are cancelled after 24 hours.</p></div></div>
           <div class="qr-pane" id="qrOmt" hidden><image-slot id="qr-omt" shape="rect" fit="contain" placeholder="OMT Pay QR"></image-slot><div class="qr-txt"><p class="qr-h">OMT Pay</p><p>Send <b class="qr-amt">$0</b> to <b>Incenso Studio</b> · +961 71 930 290</p><p class="qr-s">Scan the code in OMT Pay, pay the total, then place your order. We match the transfer to your order number and confirm on WhatsApp — unpaid orders are cancelled after 24 hours.</p></div></div>
           <div id="cardFields" hidden>
+            <p class="stripe-note">You’ll enter your card securely on the next step — our payment page. No card details are stored on this site.</p>
             <div class="field"><label for="cNum">Card number</label><input id="cNum" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="19" /></div>
             <div class="row2">
               <div class="field"><label for="cExp">Expiry</label><input id="cExp" type="text" inputmode="numeric" autocomplete="cc-exp" placeholder="MM / YY" maxlength="7" /></div>

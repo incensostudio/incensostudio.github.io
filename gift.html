@@ -55,6 +55,8 @@
 .card-wrap-in{position:relative}
 .card-wrap-in .brand{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(0,0,0,0.5);pointer-events:none}
 #cardFields[hidden]{display:none}
+#cardFields .field{display:none}
+.stripe-note{margin:12px 0 0;font-size:13.5px;line-height:1.55;color:rgba(0,0,0,0.7)}
 .qr-pane{display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;align-items:center;margin-top:16px;padding:16px;border:1px solid rgba(0,0,0,0.25);background:rgba(254,254,241,0.5)}
 .qr-pane[hidden]{display:none}
 .qr-pane image-slot{width:150px;height:150px;display:block}
@@ -158,6 +160,7 @@
 <div class="f-step"><span class="n">03</span>Payment</div>
 <div class="pills" id="payOpts" role="group" aria-label="Payment"><button type="button" class="pill" data-pay="later" aria-pressed="true">Pay at the studio</button><button type="button" class="pill" data-pay="card" aria-pressed="false">Card</button><button type="button" class="pill" data-pay="whish" aria-pressed="false">Whish Money</button><button type="button" class="pill" data-pay="omt" aria-pressed="false">OMT Pay</button></div>
 <div id="cardFields" hidden>
+<p class="stripe-note">You’ll enter your card securely on the next step — our payment page. No card details are stored on this site.</p>
 <div class="field"><label for="cNum">Card number</label><div class="card-wrap-in"><input id="cNum" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="19" /><span class="brand" id="cBrand"></span></div></div>
 <div class="row2"><div class="field"><label for="cExp">Expiry</label><input id="cExp" type="text" inputmode="numeric" autocomplete="cc-exp" placeholder="MM / YY" maxlength="7" /></div><div class="field"><label for="cCvc">CVC</label><input id="cCvc" type="text" inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4" /></div></div>
 <div class="field"><label for="cName">Name on card</label><input id="cName" type="text" autocomplete="cc-name" /></div>
@@ -242,7 +245,7 @@ $('buyBtn').addEventListener('click', () => {
 $('gvErr').classList.remove('show');
 if (!forMe() && !st.to) return fail('Who is it for? Add their name.', $('toName'));
 if (!forMe() && $('toPhone').value.replace(/\D/g, '').length < 6) return fail('Add their phone number.', $('toPhone'));
-if (st.pay === 'card') { ['cNum', 'cExp', 'cCvc', 'cName'].forEach((id) => $(id).classList.remove('bad')); const d = cNum.value.replace(/\D/g, ''), ex = cExp.value.replace(/\D/g, ''), now = new Date(), mm = +ex.slice(0, 2), yy = 2000 + +ex.slice(2, 4); let bad = null, msg = '';
+if (false) { ['cNum', 'cExp', 'cCvc', 'cName'].forEach((id) => $(id).classList.remove('bad')); const d = cNum.value.replace(/\D/g, ''), ex = cExp.value.replace(/\D/g, ''), now = new Date(), mm = +ex.slice(0, 2), yy = 2000 + +ex.slice(2, 4); let bad = null, msg = '';
 if (!luhn(d)) { bad = cNum; msg = 'That card number doesn\u2019t check out \u2014 have another look.'; }
 else if (ex.length !== 4 || mm < 1 || mm > 12 || yy < now.getFullYear() || (yy === now.getFullYear() && mm < now.getMonth() + 1)) { bad = cExp; msg = 'Expiry should be MM / YY, and a date that hasn\u2019t passed.'; }
 else if (cCvc.value.length !== (brand(d) === 'Amex' ? 4 : 3)) { bad = cCvc; msg = 'CVC is the 3 digits on the back \u2014 4 on Amex.'; }

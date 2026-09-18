@@ -115,6 +115,8 @@
 .qr-txt .qr-s{font-size:12.5px;color:rgba(0,0,0,0.6);margin:0}
 .qr-txt .qr-amt{font-family:var(--font-mono)}
 #cardFields[hidden]{display:none}
+#cardFields .field{display:none}
+.stripe-note{margin:12px 0 0;font-size:13.5px;line-height:1.55;color:rgba(0,0,0,0.7)}
 .card-wrap{position:relative}
 .card-wrap .brand{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(0,0,0,0.5);pointer-events:none}
 .field input.bad{border-color:#C81E2D}
@@ -244,6 +246,7 @@ body.m-steps .step.m-active .m-next{display:block;margin-top:22px}
 <p class="sg-h" id="payOptsLbl" hidden>Settle the difference</p>
 <div class="pills pay-opts" id="payOpts" role="group" aria-label="Payment"><button type="button" class="pill" data-pay="later" aria-pressed="true">Pay at the studio</button><button type="button" class="pill" data-pay="card" aria-pressed="false">Card</button><button type="button" class="pill" data-pay="whish" aria-pressed="false">Whish Money</button><button type="button" class="pill" data-pay="omt" aria-pressed="false">OMT Pay</button></div>
 <div id="cardFields" hidden>
+<p class="stripe-note">You’ll enter your card securely on the next step — our payment page. No card details are stored on this site.</p>
 <div class="field"><label for="cNum">Card number</label><div class="card-wrap"><input id="cNum" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="19" /><span class="brand" id="cBrand"></span></div><p class="f-err" id="eNum">That number doesn't check out — have another look.</p></div>
 <div class="row2">
 <div class="field"><label for="cExp">Expiry</label><input id="cExp" type="text" inputmode="numeric" autocomplete="cc-exp" placeholder="MM / YY" maxlength="7" /><p class="f-err" id="eExp">Use MM / YY, and a date that hasn't passed.</p></div>
@@ -608,7 +611,7 @@ $('bkErr').classList.remove('show');
 const s = sel();
 if (!s.length) return fail('step1', 'Pick at least one service first.');
 if (!st.date || !st.time) return fail('step3', 'Pick a day and a time.');
-if (st.pay === 'card' && !$('cardFields').hidden) { const f = cardErrors(); if (f) return fail('step5', 'Check the card details, or switch to pay at the studio.', f); }
+if (false) { const f = cardErrors(); if (f) return fail('step5', 'Check the card details, or switch to pay at the studio.', f); }
 const place = (acc) => {
 acc = acc || A.get();
 const clash = (acc.bookings || []).find((b) => b.date === st.date && b.time === st.time && b.ref !== editing && /upcoming/i.test(b.status || ''));
