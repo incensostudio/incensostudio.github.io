@@ -47,9 +47,18 @@ Deno.serve(async (req) => {
         if (kind === 'order' && ref) {
           await admin.from('orders').update({ pay_status: 'paid', status: 'Paid · preparing' }).eq('ref', ref)
         } else if (kind === 'booking' && ref) {
-          const { data: b } = await admin.from('bookings').select('paid, due').eq('ref', ref).maybeSingle()
-          const paid = (Number(b?.paid) || 0) + (Number(b?.due) || 0)
-          await admin.from('bookings').update({ pay_status: 'paid', status: 'Upcoming', paid, due: 0 }).eq('ref', ref)
+          const isTopup = s.metadata?.topup === '1'
+          const { data: b } = await admin.from('bookings').select('paid, due, extra').eq('ref', ref).maybeSingle()
+          if (isTopup) {
+            const ex = (b && b.extra) || {}
+            const add = Number(ex.amount || 0)
+            ex.status = 'paid'
+            const paid = (Number(b?.paid) || 0) + add
+            await admin.from('bookings').update({ pay_status: 'paid', status: 'Upcoming', paid, due: 0, extra: ex }).eq('ref', ref)
+          } else {
+            const paid = (Number(b?.paid) || 0) + (Number(b?.due) || 0)
+            await admin.from('bookings').update({ pay_status: 'paid', status: 'Upcoming', paid, due: 0 }).eq('ref', ref)
+          }
         } else if (kind === 'gift' && ref) {
           await admin.from('gift_cards').update({ status: 'Active', confirmed: true }).eq('code', ref)
         }

@@ -45,6 +45,13 @@ async function bookingCap(admin: any, services: string[]) {
     return cap
   } catch (_e) { return 0 }
 }
+async function profileEmail(admin: any, uid: string | null | undefined) {
+  if (!uid) return null
+  try {
+    const { data } = await admin.from('profiles').select('email').eq('id', uid).maybeSingle()
+    return data && data.email ? data.email : null
+  } catch (_e) { return null }
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
@@ -61,14 +68,14 @@ Deno.serve(async (req) => {
     const base = (typeof origin === 'string' && /^https:\/\/(www\.)?incensostudio\.com$/.test(origin))
       ? origin : 'https://incensostudio.com'
 
-    let amount = 0, label = '', email: string | null = null, success = '', cancel = ''
+    let amount = 0, label = '', email: string | null = null, success = '', cancel = '', topup = false
 
     if (kind === 'order') {
       const o = await readRow(admin, 'orders', 'ref', ref)
       if (!o) return json({ error: 'not found' }, 404)
       amount = clamp(Math.round(Number(o.to_pay ?? o.total ?? 0)), await orderCap(admin, o.items || []))
       label = 'Incenso Studio — order ' + ref
-      email = o.email || null
+      email = o.email || await profileEmail(admin, o.user_id)
       success = `${base}/checkout?order=${ref}&paid=1`
       cancel = `${base}/checkout?order=${ref}`
     } else if (kind === 'gift') {
@@ -77,13 +84,18 @@ Deno.serve(async (req) => {
       amount = Math.round(Number(g.amount ?? 0))
       if (amount < 10 || amount > 1000) return json({ error: 'amount out of range' }, 400)
       label = 'Incenso Studio — gift card ' + ref
+      email = await profileEmail(admin, g.buyer_id)
       success = `${base}/gift-card?code=${ref}&paid=1`
       cancel = `${base}/gift?ref=${ref}`
     } else {
       const b = await readRow(admin, 'bookings', 'ref', ref)
       if (!b) return json({ error: 'not found' }, 404)
-      amount = clamp(Math.round(Number(b.paid ?? 0)), await bookingCap(admin, b.services || []))
-      label = 'Incenso Studio — appointment ' + ref
+      const extra = b.extra || null
+      topup = !!(extra && extra.status === 'pending' && /card/i.test(String(extra.pay || '')))
+      const raw = topup ? Number(extra.amount || 0) : Number(b.paid ?? 0)
+      amount = clamp(Math.round(raw), await bookingCap(admin, b.services || []))
+      label = 'Incenso Studio — appointment ' + ref + (topup ? ' (balance)' : '')
+      email = await profileEmail(admin, b.user_id)
       success = `${base}/booking?ref=${ref}&paid=1`
       cancel = `${base}/booking?ref=${ref}`
     }
@@ -98,8 +110,10 @@ Deno.serve(async (req) => {
     form.set('client_reference_id', ref)
     form.set('metadata[kind]', kind)
     form.set('metadata[ref]', ref)
+    form.set('metadata[topup]', topup ? '1' : '0')
     form.set('payment_intent_data[metadata][kind]', kind)
     form.set('payment_intent_data[metadata][ref]', ref)
+    form.set('payment_intent_data[metadata][topup]', topup ? '1' : '0')
     form.set('line_items[0][quantity]', '1')
     form.set('line_items[0][price_data][currency]', 'usd')
     form.set('line_items[0][price_data][unit_amount]', String(cents))
