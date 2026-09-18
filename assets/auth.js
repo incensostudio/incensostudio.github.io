@@ -352,7 +352,24 @@
     return { ok: true };
   };
 
-  window.IncensoAuth = { get, set, flush, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, orderTotal, payLabel, nextRef, TIERS, sync: syncButtons, findByPhone, all, hydrate, sendDetailOtp, verifyDetailOtp };
+  // ---- Card payment via Stripe Checkout (server creates the session; we redirect) ----
+  const SB_FN = 'https://gcqkkruzgxpqpqxeymqx.supabase.co/functions/v1/';
+  const SB_ANON = 'sb_publishable_cRcQdQ7ZPXQMUoBOGm71DA_2d22DyLu';
+  const stripeCheckout = async (kind, ref) => {
+    try {
+      const r = await fetch(SB_FN + 'create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SB_ANON, 'Authorization': 'Bearer ' + SB_ANON },
+        body: JSON.stringify({ kind, ref, origin: location.origin }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (r.ok && d && d.url) { location.href = d.url; return true; }
+      console.warn('[Incenso] checkout failed', d);
+      return false;
+    } catch (e) { console.warn('[Incenso] checkout error', e); return false; }
+  };
+
+  window.IncensoAuth = { get, set, flush, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, orderTotal, payLabel, nextRef, TIERS, sync: syncButtons, findByPhone, all, hydrate, sendDetailOtp, verifyDetailOtp, stripeCheckout };
 
   // ---- Newsletter subscribe (persists to Supabase; members pass straight through) ----
   document.addEventListener('submit', (e) => {

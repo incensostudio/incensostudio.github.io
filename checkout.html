@@ -766,12 +766,19 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     const gv = (id) => { const x = document.getElementById(id); return x ? x.value.trim() : ''; };
     const name = gv('fName'), phone = (/^\+/.test(gv('fPhone')) ? gv('fPhone') : (gv('fPhoneCC') + ' ' + gv('fPhone')).trim()), email = gv('fEmail');
     const address = ship ? [gv('fStreet'), gv('fBldg') && 'Bldg ' + gv('fBldg'), gv('fFloor'), gv('fCity'), gv('fGov'), 'Lebanon'].filter(Boolean).join(', ') : '';
-    const order = { ref: ref, date: new Date().toISOString().slice(0, 10), time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }), items: orderLines, total: total, status: transfer ? 'Awaiting payment' : (!ship ? 'Ready for pickup' : (pay === 'card' || covered ? 'Paid · preparing' : 'Placed')), payStatus: covered ? 'paid' : pay === 'card' ? 'paid' : (transfer ? 'pending' : 'due'), gift: g > 0 ? { amount: g } : null, toPay: toPay, placedAt: Date.now(), method: ship ? 'Shipped' : 'Studio pickup', pay: payLabel, name: name, phone: phone, email: email, address: address, discount: discAmt, tier: discTier };
+    const isCard = pay === 'card' && !covered && toPay > 0;
+    const order = { ref: ref, date: new Date().toISOString().slice(0, 10), time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }), items: orderLines, total: total, status: isCard ? 'Awaiting payment' : (transfer ? 'Awaiting payment' : (!ship ? 'Ready for pickup' : (covered ? 'Paid · preparing' : 'Placed'))), payStatus: covered ? 'paid' : isCard ? 'pending' : (transfer ? 'pending' : 'due'), gift: g > 0 ? { amount: g } : null, toPay: toPay, placedAt: Date.now(), method: ship ? 'Shipped' : 'Studio pickup', pay: payLabel, name: name, phone: phone, email: email, address: address, discount: discAmt, tier: discTier };
     if (A && A.signedIn()) {
       const acc = A.get();
       if (g > 0 && window.IncensoGift) { const parts = window.IncensoGift.redeemFrom(acc, g, ref, 'Shop order'); order.gift.parts = parts; order.gift.codes = [...new Set(parts.map((p) => p.code))]; window.IncensoGift.attach(acc); }
       acc.orders = [order].concat(acc.orders || []);
       A.set(acc);
+    }
+    // Card → clear cart, save, then hand off to Stripe's secure page. Webhook marks it paid.
+    if (isCard && A) {
+      items = {}; try { localStorage.setItem(IKEY, '{}'); localStorage.setItem(KEY, '0'); } catch (err) {} setBadges(0);
+      await A.flush();
+      if (await A.stripeCheckout('order', ref)) return;
     }
     useGift = false;
     renderOrder(order);

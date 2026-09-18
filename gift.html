@@ -254,7 +254,7 @@ $('buyBtn').disabled = true; $('buyBtn').textContent = 'One moment\u2026'; $('mB
 setTimeout(async () => {
 const code = await A.nextRef('GF');
 const exp = new Date(); exp.setFullYear(exp.getFullYear() + 1);
-const v = { code, amount: amount(), to: forMe() ? acc.name : st.to, from: forMe() ? acc.name : (st.from || acc.name), msg: st.msg, acc: st.acc, deliver: forMe() ? 'me' : 'sms', toPhone: forMe() ? acc.phone : ($('toPhoneWrap').querySelector('.pc-cc').value + ' ' + $('toPhone').value.trim()).trim(), pay: PAYS[st.pay], status: st.pay === 'card' ? 'Active' : 'Reserved', confirmed: st.pay === 'card' ? new Date().toISOString() : '', created: new Date().toISOString(), expires: exp.toISOString().slice(0, 10) };
+const v = { code, amount: amount(), to: forMe() ? acc.name : st.to, from: forMe() ? acc.name : (st.from || acc.name), msg: st.msg, acc: st.acc, deliver: forMe() ? 'me' : 'sms', toPhone: forMe() ? acc.phone : ($('toPhoneWrap').querySelector('.pc-cc').value + ' ' + $('toPhone').value.trim()).trim(), pay: PAYS[st.pay], status: 'Reserved', confirmed: '', created: new Date().toISOString(), expires: exp.toISOString().slice(0, 10) };
 v.buyerPhone = acc.phone; v.buyerName = acc.name;
 window.IncensoGift.issue(v);
 acc.vouchers = [v].concat(acc.vouchers || []);
@@ -262,6 +262,7 @@ window.IncensoGift.attach(acc);
 A.set(acc);
 last = v;
 Object.assign(st, { to: '', msg: '' });
+if (st.pay === 'card') { await A.flush(); if (await A.stripeCheckout('gift', code)) return; }
 location.href = '/gift-card?code=' + code + '&new=1';
 }, 700);
 };
