@@ -59,10 +59,13 @@ Deno.serve(async (req) => {
           const isTopup = s.metadata?.topup === '1'
           const { data: b } = await admin.from('bookings').select('paid, due, extra').eq('ref', ref).maybeSingle()
           if (isTopup) {
-            // The top-up is tracked in `extra` and shown separately — don't fold it into `paid`.
-            const ex = (b && b.extra) || {}
-            ex.status = 'paid'
-            await admin.from('bookings').update({ pay_status: 'paid', status: 'Upcoming', extra: ex }).eq('ref', ref)
+            // Top-ups are tracked in `extra` (an array of {amount,pay,status}) and shown
+            // separately — don't fold them into `paid`. The card checkout covered every
+            // pending card top-up, so mark them all paid; leave Whish/OMT top-ups pending.
+            const raw = b && b.extra
+            const arr = Array.isArray(raw) ? raw : (raw && raw.amount ? [raw] : [])
+            const next = arr.map((e: any) => (e && e.status === 'pending' && /card/i.test(String(e.pay || '')) ? { ...e, status: 'paid' } : e))
+            await admin.from('bookings').update({ pay_status: 'paid', status: 'Upcoming', extra: next }).eq('ref', ref)
           } else {
             const paid = (Number(b?.paid) || 0) + (Number(b?.due) || 0)
             await admin.from('bookings').update({ pay_status: 'paid', status: 'Upcoming', paid, due: 0 }).eq('ref', ref)

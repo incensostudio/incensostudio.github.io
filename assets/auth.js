@@ -42,6 +42,11 @@
     const k = 'incenso-seq'; let m = {}; try { m = JSON.parse(localStorage.getItem(k) || '{}') || {}; } catch (e) {} m[prefix] = (m[prefix] || 0) + 1; try { localStorage.setItem(k, JSON.stringify(m)); } catch (e) {} return prefix + String(m[prefix]).padStart(4, '0');
   };
 
+  // Normalize a booking's top-ups into an array. Legacy rows stored a single
+  // {amount,pay,status,placedAt} object; new rows store an array so multiple
+  // top-ups of different methods (card / whish / omt) stay separate.
+  const exArr = (b) => { const x = b && (b.extras != null ? b.extras : b.extra); return Array.isArray(x) ? x.filter((e) => e && e.amount) : (x && x.amount ? [x] : []); };
+
   // One-line payment label for a booking, derived from the money actually held
   const payLabel = (b) => {
     if (!b) return '';
@@ -49,13 +54,14 @@
     if (/cancel/i.test(b.status || '')) return 'Cancelled';
     if (b.final && typeof b.final.total === 'number') return 'Settled';
     const price = b.price || 0, gift = b.gift && b.gift.amount ? b.gift.amount : 0;
-    const paid = typeof b.paid === 'number' ? b.paid : 0, due = typeof b.due === 'number' ? b.due : Math.max(0, price - gift - paid);
-    const extra = b.extra || null, method = (b.pay || '').replace(/^Paid (by|via) /, '');
+    const paid = typeof b.paid === 'number' ? b.paid : 0;
+    const extras = exArr(b), exSum = extras.reduce((s, e) => s + (e.amount || 0), 0), method = (b.pay || '').replace(/^Paid (by|via) /, '');
+    const due = typeof b.due === 'number' ? b.due : Math.max(0, price - gift - paid - exSum);
     if (b.payStatus === 'pending' || /await/i.test(b.status || '')) return 'Awaiting ' + method;
     const parts = [];
-    if (gift > 0) parts.push(gift >= price && !extra && !due ? 'Gift balance' : '$' + gift + ' gift');
+    if (gift > 0) parts.push(gift >= price && !extras.length && !due ? 'Gift balance' : '$' + gift + ' gift');
     if (paid > 0) parts.push('$' + paid + ' ' + (/card/i.test(method) ? 'card' : method));
-    if (extra) parts.push('$' + extra.amount + (extra.pay === method && paid > 0 ? '' : ' ' + extra.pay) + (extra.status === 'paid' ? '' : ' pending'));
+    extras.forEach((ex) => parts.push('$' + ex.amount + (ex.pay === method && paid > 0 ? '' : ' ' + ex.pay) + (ex.status === 'paid' ? '' : ' pending')));
     if (due > 0) parts.push('$' + due + ' at studio');
     if (b.quote) parts.push(price ? '+ quote at studio' : 'Quote at studio');
     if (b.refund > 0) parts.push('$' + b.refund + ' refund on its way');
@@ -83,7 +89,7 @@
       if (b.final && typeof b.final.total === 'number') { s += Math.max(0, b.final.total - giftPart); return; }
       const completed = /complet/i.test(st) || b.completed === true;
       const prepaid = b.payStatus === 'paid' || (b.paid > 0 && b.payStatus !== 'due');
-      const extraPaid = b.extra && b.extra.status === 'paid' ? b.extra.amount || 0 : 0;
+      const extraPaid = exArr(b).reduce((s2, e) => s2 + (e.status === 'paid' ? (e.amount || 0) : 0), 0);
       if (prepaid) s += (b.paid || 0) + (completed ? (b.due || 0) : 0) + extraPaid;
       else if (completed) s += Math.max(0, (b.price || 0) - giftPart);
       else s += extraPaid;
@@ -96,8 +102,8 @@
   const seed = (name, phone, email, birthday) => ({ name, phone, email: email || '', birthday: birthday || '', created: new Date().toISOString(), visits: [], orders: [], bookings: [], prefs: {} });
 
   // ---- Supabase <-> account-object mapping ----
-  const bkFromRow = (r) => ({ ref: r.ref, services: r.services || [], serviceMins: r.service_mins || [], staff: r.staff || {}, date: r.date, time: r.time, start: r.start_min, mins: r.mins, price: r.price, priceFrom: r.price_from, quote: r.quote, quoteItems: r.quote_items || [], pay: r.pay, paid: r.paid, due: r.due, refund: r.refund, gift: r.gift && Object.keys(r.gift).length ? r.gift : null, status: r.status, payStatus: r.pay_status, completed: !!r.completed, extra: r.extra || null, final: r.final || null, placedAt: r.placed_at ? new Date(r.placed_at).getTime() : undefined, payDeadline: r.pay_deadline ? new Date(r.pay_deadline).getTime() : undefined, notes: r.notes, mood: r.mood, flags: r.flags || [], drink: r.drink || [], smoke: r.smoke, created: r.created_at, updated: r.updated_at, cancelled: r.cancelled_at, cancelReason: r.cancel_reason, service: (r.services || []).join(' + ') });
-  const bkToRow = (b, uid) => ({ ref: b.ref, user_id: uid, services: b.services || [], service_mins: b.serviceMins || [], staff: b.staff || {}, date: b.date || null, time: b.time || null, start_min: (b.start != null ? b.start : null), mins: b.mins || null, price: b.price || 0, price_from: !!b.priceFrom, quote: !!b.quote, quote_items: b.quoteItems || [], pay: b.pay || null, paid: b.paid || 0, due: b.due || 0, refund: b.refund || 0, gift: b.gift || {}, status: b.status || 'Upcoming', pay_status: b.payStatus || null, completed: !!b.completed, extra: b.extra || null, final: b.final || null, placed_at: b.placedAt ? new Date(b.placedAt).toISOString() : null, pay_deadline: b.payDeadline ? new Date(b.payDeadline).toISOString() : null, notes: b.notes || null, mood: b.mood || null, flags: b.flags || [], drink: b.drink || [], smoke: b.smoke || null, cancelled_at: b.cancelled || null, cancel_reason: b.cancelReason || null });
+  const bkFromRow = (r) => ({ ref: r.ref, services: r.services || [], serviceMins: r.service_mins || [], staff: r.staff || {}, date: r.date, time: r.time, start: r.start_min, mins: r.mins, price: r.price, priceFrom: r.price_from, quote: r.quote, quoteItems: r.quote_items || [], pay: r.pay, paid: r.paid, due: r.due, refund: r.refund, gift: r.gift && Object.keys(r.gift).length ? r.gift : null, status: r.status, payStatus: r.pay_status, completed: !!r.completed, extras: exArr({ extra: r.extra }), final: r.final || null, placedAt: r.placed_at ? new Date(r.placed_at).getTime() : undefined, payDeadline: r.pay_deadline ? new Date(r.pay_deadline).getTime() : undefined, notes: r.notes, mood: r.mood, flags: r.flags || [], drink: r.drink || [], smoke: r.smoke, created: r.created_at, updated: r.updated_at, cancelled: r.cancelled_at, cancelReason: r.cancel_reason, service: (r.services || []).join(' + ') });
+  const bkToRow = (b, uid) => ({ ref: b.ref, user_id: uid, services: b.services || [], service_mins: b.serviceMins || [], staff: b.staff || {}, date: b.date || null, time: b.time || null, start_min: (b.start != null ? b.start : null), mins: b.mins || null, price: b.price || 0, price_from: !!b.priceFrom, quote: !!b.quote, quote_items: b.quoteItems || [], pay: b.pay || null, paid: b.paid || 0, due: b.due || 0, refund: b.refund || 0, gift: b.gift || {}, status: b.status || 'Upcoming', pay_status: b.payStatus || null, completed: !!b.completed, extra: exArr(b), final: b.final || null, placed_at: b.placedAt ? new Date(b.placedAt).toISOString() : null, pay_deadline: b.payDeadline ? new Date(b.payDeadline).toISOString() : null, notes: b.notes || null, mood: b.mood || null, flags: b.flags || [], drink: b.drink || [], smoke: b.smoke || null, cancelled_at: b.cancelled || null, cancel_reason: b.cancelReason || null });
   const orFromRow = (r) => ({ ref: r.ref, date: (r.created_at || '').slice(0, 10), items: r.items || [], total: r.total, status: r.status, method: r.method, pay: r.pay, name: r.name, phone: r.phone, email: r.email, address: (r.address && r.address.text) || '', discount: r.discount, tier: r.tier, payStatus: r.pay_status, gift: r.gift || null, courier: r.courier || null, toPay: (r.to_pay != null ? r.to_pay : undefined), placedAt: r.placed_at ? new Date(r.placed_at).getTime() : undefined, payDeadline: r.pay_deadline ? new Date(r.pay_deadline).getTime() : undefined, cancelReason: r.cancel_reason });
   const orToRow = (o, uid) => ({ ref: o.ref, user_id: uid, items: o.items || [], total: o.total || 0, status: o.status || 'Placed', method: o.method || null, pay: o.pay || null, name: o.name || null, phone: o.phone || null, email: o.email || null, address: (typeof o.address === 'string' ? { text: o.address } : (o.address || {})), discount: o.discount || 0, tier: o.tier || null, pay_status: o.payStatus || null, gift: o.gift || null, courier: o.courier || null, to_pay: (o.toPay != null ? o.toPay : null), placed_at: o.placedAt ? new Date(o.placedAt).toISOString() : null, pay_deadline: o.payDeadline ? new Date(o.payDeadline).toISOString() : null, cancel_reason: o.cancelReason || null });
 
@@ -406,7 +412,7 @@
     }
   };
 
-  window.IncensoAuth = { get, set, flush, removeRestock, resync, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, orderTotal, payLabel, nextRef, TIERS, sync: syncButtons, findByPhone, all, hydrate, sendDetailOtp, verifyDetailOtp, stripeCheckout };
+  window.IncensoAuth = { get, set, flush, removeRestock, resync, signedIn, open, close, signOut, tierFor, nextTier, yearSpend, orderTotal, payLabel, nextRef, TIERS, sync: syncButtons, findByPhone, all, hydrate, sendDetailOtp, verifyDetailOtp, stripeCheckout, exArr };
 
   // ---- Newsletter subscribe (persists to Supabase; members pass straight through) ----
   document.addEventListener('submit', (e) => {

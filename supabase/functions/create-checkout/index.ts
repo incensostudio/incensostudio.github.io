@@ -105,9 +105,10 @@ Deno.serve(async (req) => {
     } else {
       const b = await readRow(admin, 'bookings', 'ref', ref)
       if (!b) return json({ error: 'not found' }, 404)
-      const extra = b.extra || null
-      topup = !!(extra && extra.status === 'pending' && /card/i.test(String(extra.pay || '')))
-      const raw = topup ? Number(extra.amount || 0) : Number(b.paid ?? 0)
+      const exArr = Array.isArray(b.extra) ? b.extra : (b.extra && b.extra.amount ? [b.extra] : [])
+      const cardPend = exArr.filter((e: any) => e && e.status === 'pending' && /card/i.test(String(e.pay || '')))
+      topup = cardPend.length > 0
+      const raw = topup ? cardPend.reduce((s: number, e: any) => s + Number(e.amount || 0), 0) : Number(b.paid ?? 0)
       amount = clamp(Math.round(raw), await bookingCap(admin, b.services || []))
       label = 'Incenso Studio — appointment ' + ref + (topup ? ' (balance)' : '')
       email = await profileEmail(admin, b.user_id)

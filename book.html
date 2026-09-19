@@ -626,20 +626,24 @@ const ref = editing || await A.nextRef('BK');
 const freshPay = !editing || !orig || orig.paid === 0;
 const payNow = Math.max(0, net() - giftAmt());
 const cardGate = st.pay === 'card' && freshPay && payNow > 0;
+let addedCard = false;
 const b = { ref, service: s.map((x) => x.name).join(' + '), services: s.map((x) => x.name), staff: staffLabel(), date: st.date, time: st.time, start: st.start, mins: totalMins(), serviceMins: s.map((x) => x.mins), price: net(), priceFrom: anyFrom(), quote: anyQuote(), quoteItems: s.filter((x) => x.price == null).map((x) => x.name), pay: PAYS[st.pay], gift: giftAmt() > 0 ? { amount: giftAmt() } : null, paid: st.pay === 'later' ? 0 : Math.max(0, net() - giftAmt()), due: st.pay === 'later' ? Math.max(0, net() - giftAmt()) : 0, status: (st.pay === 'whish' || st.pay === 'omt' || cardGate) ? 'Awaiting payment' : 'Upcoming', payStatus: cardGate ? 'pending' : st.pay === 'card' ? 'paid' : (st.pay === 'whish' || st.pay === 'omt') ? 'pending' : 'due', placedAt: Date.now(), payDeadline: (st.pay === 'whish' || st.pay === 'omt') ? transferDeadline() : null, notes: st.notes.trim(), mood: st.mood, flags: st.flags.slice(), smoke: st.smoke, created: new Date().toISOString() };
 if (editing) { const old = (acc.bookings || []).find((x) => x.ref === editing); if (old) { b.created = old.created || b.created; b.updated = new Date().toISOString(); if (orig && orig.pendingTransfer && b.payStatus === 'pending' && old.placedAt) b.placedAt = old.placedAt; }
-if (orig && orig.paid > 0) { const diff = net() - orig.paid - giftAmt(); b.pay = orig.pay; b.paid = orig.cash; b.due = 0; b.gift = old && old.gift ? old.gift : null; if (giftAmt() > 0) b.gift = { amount: giftAmt() + (old && old.gift ? old.gift.amount : 0), parts: (old && old.gift && old.gift.parts) || [] }; b.status = 'Upcoming'; b.payStatus = 'paid'; b.placedAt = (old && old.placedAt) || b.placedAt;
-if (diff > 0) { if (st.pay === 'later') b.due = diff; else if (st.pay === 'card') { b.paid = orig.cash; b.extra = { amount: diff, pay: 'Paid by card', status: 'pending', placedAt: Date.now() }; } else { b.paid = orig.cash; b.extra = { amount: diff, pay: PAYS[st.pay], status: 'pending', placedAt: Date.now() }; } } else if (diff < 0) { const back = -diff; const fromGift = Math.min(back, orig.gift); if (fromGift > 0 && old && old.gift) { const parts = old.gift.parts || []; let left = fromGift; parts.slice().reverse().forEach((p) => { if (left <= 0) return; const r = Math.min(left, p.amount); G.refund(p.code, r, ref); p.amount -= r; left -= r; }); b.gift = { amount: orig.gift - fromGift + (giftAmt() || 0), parts: parts.filter((p) => p.amount > 0), codes: [...new Set(parts.filter((p) => p.amount > 0).map((p) => p.code))] }; if (b.gift.amount <= 0) b.gift = null; } const cashBack = back - fromGift; if (cashBack > 0) { b.paid = orig.cash - cashBack; b.refund = cashBack; } } }
+if (orig && orig.paid > 0) { const diff = net() - orig.paid - (orig.pending || 0) - giftAmt(); let exList = (orig.pendingExtras || []).map((e) => ({ ...e })); b.pay = orig.pay; b.paid = orig.cash; b.due = 0; b.gift = old && old.gift ? old.gift : null; if (giftAmt() > 0) b.gift = { amount: giftAmt() + (old && old.gift ? old.gift.amount : 0), parts: (old && old.gift && old.gift.parts) || [] }; b.status = 'Upcoming'; b.payStatus = 'paid'; b.payDeadline = null; b.placedAt = (old && old.placedAt) || b.placedAt;
+// Each top-up keeps its own method, amount and status. Card top-ups go through Stripe now
+// (addedCard); Whish/OMT top-ups wait for manual verification with a 24h deadline. A price
+// cut is refunded from unpaid pending top-ups first (never charged), then gift, then cash.
+if (diff > 0) { if (st.pay === 'later') b.due = diff; else if (st.pay === 'card') { exList.push({ amount: diff, pay: 'Paid by card', status: 'pending', placedAt: Date.now() }); addedCard = true; } else { exList.push({ amount: diff, pay: PAYS[st.pay], status: 'pending', placedAt: Date.now(), deadline: transferDeadline() }); } } else if (diff < 0) { let back = -diff; for (let i = exList.length - 1; i >= 0 && back > 0; i--) { const take = Math.min(back, exList[i].amount || 0); exList[i].amount -= take; back -= take; } exList = exList.filter((e) => e.amount > 0); if (back > 0) { const fromGift = Math.min(back, orig.gift); if (fromGift > 0 && old && old.gift) { const parts = old.gift.parts || []; let left = fromGift; parts.slice().reverse().forEach((p) => { if (left <= 0) return; const r = Math.min(left, p.amount); G.refund(p.code, r, ref); p.amount -= r; left -= r; }); b.gift = { amount: orig.gift - fromGift + (giftAmt() || 0), parts: parts.filter((p) => p.amount > 0), codes: [...new Set(parts.filter((p) => p.amount > 0).map((p) => p.code))] }; if (b.gift.amount <= 0) b.gift = null; } const cashBack = back - fromGift; if (cashBack > 0) { b.paid = orig.cash - cashBack; b.refund = cashBack; } } } b.extras = exList; }
 acc.bookings = (acc.bookings || []).map((x) => x.ref === editing ? b : x); } else {
 // Gift balance already secures the booking: a Whish / OMT remainder is a pending top-up, not a hold on the slot
-if (giftAmt() > 0 && (st.pay === 'whish' || st.pay === 'omt') && b.paid > 0) { b.extra = { amount: b.paid, pay: PAYS[st.pay], status: 'pending', placedAt: Date.now() }; b.paid = 0; b.status = 'Upcoming'; b.payStatus = 'gift'; b.payDeadline = null; }
+if (giftAmt() > 0 && (st.pay === 'whish' || st.pay === 'omt') && b.paid > 0) { b.extras = [{ amount: b.paid, pay: PAYS[st.pay], status: 'pending', placedAt: Date.now(), deadline: transferDeadline() }]; b.paid = 0; b.status = 'Upcoming'; b.payStatus = 'gift'; b.payDeadline = null; }
 acc.bookings = [b].concat(acc.bookings || []); }
 acc.prefs = { mood: st.mood, flags: st.flags.slice(), smoke: st.smoke };
 if (giftAmt() > 0) { const parts = G.redeemFrom(acc, giftAmt(), ref, b.service); b.gift.parts = (b.gift.parts || []).concat(parts); b.gift.codes = [...new Set(b.gift.parts.map((p) => p.code))]; }
 G.attach(acc);
 A.set(acc);
 try { localStorage.removeItem(DRAFT); } catch (e) {}
-const needsCard = cardGate || (b.extra && b.extra.status === 'pending' && /card/i.test(b.extra.pay || ''));
+const needsCard = cardGate || addedCard;
 if (needsCard) { await Promise.race([ (A.flush ? A.flush() : Promise.resolve()), new Promise((r) => setTimeout(r, 4000)) ]); if (await A.stripeCheckout('booking', ref)) return; }
 const dest = '/booking?ref=' + encodeURIComponent(ref) + (editing ? '&updated=1' : '&new=1');
 // Wait for the booking to finish saving to Supabase before navigating, so the
@@ -671,9 +675,12 @@ const pendingTransfer = /whish|omt/i.test(b.pay || '') && b.payStatus !== 'paid'
 // A confirmed top-up (a previous edit's card/transfer difference that was actually paid)
 // is money already held — fold it into the baseline so re-editing doesn't lose it or
 // take the new difference from the wrong number.
-const extraPaid = (b.extra && b.extra.status === 'paid') ? (b.extra.amount || 0) : 0;
+const exs = A.exArr(b);
+const extraPaid = exs.reduce((s2, e) => s2 + (e.status === 'paid' ? (e.amount || 0) : 0), 0);
+const pendingExtras = exs.filter((e) => e.status !== 'paid').map((e) => ({ ...e }));
+const pending = pendingExtras.reduce((s2, e) => s2 + (e.amount || 0), 0);
 const cash = (pendingTransfer ? 0 : (typeof b.paid === 'number' ? b.paid : (b.pay === 'Pay at studio' ? 0 : b.price))) + extraPaid;
-orig = { pay: b.pay, cash, gift: b.gift ? b.gift.amount : 0, paid: cash + (b.gift ? b.gift.amount : 0), pendingTransfer, placedAt: b.placedAt };
+orig = { pay: b.pay, cash, gift: b.gift ? b.gift.amount : 0, paid: cash + (b.gift ? b.gift.amount : 0), pendingTransfer, pendingExtras, pending, placedAt: b.placedAt };
 setPay(pendingTransfer ? (/whish/i.test(b.pay) ? 'whish' : 'omt') : 'later'); }
 if (st.svcs.length) cat = SERVICES.find((s) => s.name === st.svcs[0]).cat;
 return true;
