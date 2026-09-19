@@ -2,8 +2,7 @@
 //
 // Supabase Auth calls this whenever it needs to deliver a phone sign-in code.
 // It replaces Supabase's built-in sender and delivers the code over WhatsApp
-// using Bird's approved authentication template ("bird_otp"). Confirmed working
-// against Bird's regional API (eu1.platform.bird.com) with a real device.
+// using Bird's approved authentication template ("bird_otp").
 //
 // Required secrets (Supabase -> Edge Functions -> send-sms-otp -> Secrets):
 //   SEND_SMS_HOOK_SECRET   Standard-Webhooks secret from the Send SMS hook
@@ -13,8 +12,17 @@
 //   BIRD_REGION            region from the key prefix; default "eu1"
 //   BIRD_WA_TEMPLATE_SLUG  approved template slug; default "bird_otp"
 //   BIRD_WA_LANG           template language code; default "en"
+//
+// The WhatsApp sender ("from") is read from app_secrets.bird_from — the studio's
+// approved WhatsApp Business number in E.164. Once a real number is connected,
+// Bird REQUIRES `from` on every send (error E15017 without it). Falls back to the
+// BIRD_WA_FROM env var, then to Bird auto-selecting the sender if neither is set.
+// NOTE: bird_otp is a Bird-managed template whose sender Bird fixes, so `from` is
+// not applied to it (Bird rejects `from` on managed templates, E15018). It only
+// takes effect if BIRD_WA_TEMPLATE_SLUG is pointed at a custom auth template.
 
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const rawSecret = Deno.env.get('SEND_SMS_HOOK_SECRET') ?? ''
 const hookSecrets = rawSecret.split('|').map((s) => s.trim().replace('v1,whsec_', '')).filter(Boolean)
@@ -32,21 +40,42 @@ const fail = (message: string, code = 500) =>
     status: code, headers: { 'Content-Type': 'application/json' },
   });
 
+// The approved WhatsApp Business sender number (E.164). Single source of truth in
+// app_secrets so it matches send_wa; cached per cold start.
+let _from: string | null = null;
+async function senderFrom(): Promise<string> {
+  if (_from !== null) return _from;
+  try {
+    const url = Deno.env.get('SUPABASE_URL'), key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (url && key) {
+      const admin = createClient(url, key);
+      const { data } = await admin.from('app_secrets').select('value').eq('name', 'bird_from').maybeSingle();
+      if (data && data.value) { _from = String(data.value); return _from; }
+    }
+  } catch (_e) { /* fall through */ }
+  _from = Deno.env.get('BIRD_WA_FROM') || '';
+  return _from;
+}
+
 // Deliver the code over WhatsApp using Bird's approved authentication template.
 async function sendWhatsApp(to: string, code: string): Promise<void> {
+  const from = await senderFrom();
+  const body: any = {
+    to: '+' + to,
+    template: {
+      slug: TEMPLATE,
+      language: LANG,
+      components: [
+        { type: 'body', parameters: [{ type: 'text', text: code }] },
+      ],
+    },
+  };
+  // Bird-managed templates (slug starts with 'bird_') fix their own sender and reject `from`.
+  if (from && !TEMPLATE.startsWith('bird_')) body.from = from;
   const res = await fetch(BIRD_URL, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${BIRD_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      to: '+' + to,
-      template: {
-        slug: TEMPLATE,
-        language: LANG,
-        components: [
-          { type: 'body', parameters: [{ type: 'text', text: code }] },
-        ],
-      },
-    }),
+    body: JSON.stringify(body),
   });
   if (res.status < 200 || res.status >= 300) {
     throw new Error(`Bird WhatsApp ${res.status}: ${await res.text()}`);
