@@ -61,7 +61,7 @@
     const parts = [];
     if (gift > 0) parts.push(gift >= price && !extras.length && !due ? 'Gift balance' : '$' + gift + ' gift');
     if (paid > 0) parts.push('$' + paid + ' ' + (/card/i.test(method) ? 'card' : method));
-    extras.forEach((ex) => parts.push('$' + ex.amount + (ex.pay === method && paid > 0 ? '' : ' ' + ex.pay) + (ex.status === 'paid' ? '' : ' pending')));
+    extras.forEach((ex) => { const em = (ex.pay || '').replace(/^Paid (by|via) /, ''); const el = /card/i.test(em) ? 'card' : em; parts.push('$' + ex.amount + ' ' + el + (ex.status === 'paid' ? '' : ' pending')); });
     if (due > 0) parts.push('$' + due + ' at studio');
     if (b.quote) parts.push(price ? '+ quote at studio' : 'Quote at studio');
     if (b.refund > 0) parts.push('$' + b.refund + ' refund on its way');
