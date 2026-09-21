@@ -109,7 +109,7 @@
 <main class="page" id="main" data-screen-label="Account">
   <section class="intro">
     <div class="hi-row"><button type="button" class="pfp" id="pfp" hidden aria-label="Change profile photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"></circle><path d="M5 19.5c1.3-3.2 4-4.8 7-4.8s5.7 1.6 7 4.8"></path></svg></button><input id="pfpFile" type="file" accept="image/*" hidden /><h1 id="hi">Your account.</h1></div>
-    <p class="sub"><span id="phoneLine"></span> · <button type="button" id="signOut">Sign out</button></p>
+    <p class="sub"><span id="phoneLine"></span> · <button type="button" id="signOut">Sign out</button><span id="deskDashWrap" hidden> · <a id="deskDash" href="https://manage.incensostudio.com">Dashboard</a></span></p>
   </section>
 
   <section class="lock" aria-label="Sign in">
@@ -188,10 +188,21 @@
   const money = (n) => '$' + n;
   const nice = (iso) => iso ? new Date(String(iso).slice(0, 10) + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
 
+  // Studio staff: if the signed-in number is on the desk allow-list (desk_users, RLS-guarded
+  // so only a desk number sees any row), reveal a Dashboard link to the management app.
+  async function checkDesk() {
+    const wrap = $('deskDashWrap'); if (!wrap) return;
+    if (!(window.SB && A.signedIn())) { wrap.hidden = true; return; }
+    try {
+      const { data, error } = await window.SB.from('desk_users').select('id').limit(1);
+      wrap.hidden = !(!error && data && data.length);
+    } catch (e) { wrap.hidden = true; }
+  }
   const render = () => {
     const on = A.signedIn();
     document.body.classList.toggle('locked', !on);
-    if (!on) { $('hi').textContent = 'Your account.'; $('phoneLine').textContent = ''; $('pfp').hidden = true; return; }
+    if (!on) { $('hi').textContent = 'Your account.'; $('phoneLine').textContent = ''; $('pfp').hidden = true; const w = $('deskDashWrap'); if (w) w.hidden = true; return; }
+    checkDesk();
     const a = A.get();
     $('hi').textContent = 'Hello, ' + ((a.name || '').split(' ')[0] || 'there') + '.';
     $('pfp').hidden = false;
