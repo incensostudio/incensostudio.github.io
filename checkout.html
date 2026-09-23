@@ -704,7 +704,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
       : (ship
         ? (card ? 'Paid ✦ We’re preparing it now, then it goes to the courier — nothing more to pay.' : 'We’re preparing it now, then it goes to the courier — pay cash when it arrives.')
         : 'Ready the moment your payment is confirmed — we’ll message you on WhatsApp.');
-    const thumb = (l) => { const i = Math.max(0, PRODUCTS.findIndex((p) => p.name === l.name)); return '<span class="ph" style="background:' + ACCENTS[i % ACCENTS.length] + '40"><span class="pl">Photo</span></span>'; };
+    const thumb = (l) => { const i = Math.max(0, PRODUCTS.findIndex((p) => p.name === l.name)); const pr = PRODUCTS[i] && PRODUCTS[i].name === l.name ? PRODUCTS[i] : null; const img = (pr && pr.image) || l.image; return '<span class="ph" style="background:' + ACCENTS[i % ACCENTS.length] + '40;overflow:hidden">' + (img ? '<img src="' + img + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block">' : '<span class="pl">Photo</span>') + '</span>'; };
     const itemsHtml = o.items.map((l) =>
       '<div class="oi' + (l.removed ? ' rm' : '') + '">' + thumb(l) +
       '<span class="nm">' + (l.removed ? '<s>' + l.name + '</s>' : l.name) + '<span class="q">× ' + l.q + '</span>' +
