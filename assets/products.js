@@ -33,13 +33,15 @@
   };
 
   let list = FALLBACK;
+  let loaded = false;   // true once we've heard from Supabase — the DB is then the source of truth, even if empty
   try {
     const cached = JSON.parse(localStorage.getItem(CKEY) || 'null');
-    if (cached && Array.isArray(cached) && cached.length) list = cached;
+    if (cached && Array.isArray(cached)) { list = cached; loaded = true; }
   } catch (e) {}
 
   window.IncensoProducts = {
     get list() { return list; },
+    get loaded() { return loaded; },
     ready: Promise.resolve(list),
   };
 
@@ -47,10 +49,10 @@
   window.IncensoProducts.ready = SB.from('web_products')
     .select('*').eq('active', true).order('sort', { ascending: true })
     .then(({ data, error }) => {
-      if (error || !data || !data.length) return list;
+      if (error || !data) return list;   // real query error → keep what we have; otherwise mirror the DB exactly
       const next = data.map(fromRow);
-      const changed = JSON.stringify(next) !== JSON.stringify(list);
-      list = next;
+      const changed = !loaded || JSON.stringify(next) !== JSON.stringify(list);
+      list = next; loaded = true;
       try { localStorage.setItem(CKEY, JSON.stringify(list)); } catch (e) {}
       if (changed) document.dispatchEvent(new CustomEvent('products:updated', { detail: list }));
       return list;

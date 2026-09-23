@@ -426,7 +426,11 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
 
   // Products come from Supabase (assets/products.js) when available, so the admin can edit
   // price, stock and copy live; the design list above is the offline fallback.
-  const liveProducts = () => (window.IncensoProducts && IncensoProducts.list && IncensoProducts.list.length) ? IncensoProducts.list : FALLBACK_PRODUCTS;
+  // Once Supabase has answered, the DB is the source of truth — even when it's empty (show an empty shop, never phantom demo products).
+  const liveProducts = () => {
+    if (window.IncensoProducts && IncensoProducts.loaded) return IncensoProducts.list || [];
+    return (window.IncensoProducts && IncensoProducts.list && IncensoProducts.list.length) ? IncensoProducts.list : FALLBACK_PRODUCTS;
+  };
   const liveDetails = () => { const m = {}; liveProducts().forEach((p) => { if (p.details) m[p.name] = p.details; }); return Object.keys(m).length ? m : FALLBACK_DETAILS; };
   let PRODUCTS = liveProducts();
   let DETAILS = liveDetails();
@@ -437,10 +441,11 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     PRODUCTS = liveProducts();
     DETAILS = liveDetails();
     shelf.innerHTML = '';
+    if (!PRODUCTS.length) { shelf.innerHTML = '<p class="shelf-empty" style="grid-column:1/-1;text-align:center;color:rgba(0,0,0,0.5);font-family:var(--font-mono);font-size:12px;letter-spacing:0.12em;text-transform:uppercase;padding:48px 0">New pieces coming soon.</p>'; document.querySelectorAll('.filters .filter').forEach((b) => { const n = b.querySelector('.n'); if (n) n.textContent = 0; b.hidden = b.dataset.cat !== 'all'; }); return; }
     PRODUCTS.forEach((p, i) => {
       const el = document.createElement('article');
       el.className = 'product';
-      el.dataset.cat = p.cat;
+      el.dataset.cat = (p.cat || '').toLowerCase();
       el.dataset.accent = ACCENTS[i % ACCENTS.length];
       const photos = (p.images && p.images.length) ? p.images : null; // real photos when set, else placeholders
       const frames = photos ? photos.length : (p.imgs || 3);
@@ -459,7 +464,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
         '<div class="ph-dots" aria-hidden="true">' + dotsHtml + '</div></div>' +
         '<div class="p-head"><h2 class="p-name">' + p.name + '</h2><span class="p-price">$' + p.price + '</span></div>' +
         '<p class="p-note">' + p.note + '</p>' +
-        '<div class="p-foot"><span class="p-cat">' + CATLABEL[p.cat] + '</span>' +
+        '<div class="p-foot"><span class="p-cat">' + (CATLABEL[(p.cat || '').toLowerCase()] || p.cat || '') + '</span>' +
         '<span class="buy" data-idx="' + i + '" data-name="' + p.name + '">' + (st === 0 ? '<button type="button" class="add" disabled>Sold out</button>' : '<button type="button" class="add">Add to cart</button>') + '</span></div>';
       shelf.appendChild(el);
     });
@@ -484,6 +489,14 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     const activeF = document.querySelector('.filter[aria-pressed="true"]');
     const fcat = activeF ? activeF.dataset.cat : 'all';
     shelf.querySelectorAll('.product').forEach((card) => { card.hidden = fcat !== 'all' && card.dataset.cat !== fcat; });
+    // Live category counts (were hard-coded) + hide tabs with nothing in them
+    const counts = { all: PRODUCTS.length };
+    PRODUCTS.forEach((p) => { const c = (p.cat || '').toLowerCase(); if (c) counts[c] = (counts[c] || 0) + 1; });
+    document.querySelectorAll('.filters .filter').forEach((btn) => {
+      const c = btn.dataset.cat; const n = btn.querySelector('.n'); const cnt = c === 'all' ? counts.all : (counts[c] || 0);
+      if (n) n.textContent = cnt;
+      btn.hidden = c !== 'all' && cnt === 0;
+    });
     if (typeof syncBuys === 'function') syncBuys();
   };
 
