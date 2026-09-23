@@ -58,11 +58,15 @@
     const card = Object.assign({ balance: v.amount, redemptions: [], status: 'Reserved', confirmed: false, created: new Date().toISOString(), expires: '' }, v);
     cards = cards.filter((x) => x.code !== v.code); cards.unshift(card); saveCache();
     if (SB) {
-      SB.from('gift_cards').insert({
-        code: v.code, amount: v.amount, to_name: v.to || null, to_phone: v.toPhone || null,
-        from_name: v.from || null, msg: v.msg || null, color: v.color || null,
-        buyer_name: v.buyerName || null, buyer_phone: v.buyerPhone || null, pay: v.pay || null,
-      }).then(({ error }) => { if (error) console.warn('[Incenso] gift issue', error); refresh(); }, () => {});
+      // The insert policy requires buyer_id = the signed-in user, so we must include it.
+      SB.auth.getUser().then(({ data }) => {
+        const uid = data && data.user ? data.user.id : null;
+        SB.from('gift_cards').insert({
+          code: v.code, amount: v.amount, to_name: v.to || null, to_phone: v.toPhone || null,
+          from_name: v.from || null, msg: v.msg || null, color: v.color || null,
+          buyer_id: uid, buyer_name: v.buyerName || null, buyer_phone: v.buyerPhone || null, pay: v.pay || null,
+        }).then(({ error }) => { if (error) console.warn('[Incenso] gift issue', error); refresh(); }, () => {});
+      }, () => {});
     }
     return v;
   };
