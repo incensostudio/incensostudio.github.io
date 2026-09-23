@@ -442,10 +442,11 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
       el.className = 'product';
       el.dataset.cat = p.cat;
       el.dataset.accent = ACCENTS[i % ACCENTS.length];
-      const frames = p.imgs || 3; // placeholder count per product — swap for real photo lists
+      const photos = (p.images && p.images.length) ? p.images : null; // real photos when set, else placeholders
+      const frames = photos ? photos.length : (p.imgs || 3);
       let framesHtml = '', dotsHtml = '';
       for (let f = 0; f < frames; f++) {
-        framesHtml += '<div class="frame' + (f === 0 ? ' on' : '') + '"><span class="ph-label">Photo ' + (f + 1) + ' of ' + frames + '</span></div>';
+        framesHtml += '<div class="frame' + (f === 0 ? ' on' : '') + '">' + (photos ? '<img src="' + photos[f] + '" alt="" loading="lazy">' : '<span class="ph-label">Photo ' + (f + 1) + ' of ' + frames + '</span>') + '</div>';
         dotsHtml += '<span class="dot' + (f === 0 ? ' on' : '') + '"></span>';
       }
       const st = p.stock;
@@ -683,10 +684,11 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
   const qvPhoto = qv.querySelector('.qv-photo');
   const openQv = (i) => {
     const p = PRODUCTS[i];
-    const frames = 3;
+    const photos = (p.images && p.images.length) ? p.images : null;
+    const frames = photos ? photos.length : 3;
     let fh = '', dh = '';
     for (let f = 0; f < frames; f++) {
-      fh += '<div class="frame' + (f === 0 ? ' on' : '') + '"><span class="ph-label">Photo ' + (f + 1) + ' of ' + frames + '</span></div>';
+      fh += '<div class="frame' + (f === 0 ? ' on' : '') + '">' + (photos ? '<img src="' + photos[f] + '" alt="" loading="lazy">' : '<span class="ph-label">Photo ' + (f + 1) + ' of ' + frames + '</span>') + '</div>';
       dh += '<span class="dot' + (f === 0 ? ' on' : '') + '"></span>';
     }
     qvPhoto.dataset.frame = '0';

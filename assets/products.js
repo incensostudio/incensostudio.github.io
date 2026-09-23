@@ -25,6 +25,9 @@
 
   const fromRow = (r) => {
     const p = { cat: r.cat, name: r.name, note: r.note || '', price: r.price, details: r.details || '' };
+    const imgs = (Array.isArray(r.images) ? r.images : []).filter(Boolean);
+    if (r.image_url && !imgs.includes(r.image_url)) imgs.unshift(r.image_url);
+    if (imgs.length) { p.images = imgs; p.image = imgs[0]; }
     if (r.stock !== null && r.stock !== undefined) p.stock = r.stock; // null → unlimited (omit)
     return p;
   };
