@@ -126,7 +126,7 @@
   window.IncensoCatalog.ready = Promise.all([
     q('web_categories?select=*&active=eq.true&order=sort'),
     q('web_services?select=*&active=eq.true&order=sort'),
-    q('web_staff?select=*&active=eq.true&order=sort'),
+    q('web_staff_public?select=*&active=eq.true&order=sort'),
     q('web_config?select=*'),
   ]).then(([cats, svcs, staff, cfg]) => {
     if (!cats || !cats.length || !svcs || !svcs.length) return;
