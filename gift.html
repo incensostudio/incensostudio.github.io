@@ -269,6 +269,8 @@ A.set(acc);
 last = v;
 Object.assign(st, { to: '', msg: '' });
 if (st.pay === 'card') { await Promise.race([ (A.flush ? A.flush() : Promise.resolve()), new Promise((r) => setTimeout(r, 4000)) ]); if (await A.stripeCheckout('gift', code)) return; }
+// Wait for the card (and the account) to reach the database before leaving the page — navigating away cancels in-flight saves.
+await Promise.race([ Promise.all([ window.IncensoGift.flush ? window.IncensoGift.flush() : null, A.flush ? A.flush() : null ]), new Promise((r) => setTimeout(r, 6000)) ]);
 location.href = '/gift-card?code=' + code + '&new=1';
 }, 700);
 };
