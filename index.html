@@ -1466,8 +1466,6 @@
       <div class="ig-scrim"></div>
       <div class="ig-bars" id="igBars"></div>
       <div class="ig-head">
-        <span class="ig-avatar"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' fill='%23111'/%3E%3Ctext x='30' y='41' text-anchor='middle' font-family='Georgia,serif' font-size='30' fill='%23fff'%3Ei%3C/text%3E%3C/svg%3E" alt="" /></span>
-        <span class="ig-name" id="igName">incenso</span>
         <span class="ig-when" id="igWhen"></span>
       </div>
       <div class="ig-cap" id="igCap"></div>
@@ -2154,7 +2152,6 @@
           '<img src="' + hl.stories[0].img + '" alt="" loading="lazy" />' +
           '<div class="sp-scrim"></div>' +
           '<div class="sp-progress">' + segs + '</div>' +
-          '<div class="sp-meta"><span class="sp-avatar"><img src="' + AVATAR + '" alt=""/></span>incenso</div>' +
           '<div class="sp-caption">' + hl.name + '<span class="sp-when">' + n + ' stories</span></div>' +
         '</div>';
       wrap.appendChild(btn);
@@ -2269,7 +2266,7 @@
 
     function render() {
       const st = stories()[si];
-      nameEl.textContent = HIGHLIGHTS[hi].name;
+      if (nameEl) nameEl.textContent = HIGHLIGHTS[hi].name;
       whenEl.textContent = st.when || '';
       capEl.textContent = st.label || '';
       if (avatarEl) avatarEl.src = HIGHLIGHTS[hi].cover || AVATAR;
