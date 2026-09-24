@@ -5,7 +5,9 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+<style>html{touch-action:manipulation;-webkit-text-size-adjust:100%}@media (pointer:coarse){input,select,textarea{font-size:16px!important}}</style>
+<script>(function(){var d=document,o={passive:false},last=0;d.addEventListener("gesturestart",function(e){e.preventDefault()},o);d.addEventListener("gesturechange",function(e){e.preventDefault()},o);d.addEventListener("touchmove",function(e){if(e.touches.length>1||(e.scale&&e.scale!==1))e.preventDefault()},o);d.addEventListener("touchend",function(e){var n=Date.now();if(n-last<350&&!e.target.closest("input,textarea,select,button,a,label,[role=button]"))e.preventDefault();last=n},o);d.addEventListener("dblclick",function(e){e.preventDefault()},o)})();</script>
 <meta name="description" content="Incenso Studio — your cart. Shipping or studio pickup in Tripoli, Lebanon." />
 <meta name="theme-color" content="#e5dcc9" />
 <title>Cart — Incenso Studio</title>
@@ -406,7 +408,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
       const row = document.createElement('article');
       row.className = 'line';
       row.innerHTML =
-        '<div class="l-photo" style="background:' + ACCENTS[p.i % ACCENTS.length] + '40">' + (p.image ? '<img src="' + p.image + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block">' : '<span class="ph-label">Photo</span>') + '</div>' +
+        '<div class="l-photo" style="background:' + ACCENTS[p.i % ACCENTS.length] + '40">' + (p.image ? '<img src="' + p.image + '" alt="" style="width:100%;height:100%;object-fit:contain;background:#FEFEF1;display:block">' : '<span class="ph-label">Photo</span>') + '</div>' +
         '<div class="l-info"><h2 class="l-name">' + name + '</h2><p class="l-note">' + p.note + ' · $' + p.price + '</p><span class="l-cat">' + CATLABEL[p.cat] + '</span></div>' +
         '<div class="l-ctrls">' +
         '<span class="qty"><button type="button" data-act="dec" data-name="' + name + '" aria-label="Decrease quantity">&minus;</button><span class="q">' + q + '</span><button type="button" data-act="inc" data-name="' + name + '" aria-label="Increase quantity">+</button></span>' +

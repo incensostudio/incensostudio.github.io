@@ -5,7 +5,9 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+<style>html{touch-action:manipulation;-webkit-text-size-adjust:100%}@media (pointer:coarse){input,select,textarea{font-size:16px!important}}</style>
+<script>(function(){var d=document,o={passive:false},last=0;d.addEventListener("gesturestart",function(e){e.preventDefault()},o);d.addEventListener("gesturechange",function(e){e.preventDefault()},o);d.addEventListener("touchmove",function(e){if(e.touches.length>1||(e.scale&&e.scale!==1))e.preventDefault()},o);d.addEventListener("touchend",function(e){var n=Date.now();if(n-last<350&&!e.target.closest("input,textarea,select,button,a,label,[role=button]"))e.preventDefault();last=n},o);d.addEventListener("dblclick",function(e){e.preventDefault()},o)})();</script>
 <meta name="description" content="Incenso Studio — The Shelf. Studio-approved hair, nail and home ritual goods. Pickup in Tripoli, Lebanon." />
 <meta name="theme-color" content="#e5dcc9" />
 <title>Shop — Incenso Studio</title>
@@ -136,13 +138,14 @@
   .product::before,.product::after{content:"";position:absolute;background:var(--grid-mark);pointer-events:none;z-index:2}
   .product::before{left:-4.5px;top:-1px;width:9px;height:1px}
   .product::after{left:-1px;top:-4.5px;width:1px;height:9px}
-  .photo{position:relative;z-index:1;aspect-ratio:4/5;background:#FEFEF1;border:1px solid var(--grid-line);display:grid;place-items:center;overflow:hidden}
+  .photo{position:relative;z-index:1;aspect-ratio:4/5;touch-action:pan-y;background:#FEFEF1;border:1px solid var(--grid-line);display:grid;place-items:center;overflow:hidden}
   .photo .ph-label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(0,0,0,0.38)}
   .photo .frame{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity 260ms cubic-bezier(0.16,1,0.3,1)}
   .photo .frame.on{opacity:1}
-  .photo .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .photo .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#FEFEF1}
   .ph-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;appearance:none;width:30px;height:30px;border-radius:999px;border:1px solid rgba(0,0,0,0.18);background:rgba(254,254,241,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--fg-warm);font-size:17px;line-height:1;display:grid;place-items:center;cursor:pointer;opacity:0;transition:opacity 180ms,background-color 180ms;padding:0 0 2px}
   .ph-prev{left:8px}
+  @media (hover:none) and (pointer:coarse){.ph-nav{display:none!important}}   /* phones: swipe instead */
   .ph-next{right:8px}
   .photo:hover .ph-nav,.ph-nav:focus-visible{opacity:1}
   .ph-nav:hover{background:rgba(254,254,241,0.95)}
@@ -150,7 +153,7 @@
   .ph-dots .dot{width:5px;height:5px;border-radius:999px;background:rgba(0,0,0,0.22);transition:background-color 180ms}
   .ph-dots .dot.on{background:var(--fg-warm)}
   @media (hover:none){.ph-nav{opacity:1}}
-  .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#FEFEF1}
   .p-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:16px}
   .p-name{font-family:var(--font-sans);font-weight:600;font-size:16px;letter-spacing:-0.01em;margin:0}
   .p-price{font-family:var(--font-mono);font-size:13px;font-weight:500;white-space:nowrap}
@@ -211,9 +214,10 @@
   .qv-card{position:relative;z-index:1;width:min(880px,100%);max-height:min(640px,100%);background:#FEFEF1;border:1px solid rgba(0,0,0,0.25);box-shadow:0 24px 64px rgba(0,0,0,0.28);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);overflow:hidden;transform:translateY(10px) scale(0.985);transition:transform 280ms cubic-bezier(0.16,1,0.3,1)}
   .qv.open .qv-card{transform:translateY(0) scale(1)}
   .qv-photo{position:relative;background:rgba(229,220,201,0.5);border-right:1px solid var(--grid-line);min-height:420px}
+  .qv-photo{touch-action:pan-y}
   .qv-photo .frame{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity 260ms cubic-bezier(0.16,1,0.3,1)}
   .qv-photo .frame.on{opacity:1}
-  .qv-photo .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .qv-photo .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#FEFEF1}
   .qv-photo .ph-nav{opacity:1}
   .qv-info{padding:clamp(24px,3.4vw,40px);display:flex;flex-direction:column;overflow-y:auto}
   .qv-cat{font-family:var(--font-mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(0,0,0,0.45)}
@@ -621,18 +625,31 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
     } catch (e) {}
   };
 
-  // Photo gallery — arrows cycle frames (cards + quick view)
-  document.addEventListener('click', (e) => {
-    const nav = e.target.closest('.ph-nav');
-    if (!nav) return;
-    const photo = nav.closest('.photo, .qv-photo');
-    const n = parseInt(photo.dataset.frames, 10);
-    let idx = parseInt(photo.dataset.frame, 10);
-    idx = (idx + (nav.classList.contains('ph-next') ? 1 : n - 1)) % n;
+  // Photo gallery — arrows or a sideways swipe cycle frames (cards + quick view)
+  const stepPhoto = (photo, dir) => {
+    const n = parseInt(photo.dataset.frames, 10); if (!(n > 1)) return;
+    const idx = (parseInt(photo.dataset.frame, 10) + dir + n) % n;
     photo.dataset.frame = idx;
     photo.querySelectorAll('.frame').forEach((f, k) => f.classList.toggle('on', k === idx));
     photo.querySelectorAll('.dot').forEach((d, k) => d.classList.toggle('on', k === idx));
+  };
+  document.addEventListener('click', (e) => {
+    const nav = e.target.closest('.ph-nav');
+    if (!nav) return;
+    stepPhoto(nav.closest('.photo, .qv-photo'), nav.classList.contains('ph-next') ? 1 : -1);
   });
+  let swipe = null, swipedAt = 0;
+  document.addEventListener('touchstart', (e) => {
+    const photo = e.target.closest('.photo, .qv-photo');
+    swipe = (photo && e.touches.length === 1 && !e.target.closest('.ph-nav')) ? { photo, x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+  }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    if (!swipe) return; const t = e.changedTouches[0]; const dx = t.clientX - swipe.x, dy = t.clientY - swipe.y;
+    if (Math.abs(dx) > 35 && Math.abs(dx) > Math.abs(dy) * 1.3) { stepPhoto(swipe.photo, dx < 0 ? 1 : -1); swipedAt = Date.now(); }
+    swipe = null;
+  }, { passive: true });
+  // a swipe must not also count as a tap that opens the quick view
+  document.addEventListener('click', (e) => { if (Date.now() - swipedAt < 400 && e.target.closest('.photo, .qv-photo')) { e.stopPropagation(); e.preventDefault(); } }, true);
 
   document.addEventListener('click', (e) => {
     const buy = e.target.closest('.buy');

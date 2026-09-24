@@ -324,6 +324,8 @@
     '.empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;' +
     '  justify-content:center;gap:6px;text-align:center;padding:12px;box-sizing:border-box;' +
     '  cursor:pointer;user-select:none}' +
+    ':host(:not([data-editable])) .empty{cursor:default}' +
+    ':host(:not([data-editable])) .empty svg,:host(:not([data-editable])) .empty .cap{display:none}' +
     '.empty svg{opacity:.45}' +
     '.empty .cap{max-width:90%;font-weight:500;letter-spacing:.01em}' +
     '.empty .sub{font-size:11px}' +
@@ -568,7 +570,7 @@
       this._subFn = () => this._render();
       // Shadow-DOM listeners live with the shadow DOM — bound once here so
       // disconnect/reconnect (e.g. React remount) doesn't stack handlers.
-      this._empty.addEventListener('click', () => this._input.click());
+      this._empty.addEventListener('click', () => { if (this.hasAttribute('data-editable')) this._input.click(); });
       root.addEventListener('click', (e) => {
         const act = e.target && e.target.getAttribute && e.target.getAttribute('data-act');
         if (!act) return;
@@ -590,6 +592,7 @@
         }
       });
       this._input.addEventListener('change', () => {
+        if (!this.hasAttribute('data-editable')) { this._input.value = ''; return; }
         const f = this._input.files && this._input.files[0];
         if (f) this._ingest(f);
         this._input.value = '';
@@ -855,6 +858,7 @@
     // handleEvent — one listener object for all four drag events keeps the
     // add/remove symmetric and the depth counter correct.
     handleEvent(e) {
+      if (!this.hasAttribute('data-editable')) return;   // read-only outside the design tool: no drops
       if (e.type === 'dragenter' || e.type === 'dragover') {
         // Without preventDefault the browser never fires 'drop'.
         e.preventDefault();

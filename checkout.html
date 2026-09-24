@@ -5,7 +5,9 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+<style>html{touch-action:manipulation;-webkit-text-size-adjust:100%}@media (pointer:coarse){input,select,textarea{font-size:16px!important}}</style>
+<script>(function(){var d=document,o={passive:false},last=0;d.addEventListener("gesturestart",function(e){e.preventDefault()},o);d.addEventListener("gesturechange",function(e){e.preventDefault()},o);d.addEventListener("touchmove",function(e){if(e.touches.length>1||(e.scale&&e.scale!==1))e.preventDefault()},o);d.addEventListener("touchend",function(e){var n=Date.now();if(n-last<350&&!e.target.closest("input,textarea,select,button,a,label,[role=button]"))e.preventDefault();last=n},o);d.addEventListener("dblclick",function(e){e.preventDefault()},o)})();</script>
 <meta name="description" content="Incenso Studio — checkout. Shipping or studio pickup in Tripoli, Lebanon." />
 <meta name="theme-color" content="#e5dcc9" />
 <title>Checkout — Incenso Studio</title>
@@ -704,7 +706,7 @@ body.menu-open .tb-cart-left,body.menu-open .wm-link{visibility:hidden}
       : (ship
         ? (card ? 'Paid ✦ We’re preparing it now, then it goes to the courier — nothing more to pay.' : 'We’re preparing it now, then it goes to the courier — pay cash when it arrives.')
         : 'Ready the moment your payment is confirmed — we’ll message you on WhatsApp.');
-    const thumb = (l) => { const i = Math.max(0, PRODUCTS.findIndex((p) => p.name === l.name)); const pr = PRODUCTS[i] && PRODUCTS[i].name === l.name ? PRODUCTS[i] : null; const img = (pr && pr.image) || l.image; return '<span class="ph" style="background:' + ACCENTS[i % ACCENTS.length] + '40;overflow:hidden">' + (img ? '<img src="' + img + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block">' : '<span class="pl">Photo</span>') + '</span>'; };
+    const thumb = (l) => { const i = Math.max(0, PRODUCTS.findIndex((p) => p.name === l.name)); const pr = PRODUCTS[i] && PRODUCTS[i].name === l.name ? PRODUCTS[i] : null; const img = (pr && pr.image) || l.image; return '<span class="ph" style="background:' + ACCENTS[i % ACCENTS.length] + '40;overflow:hidden">' + (img ? '<img src="' + img + '" alt="" style="width:100%;height:100%;object-fit:contain;background:#FEFEF1;display:block">' : '<span class="pl">Photo</span>') + '</span>'; };
     const itemsHtml = o.items.map((l) =>
       '<div class="oi' + (l.removed ? ' rm' : '') + '">' + thumb(l) +
       '<span class="nm">' + (l.removed ? '<s>' + l.name + '</s>' : l.name) + '<span class="q">× ' + l.q + '</span>' +
